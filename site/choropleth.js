@@ -88,6 +88,16 @@ function selectProperty(value){
 	window.location.assign(queryString);
 }
 
+function selectScheme(value){
+	queryString = "?scheme=" + value;
+	for (key in queryStringResult) {
+		if (key != 'scheme'){
+			queryString = queryString + "&" + key + "=" + queryStringResult[key];
+		}
+	}
+	window.location.assign(queryString);
+}
+
 function getRange(data,property) {
 	var low=data.features[0].properties[property];
 	var high=data.features[0].properties[property];
@@ -168,52 +178,115 @@ for (key in properties.representative){
 
 	propertySelect.appendChild(opt);
 }
-var color_scheme="green_blue";
+
+var schemes = {
+	//Darkest to most pale
+	"reds":{
+		"name":"Reds", 
+		"list":['#DE0A09', '#FA3A3E', '#F56B69', '#FAAFAC', '#FFD1CF' ]
+	},
+	"oranges":{
+		"name":"Oranges",
+		"list":['#DE520A', "#FA7836", "#F58B55", "#FAAC83", "#FFD1BA"]
+	},
+	"yellows":{
+		"name":"Yellows",
+		"list":["#DED404", "#FAF13D", "#F5EE5C", "#FAF68A", "#FFFCC1"]
+	},
+	"greens":{
+		"name":"Greens",
+		"list":["#0E5404", "#2A851E", "#5ED64C", "#87E077", "#C4FFBA"]
+	},
+	"ltblues":{
+		"name":"Light Blues",
+		"list":["#065438", "#218561", "#51D6A5", "#7DE0BA", "#C1FFE7"]
+	},
+	"blues":{
+		"name":"Blues",
+		"list":["#030654", "#1B1F85", "#484ED6", "#747AE0", "#B6BAFF"]
+	},
+	"purples":{
+		"name":"Purples",
+		"list":["#380354", "#5E1385", "#A03AD6", "#B465E0", "#DFA5FF"]
+	},
+	"pinks":{
+		"name":"Pinks",
+		"list":["#540542", "#850F68", "#D635B2", "#E05FC7", "#FF9FEB"]
+	},
+
+	//dark to lighter color
+	"red_yellow":{
+		"name":"Red Fade To Yellow",
+		"list":['#800026', '#BD0026', '#FC4E2A', '#FEB24C', '#FFEDA0' ]
+	},
+	"blue_yellow":{
+		"name":"Blue Fade To Yellow",
+		"list":['#1506FF', '#53A2B8', '#93FFB5', '#B6D65D', '#FFE083' ]
+	},
+
+	//polar saturation
+	"blue_red":{
+		"name":"Blue To Red",
+		"list":["#0000FF", "#7A42D6", "#F7DEFF", "#FF59D5", "#FF000D"]
+	},
+	"green_blue":{
+		"name":"Green To Blue",
+		"list":["#12FF08", "#3BD689", "#D5FDFF", "#51A0FF", "#0E03FF"]
+	},
+	"yellow_blue":{
+		"name":"Yellow To Blue",
+		"list":["#FFE009", "#74D62C", "#C4FFE0", "#3FC9FF", "#1A0EFF"]
+	},
+	"red_green":{
+		"name":"Red To Green",
+		"list":["#FF0007", "#D66F33", "#FFEFCC", "#FFF747", "#4FFF16"]
+	}
+};
+
+if (queryStringResult.hasOwnProperty('scheme') && schemes.hasOwnProperty(queryStringResult['scheme']) >= 0){
+	var color_scheme = schemes[queryStringResult['scheme']];
+} else {
+	var color_scheme = schemes["reds"];
+}
+
+var schemeSelect=document.getElementById("schemeSelect");
+
+for (key in schemes){
+	var opt = document.createElement("option");
+	opt.value = key;
+	opt.innerHTML = schemes[key].name;
+
+	if (schemes[key].name == color_scheme.name){
+		opt.selected = true;
+	}
+
+	schemeSelect.appendChild(opt);
+}
+
+// var color_scheme="green_blue";
 var range=getRange(data,property);
 var num_categories=5;		//TODO: Currently this all we support
 var categories=getCategories(range, num_categories);
 if (categories==false || num_categories==0){
 	return false;
 }
-var reverse_scheme=true;
+var reverse_scheme=false;
 
 // get color depending on population density value
 function getColor(value, scheme, categories, reverse) {
 
-	var schemes = {
-		//Darkest to most pale
-		"reds":['#DE0A09', '#FA3A3E', '#F56B69', '#FAAFAC', '#FFD1CF' ],
-		"oranges":['#DE520A', "#FA7836", "#F58B55", "#FAAC83", "#FFD1BA"],
-		"yellows":["#DED404", "#FAF13D", "#F5EE5C", "#FAF68A", "#FFFCC1"],
-		"greens":["#0E5404", "#2A851E", "#5ED64C", "#87E077", "#C4FFBA"],
-		"ltblues":["#065438", "#218561", "#51D6A5", "#7DE0BA", "#C1FFE7"],
-		"blues":["#030654", "#1B1F85", "#484ED6", "#747AE0", "#B6BAFF"],
-		"purples":["#380354", "#5E1385", "#A03AD6", "#B465E0", "#DFA5FF"],
-		"pinks":["#540542", "#850F68", "#D635B2", "#E05FC7", "#FF9FEB"],
-
-		//dark to lighter color
-		"red_yellow":['#800026', '#BD0026', '#FC4E2A', '#FEB24C', '#FFEDA0' ],
-		"blue_yellow":['#1506FF', '#53A2B8', '#93FFB5', '#B6D65D', '#FFE083' ],
-
-		//polar saturation
-		"blue_red":["#0000FF", "#7A42D6", "#F7DEFF", "#FF59D5", "#FF000D"],
-		"green_blue":["#12FF08", "#3BD689", "#D5FDFF", "#51A0FF", "#0E03FF"],
-		"yellow_blue":["#FFE009", "#74D62C", "#C4FFE0", "#3FC9FF", "#1A0EFF"],
-		"red_green":["#FF0007", "#D66F33", "#FFEFCC", "#FFF747", "#4FFF16"]
-	};
-
 	if (reverse==true){
-		return 	value > categories[0] ? schemes[scheme][4] :
-				value > categories[1] ? schemes[scheme][3] :
-				value > categories[2] ? schemes[scheme][2] :
-				value > categories[3] ? schemes[scheme][1] :
-									 	schemes[scheme][0];
+		return 	value > categories[0] ? scheme.list[4] :
+				value > categories[1] ? scheme.list[3] :
+				value > categories[2] ? scheme.list[2] :
+				value > categories[3] ? scheme.list[1] :
+									 	scheme.list[0];
 	} else {
-		return 	value > categories[0] ? schemes[scheme][0] :
-				value > categories[1] ? schemes[scheme][1] :
-				value > categories[2] ? schemes[scheme][2] :
-				value > categories[3] ? schemes[scheme][3] :
-									 	schemes[scheme][4];
+		return 	value > categories[0] ? scheme.list[0] :
+				value > categories[1] ? scheme.list[1] :
+				value > categories[2] ? scheme.list[2] :
+				value > categories[3] ? scheme.list[3] :
+									 	scheme.list[4];
 	}
 
 }
