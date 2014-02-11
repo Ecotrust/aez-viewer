@@ -6,7 +6,6 @@ var cloudmade = L.tileLayer('http://{s}.tile.cloudmade.com/{key}/{styleId}/256/{
 	styleId: 22677
 }).addTo(map);
 
-
 // control that shows state info on hover
 var info = L.control();
 
@@ -98,6 +97,16 @@ function selectScheme(value){
 	window.location.assign(queryString);
 }
 
+function selectReverse(value){
+	queryString = "?reverse=" + value;
+	for (key in queryStringResult) {
+		if (key != 'reverse'){
+			queryString = queryString + "&" + key + "=" + queryStringResult[key];
+		}
+	}
+	window.location.assign(queryString);
+}
+
 function getRange(data,property) {
 	var low=data.features[0].properties[property];
 	var high=data.features[0].properties[property];
@@ -155,6 +164,12 @@ function getCategories(range, count){
 	return categories;
 }
 
+function capFirstLetter(string)
+{
+    //Shamelessly ripped from http://stackoverflow.com/questions/1026069/capitalize-the-first-letter-of-string-in-javascript
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+
 var data = statesData;
 var property_object = parseData(data);
 var properties = getProperties(property_object, data.features.length);
@@ -170,7 +185,7 @@ var propertySelect=document.getElementById("propertySelect");
 for (key in properties.representative){
 	var opt = document.createElement("option");
 	opt.value = properties.representative[key];
-	opt.innerHTML = properties.representative[key];
+	opt.innerHTML = capFirstLetter(properties.representative[key]);
 
 	if (properties.representative[key] == property){
 		opt.selected = true;
@@ -263,14 +278,34 @@ for (key in schemes){
 	schemeSelect.appendChild(opt);
 }
 
-// var color_scheme="green_blue";
+if (queryStringResult.hasOwnProperty('reverse') && 
+	queryStringResult['reverse'] == "true") {
+	var reverse_scheme = true;
+} else {
+	var reverse_scheme = false;
+}
+
+var reverseSelect=document.getElementById("reverseSelect");
+
+reverse_opts = ['Normal', 'Reverse'];
+for (key in reverse_opts){
+	var opt = document.createElement("option");
+	opt.value = (reverse_opts[key]=='Reverse');
+	opt.innerHTML = reverse_opts[key];
+
+	if ((reverse_opts[key] == 'Normal' && !reverse_scheme) || (reverse_opts[key] == 'Reverse' && reverse_scheme)){
+		opt.selected = true;
+	}
+
+	reverseSelect.appendChild(opt);
+}
+
 var range=getRange(data,property);
 var num_categories=5;		//TODO: Currently this all we support
 var categories=getCategories(range, num_categories);
 if (categories==false || num_categories==0){
 	return false;
 }
-var reverse_scheme=false;
 
 // get color depending on population density value
 function getColor(value, scheme, categories, reverse) {
