@@ -5,7 +5,7 @@ var statesData = {"type":"FeatureCollection","features":[
 	"properties":{
 		"name":"Phil",
 		"val":4,
-		"density":3000.65
+		"density":30.65
 	},
 	"geometry":{
 		"type":"MultiPolygon",

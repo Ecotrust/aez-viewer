@@ -38,18 +38,60 @@ function getRange(data,property) {
 	return {"low":low,"high":high};
 }
 
-function getCategories(range){
-	// return [1000,200,100,40,0];
-	return [3.9,2.9,1.9,0.9,0];
+function simplifyNumber(high, dev){
+	//leave to 2 digits untouched, unless less than 100, then just top digit
+	var digits = parseInt(Math.log(dev)/Math.LN10);
+	var exp = digits - 1;
+	if (exp>0){
+		var mask = Math.pow(10,exp);
+	} else if (dev > 20) {
+		var mask = 10;
+	} else {
+		var mask = 0;
+	}
+	if (mask != 0) {
+		dev = Math.round(dev/mask)*mask;
+		high = Math.round(high/mask)*mask;
+	}
+
+	return {"dev":dev, "high":high};
+}
+
+function getCategories(range, count){
+	if (count == 0){
+		alert("number of categories cannot be set to 0");
+		return false;
+	}
+	var diff = range['high'] - range['low'];
+	var dev = 0;
+	if (diff < 20){
+		dev = parseFloat(diff/(count-1));
+	} else {
+		dev = parseInt(diff/(count-1));
+	}
+	var simplevals = simplifyNumber(range['high']-(dev/2), dev);
+	var high_bar = simplevals['high'];
+	dev = simplevals['dev'];
+	var categories = [high_bar];
+	for (var i = 1; i < count-1; i++) {
+		categories.push(categories[categories.length-1]-dev);
+	}
+	categories.push(0);
+		//TODO: This assumes only positive values
+	return categories;
 }
 
 var data=statesData;
 // var property="density";
 var property="val";
-var color_scheme="reds";
+var color_scheme="green_blue";
 var range=getRange(data,property);
-var categories=getCategories(range);
-var reverse_scheme=false;
+var num_categories=5;		//TODO: Currently this all we support
+var categories=getCategories(range, num_categories);
+if (categories==false || num_categories==0){
+	return false;
+}
+var reverse_scheme=true;
 
 // get color depending on population density value
 function getColor(value, scheme, categories, reverse) {
