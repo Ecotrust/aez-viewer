@@ -304,7 +304,7 @@ var range=getRange(data,property);
 var num_categories=5;		//TODO: Currently this all we support
 var categories=getCategories(range, num_categories);
 if (categories==false || num_categories==0){
-	return false;
+	alert("Pleace specify the number of categories in your settings.");
 }
 
 // get color depending on population density value
