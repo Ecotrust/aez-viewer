@@ -24,6 +24,46 @@ info.update = function (props) {
 
 info.addTo(map);
 
+function addProperty(properties, property){
+	if(!properties.hasOwnProperty(property)){
+		properties[property] = 1;
+	} else {
+		properties[property] = properties[property] + 1;
+	}
+	return properties;
+}
+
+function parseData(data){
+	var properties = {};
+	for (var i=0; i < data.features.length; i++){
+		var feat = data.features[i];
+		for (var property in feat.properties) {
+			if (feat.properties.hasOwnProperty(property)){
+				var n = feat.properties[property];
+				if (!isNaN(parseFloat(n)) && isFinite(n)){
+					properties = addProperty(properties,property)
+				}
+			}
+		}
+	}
+	return properties;
+}
+
+function getProperties(prop_obj, feature_count){
+	representative = [];
+	partial = [];
+	for (var property_key in prop_obj){
+		if (prop_obj.hasOwnProperty(property_key)){
+			if (prop_obj[property_key] == feature_count){
+				representative.push(property_key);
+			} else {
+				partial.push(property_key);
+			}
+		}
+	}
+	return {"representative":representative.sort(), "partial":partial.sort()};
+}
+
 function getRange(data,property) {
 	var low=data.features[0].properties[property];
 	var high=data.features[0].properties[property];
@@ -82,8 +122,9 @@ function getCategories(range, count){
 }
 
 var data=statesData;
-// var property="density";
-var property="val";
+var property_object=parseData(data);
+var properties = getProperties(property_object, data.features.length)
+var property=properties.representative[0];
 var color_scheme="green_blue";
 var range=getRange(data,property);
 var num_categories=5;		//TODO: Currently this all we support
