@@ -24,6 +24,20 @@ info.update = function (props) {
 
 info.addTo(map);
 
+function queryObj() {
+	var result = {};
+	keyValuePairs = location.search.slice(1).split('&');
+
+	keyValuePairs.forEach(function(keyValuePair) {
+		keyValuePair = keyValuePair.split('=');
+		result[keyValuePair[0]] = keyValuePair[1] || '';
+	});
+
+	return result;
+}
+
+var queryStringResult = queryObj();
+
 function addProperty(properties, property){
 	if(!properties.hasOwnProperty(property)){
 		properties[property] = 1;
@@ -62,6 +76,16 @@ function getProperties(prop_obj, feature_count){
 		}
 	}
 	return {"representative":representative.sort(), "partial":partial.sort()};
+}
+
+function selectProperty(value){
+	queryString = "?property=" + value;
+	for (key in queryStringResult) {
+		if (key != 'property'){
+			queryString = queryString + "&" + key + "=" + queryStringResult[key];
+		}
+	}
+	window.location.assign(queryString);
 }
 
 function getRange(data,property) {
@@ -121,10 +145,29 @@ function getCategories(range, count){
 	return categories;
 }
 
-var data=statesData;
-var property_object=parseData(data);
-var properties = getProperties(property_object, data.features.length)
-var property=properties.representative[0];
+var data = statesData;
+var property_object = parseData(data);
+var properties = getProperties(property_object, data.features.length);
+
+if (queryStringResult.hasOwnProperty('property') && properties.representative.indexOf(queryStringResult['property']) >= 0){
+	var property = queryStringResult['property'];
+} else {
+	var property=properties.representative[0];
+}
+
+var propertySelect=document.getElementById("propertySelect");
+
+for (key in properties.representative){
+	var opt = document.createElement("option");
+	opt.value = properties.representative[key];
+	opt.innerHTML = properties.representative[key];
+
+	if (properties.representative[key] == property){
+		opt.selected = true;
+	}
+
+	propertySelect.appendChild(opt);
+}
 var color_scheme="green_blue";
 var range=getRange(data,property);
 var num_categories=5;		//TODO: Currently this all we support

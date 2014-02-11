@@ -12,6 +12,11 @@
 
 </head>
 <body>
+	<form id="selectors">
+		Select an attribute to view:
+		<select id="propertySelect" onchange="selectProperty(this.value)">
+		</select>
+	</form>
 	<div id="map"></div>
 
 	<script src="../dist/leaflet.js"></script>
