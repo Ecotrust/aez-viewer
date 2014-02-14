@@ -170,7 +170,7 @@ function capFirstLetter(string)
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-var data = statesData;
+var data = zonesData;
 var property_object = parseData(data);
 var properties = getProperties(property_object, data.features.length);
 
@@ -373,7 +373,7 @@ function onEachFeature(feature, layer) {
 	});
 }
 
-geojson = L.geoJson(statesData, {
+geojson = L.geoJson(data, {
 	style: style,
 	onEachFeature: onEachFeature
 }).addTo(map);
