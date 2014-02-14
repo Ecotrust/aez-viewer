@@ -109,18 +109,31 @@ function selectReverse(value){
 	window.location.assign(queryString);
 }
 
-function getRange(data,property) {
-	var low=data.features[0].properties[property];
-	var high=data.features[0].properties[property];
-	for(var i=0; i<data.features.length; i++){
-		var value=data.features[i].properties[property];
-		if (value < low || low == 0){
-			low = value;
-		} else if (value > high){
-			high = value;
+function getRange(data,property,method) {
+	if (method == "jenks"){
+		var range = []
+		for(var i=0; i<data.features.length; i++){
+			var value=data.features[i].properties[property];
+			if (value != 0){
+				range.push(value);
+			}
 		}
+		return range;
+		
+	} else {
+		var low=data.features[0].properties[property];
+		var high=data.features[0].properties[property];
+
+		for(var i=0; i<data.features.length; i++){
+			var value=data.features[i].properties[property];
+			if (value < low || low == 0){
+				low = value;
+			} else if (value > high){
+				high = value;
+			}
+		}
+		return {"low":low,"high":high};
 	}
-	return {"low":low,"high":high};
 }
 
 function simplifyNumber(high, dev){
@@ -166,6 +179,24 @@ function getCategories(range, count){
 	return categories;
 }
 
+function getJenksCategories(range, count){
+	var new_range = [];
+	for (var i = 0; i < range.length; i++) {
+		if (range[i] != 0) {
+			new_range.push(range[i]);
+		}
+	}
+	if (new_range.length < count) {
+		if (new_range.length == 0) {
+			return [0,0,0,0,0];
+		} else {
+			count = new_range.length;
+		}
+	}
+	var categories = ss.jenks(new_range, count).reverse();
+	return categories.slice(1, categories.length);
+}
+
 function capFirstLetter(string)
 {
     //Shamelessly ripped from http://stackoverflow.com/questions/1026069/capitalize-the-first-letter-of-string-in-javascript
@@ -173,6 +204,7 @@ function capFirstLetter(string)
 }
 
 var data = zonesData;
+// var data = statesData;
 var property_object = parseData(data);
 var properties = getProperties(property_object, data.features.length);
 
@@ -302,9 +334,15 @@ for (key in reverse_opts){
 	reverseSelect.appendChild(opt);
 }
 
-var range=getRange(data,property);
 var num_categories=5;		//TODO: Currently this all we support
-var categories=getCategories(range, num_categories);
+var method = "jenks";
+// var method = null;		//TODO: get to choose between these
+var range=getRange(data,property,method);
+if (method == "jenks"){
+	var categories=getJenksCategories(range, num_categories);	
+} else {
+	var categories=getCategories(range, num_categories);
+}
 if (categories==false || num_categories==0){
 	alert("Pleace specify the number of categories in your settings.");
 }
@@ -330,10 +368,10 @@ function getColor(value, scheme, categories, reverse) {
 
 function style(feature) {
 	return {
-		weight: 2,
-		opacity: 1,
+		weight: 0,
+		opacity: 0.7,
 		color: 'white',
-		dashArray: '3',
+		dashArray: '',
 		fillOpacity: 0.7,
 		fillColor: getColor(feature.properties[property], color_scheme, categories, reverse_scheme)
 	};
@@ -343,7 +381,7 @@ function highlightFeature(e) {
 	var layer = e.target;
 
 	layer.setStyle({
-		weight: 5,
+		weight: 1,
 		color: '#666',
 		dashArray: '',
 		fillOpacity: 0.7
