@@ -1,5 +1,7 @@
 var map = L.map('map').setView([41, -116], 5);
 
+var min_value = 0.000000000001; //Something nearly impossibly small
+
 var cloudmade = L.tileLayer('http://{s}.tile.cloudmade.com/{key}/{styleId}/256/{z}/{x}/{y}.png', {
 	attribution: 'Map data &copy; 2011 OpenStreetMap contributors, Imagery &copy; 2011 CloudMade',
 	key: 'BC9A493B41014CAABB98F0471D759707',
@@ -112,7 +114,7 @@ function getRange(data,property) {
 	var high=data.features[0].properties[property];
 	for(var i=0; i<data.features.length; i++){
 		var value=data.features[i].properties[property];
-		if (value < low){
+		if (value < low || low == 0){
 			low = value;
 		} else if (value > high){
 			high = value;
@@ -159,7 +161,7 @@ function getCategories(range, count){
 	for (var i = 1; i < count-1; i++) {
 		categories.push(categories[categories.length-1]-dev);
 	}
-	categories.push(0);
+	categories.push(min_value);
 		//TODO: This assumes only positive values
 	return categories;
 }
@@ -397,9 +399,15 @@ legend.onAdd = function (map) {
 		from = grades[i];
 		to = grades[i + 1];
 
-		labels.push(
-			'<i style="background:' + getColor(from + 0.000001, color_scheme, categories, reverse_scheme) + '"></i> ' +
-			from + (to ? '&ndash;' + to : '+'));
+		if (from == min_value) {
+			labels.push(
+				'<i style="background:' + getColor(from + min_value, color_scheme, categories, reverse_scheme) + '"></i> ' +
+				'<=' + to);
+		} else {
+			labels.push(
+				'<i style="background:' + getColor(from + min_value, color_scheme, categories, reverse_scheme) + '"></i> ' +
+				from + (to ? '&ndash;' + to : '+'));
+		}
 	}
 
 	div.innerHTML = labels.join('<br>');
