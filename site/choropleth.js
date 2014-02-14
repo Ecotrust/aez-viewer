@@ -18,9 +18,9 @@ info.onAdd = function (map) {
 };
 
 info.update = function (props) {
-	this._div.innerHTML = '<h4>US Population Density</h4>' +  (props ?
-		'<b>' + props.name + '</b><br />' + props.density + ' people / mi<sup>2</sup>'
-		: 'Hover over a state');
+	this._div.innerHTML = '<h4>Zone Info: ' + (props ? capFirstLetter(props["IsoZone"]) : '') + '</h4>' +  (props ?
+		'<b>' + capFirstLetter(property) + '</b><br />' + props[property] + ' '
+		: 'Hover over a zone');
 };
 
 info.addTo(map);
@@ -200,7 +200,12 @@ function getJenksCategories(range, count){
 function capFirstLetter(string)
 {
     //Shamelessly ripped from http://stackoverflow.com/questions/1026069/capitalize-the-first-letter-of-string-in-javascript
-    return string.charAt(0).toUpperCase() + string.slice(1);
+    if (string){
+    	string = string.toString();
+    	return string.charAt(0).toUpperCase() + string.slice(1);
+    } else {
+    	return '';
+    }
 }
 
 var data = zonesData;
@@ -366,14 +371,23 @@ function getColor(value, scheme, categories, reverse) {
 
 }
 
+function getOpacity(value) {
+	if (value == 0){
+		return 0;
+	} else {
+		return 0.7;
+	}
+}
+
 function style(feature) {
+	value = feature.properties[property];
 	return {
 		weight: 0,
 		opacity: 0.7,
 		color: 'white',
 		dashArray: '',
-		fillOpacity: 0.7,
-		fillColor: getColor(feature.properties[property], color_scheme, categories, reverse_scheme)
+		fillOpacity: getOpacity(value),
+		fillColor: getColor(value, color_scheme, categories, reverse_scheme)
 	};
 }
 
