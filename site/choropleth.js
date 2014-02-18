@@ -500,6 +500,14 @@ legend.onAdd = function (map) {
 			grades.push(categories[index]);
 		}
 
+	if (property) {
+		if (property.measure == 'quantity') {
+			labels.push('<b>' + dataMap[property['measure']].mapping.type[property['type']].options[property['code']].qty + '</b>');
+		} else {
+			labels.push('<b>' + capFirstLetter(property.measure) + '</b>');
+		}
+	}
+
 	for (var i = 0; i < grades.length; i++) {
 		from = grades[i];
 		to = grades[i + 1];
@@ -515,7 +523,7 @@ legend.onAdd = function (map) {
 		}
 	}
 
-	div.innerHTML = labels.join('<br>');
+	div.innerHTML = '<h4>' + dataMap[property['measure']].mapping.type[property['type']].options[property['code']].name + '</h4>' + labels.join('<br>');
 	return div;
 };
 
