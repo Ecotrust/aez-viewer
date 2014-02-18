@@ -242,6 +242,32 @@ function getCategories(range, count){
 	return categories;
 }
 
+function roundCategories(categories){
+	for (var i = 1; i < categories.length; i++){
+		var dev = categories[i] - categories[i-1];
+		if (dev > 1){
+			var digits = parseInt(Math.log(dev)/Math.LN10);
+			var exp = digits - 1;
+			if (exp>0){
+				var mask = Math.pow(10,exp);
+			} else if (dev > 20) {
+				var mask = 10;
+			} else {
+				var mask = 0;
+			}
+			if (mask != 0) {
+				dev = Math.round(dev/mask)*mask;
+			}
+		}
+		if (i == 1 && (categories[i] - dev) < (categories[i]*0.1)) {
+			categories[i] = dev;
+		} else {
+			categories[i] = Math.round(categories[i-1] + dev);
+		}
+	}
+	return categories;
+}
+
 function getJenksCategories(range, count){
 	var new_range = [];
 	for (var i = 0; i < range.length; i++) {
@@ -256,8 +282,10 @@ function getJenksCategories(range, count){
 			count = new_range.length;
 		}
 	}
-	var categories = ss.jenks(new_range, count).reverse();
-	return categories.slice(1, categories.length);
+	var categories = ss.jenks(new_range, count);
+	categories = roundCategories(categories);
+
+	return categories.reverse().slice(1, categories.length);
 }
 
 function capFirstLetter(string){
@@ -382,19 +410,18 @@ if (categories==false || num_categories==0){
 function getColor(value, scheme, categories, reverse) {
 
 	if (reverse==true){
-		return 	value > categories[0] ? scheme.list[4] :
-				value > categories[1] ? scheme.list[3] :
-				value > categories[2] ? scheme.list[2] :
-				value > categories[3] ? scheme.list[1] :
+		return 	value >= categories[0] ? scheme.list[4] :
+				value >= categories[1] ? scheme.list[3] :
+				value >= categories[2] ? scheme.list[2] :
+				value >= categories[3] ? scheme.list[1] :
 									 	scheme.list[0];
 	} else {
-		return 	value > categories[0] ? scheme.list[0] :
-				value > categories[1] ? scheme.list[1] :
-				value > categories[2] ? scheme.list[2] :
-				value > categories[3] ? scheme.list[3] :
+		return 	value >= categories[0] ? scheme.list[0] :
+				value >= categories[1] ? scheme.list[1] :
+				value >= categories[2] ? scheme.list[2] :
+				value >= categories[3] ? scheme.list[3] :
 									 	scheme.list[4];
 	}
-
 }
 
 function getOpacity(value) {
@@ -477,7 +504,7 @@ legend.onAdd = function (map) {
 		from = grades[i];
 		to = grades[i + 1];
 
-		if (from == min_value) {
+		if (from == min_value || i == 0) {
 			labels.push(
 				'<i style="background:' + getColor(from + min_value, color_scheme, categories, reverse_scheme) + '"></i> ' +
 				'<=' + to);
