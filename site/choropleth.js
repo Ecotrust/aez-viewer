@@ -3,7 +3,7 @@ var data = acresData;
 var num_categories=5;		//TODO: Currently this all we support
 var method = "jenks";
 // var method = null;		//TODO: get to choose between these
-var min_value = 0.000000000001; //Something nearly impossibly small
+var min_value = 0.00001; //Something nearly impossibly small
 
 var schemes = {
 	//Darkest to most pale
@@ -256,13 +256,13 @@ function roundCategories(categories){
 				var mask = 0;
 			}
 			if (mask != 0) {
-				dev = Math.round(dev/mask)*mask;
+				dev = Math.floor(dev/mask)*mask;
 			}
 		}
 		if (i == 1 && (categories[i] - dev) < (categories[i]*0.1)) {
 			categories[i] = dev;
 		} else {
-			categories[i] = Math.round(categories[i-1] + dev);
+			categories[i] = Math.floor(categories[i-1] + dev);
 		}
 	}
 	return categories;
@@ -270,22 +270,24 @@ function roundCategories(categories){
 
 function getJenksCategories(range, count){
 	var new_range = [];
+	var slice_count = 1;
 	for (var i = 0; i < range.length; i++) {
 		if (range[i] != 0) {
 			new_range.push(range[i]);
 		}
 	}
 	if (new_range.length < count) {
-		if (new_range.length == 0) {
+		if (new_range.length <= 1) {
 			return [0,0,0,0,0];
-		} else {
-			count = new_range.length;
 		}
+		slice_count = 0;
+		var categories = new_range.sort(function(a,b) { return a - b;});
+	} else {
+		var categories = ss.jenks(new_range, count);
 	}
-	var categories = ss.jenks(new_range, count);
 	categories = roundCategories(categories);
 
-	return categories.reverse().slice(1, categories.length);
+	return categories.reverse().slice(slice_count, categories.length);
 }
 
 function capFirstLetter(string){
@@ -485,7 +487,8 @@ geojson = L.geoJson(data, {
 	onEachFeature: onEachFeature
 }).addTo(map);
 
-map.attributionControl.addAttribution('Population data &copy; <a href="http://census.gov/">US Census Bureau</a>');
+//TODO: Get link to Ag census for attribution
+// map.attributionControl.addAttribution('Population data &copy; <a href="http://census.gov/">US Census Bureau</a>');
 
 
 var legend = L.control({position: 'bottomright'});
@@ -514,11 +517,11 @@ legend.onAdd = function (map) {
 
 		if (from == min_value || i == 0) {
 			labels.push(
-				'<i style="background:' + getColor(from + min_value, color_scheme, categories, reverse_scheme) + '"></i> ' +
+				'<i style="background:' + getColor(from, color_scheme, categories, reverse_scheme) + '"></i> ' +
 				'<=' + to);
 		} else {
 			labels.push(
-				'<i style="background:' + getColor(from + min_value, color_scheme, categories, reverse_scheme) + '"></i> ' +
+				'<i style="background:' + getColor(from, color_scheme, categories, reverse_scheme) + '"></i> ' +
 				from + (to ? '&ndash;' + to : '+'));
 		}
 	}
