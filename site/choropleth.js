@@ -1,6 +1,76 @@
-var map = L.map('map').setView([41, -116], 5);
-
+var mapping = dataMap;
+var data = acresData;
+var num_categories=5;		//TODO: Currently this all we support
+var method = "jenks";
+// var method = null;		//TODO: get to choose between these
 var min_value = 0.000000000001; //Something nearly impossibly small
+
+var schemes = {
+	//Darkest to most pale
+	"reds":{
+		"name":"Reds", 
+		"list":['#DE0A09', '#FA3A3E', '#F56B69', '#FAAFAC', '#FFD1CF' ]
+	},
+	"oranges":{
+		"name":"Oranges",
+		"list":['#DE520A', "#FA7836", "#F58B55", "#FAAC83", "#FFD1BA"]
+	},
+	"yellows":{
+		"name":"Yellows",
+		"list":["#DED404", "#FAF13D", "#F5EE5C", "#FAF68A", "#FFFCC1"]
+	},
+	"greens":{
+		"name":"Greens",
+		"list":["#0E5404", "#2A851E", "#5ED64C", "#87E077", "#C4FFBA"]
+	},
+	"ltblues":{
+		"name":"Light Blues",
+		"list":["#065438", "#218561", "#51D6A5", "#7DE0BA", "#C1FFE7"]
+	},
+	"blues":{
+		"name":"Blues",
+		"list":["#030654", "#1B1F85", "#484ED6", "#747AE0", "#B6BAFF"]
+	},
+	"purples":{
+		"name":"Purples",
+		"list":["#380354", "#5E1385", "#A03AD6", "#B465E0", "#DFA5FF"]
+	},
+	"pinks":{
+		"name":"Pinks",
+		"list":["#540542", "#850F68", "#D635B2", "#E05FC7", "#FF9FEB"]
+	},
+
+	//dark to lighter color
+	"red_yellow":{
+		"name":"Red Fade To Yellow",
+		"list":['#800026', '#BD0026', '#FC4E2A', '#FEB24C', '#FFEDA0' ]
+	},
+	"blue_yellow":{
+		"name":"Blue Fade To Yellow",
+		"list":['#1506FF', '#53A2B8', '#93FFB5', '#B6D65D', '#FFE083' ]
+	},
+
+	//polar saturation
+	"blue_red":{
+		"name":"Blue To Red",
+		"list":["#0000FF", "#7A42D6", "#F7DEFF", "#FF59D5", "#FF000D"]
+	},
+	"green_blue":{
+		"name":"Green To Blue",
+		"list":["#12FF08", "#3BD689", "#D5FDFF", "#51A0FF", "#0E03FF"]
+	},
+	"yellow_blue":{
+		"name":"Yellow To Blue",
+		"list":["#FFE009", "#74D62C", "#C4FFE0", "#3FC9FF", "#1A0EFF"]
+	},
+	"red_green":{
+		"name":"Red To Green",
+		"list":["#FF0007", "#D66F33", "#FFEFCC", "#FFF747", "#4FFF16"]
+	}
+};
+
+
+var map = L.map('map').setView([41, -116], 5);
 
 var cloudmade = L.tileLayer('http://{s}.tile.cloudmade.com/{key}/{styleId}/256/{z}/{x}/{y}.png', {
 	attribution: 'Map data &copy; 2011 OpenStreetMap contributors, Imagery &copy; 2011 CloudMade',
@@ -18,8 +88,11 @@ info.onAdd = function (map) {
 };
 
 info.update = function (props) {
+	var prop_name = (property ? 
+		dataMap[property['measure']].mapping.type[property['type']].options[property['code']].name + ' ' +
+		capFirstLetter(property.measure) : '');
 	this._div.innerHTML = '<h4>Zone Info: ' + (props ? capFirstLetter(props["IsoZone"]) : '') + '</h4>' +  (props ?
-		'<b>' + capFirstLetter(property) + '</b><br />' + props[property] + ' '
+		'<b>' + capFirstLetter(prop_name) + '</b><br />' + props[getLayerCode(property)] + ' '
 		: 'Hover over a zone');
 };
 
@@ -39,48 +112,29 @@ function queryObj() {
 
 var queryStringResult = queryObj();
 
-function addProperty(properties, property){
-	if(!properties.hasOwnProperty(property)){
-		properties[property] = 1;
-	} else {
-		properties[property] = properties[property] + 1;
-	}
-	return properties;
-}
-
-function parseData(data){
-	var properties = {};
-	for (var i=0; i < data.features.length; i++){
-		var feat = data.features[i];
-		for (var property in feat.properties) {
-			if (feat.properties.hasOwnProperty(property)){
-				var n = feat.properties[property];
-				if (!isNaN(parseFloat(n)) && isFinite(n)){
-					properties = addProperty(properties,property)
-				}
-			}
+function selectMeasure(value){
+	if (!property){
+		var property = getDefaultLayer();
+	} 
+	var layer_string = encodeLayer(value, property.type, property.code);
+	
+	queryString = "?property=" + layer_string;
+	for (key in queryStringResult) {
+		if (key != 'property'){
+			queryString = queryString + "&" + key + "=" + queryStringResult[key];
 		}
 	}
-	return properties;
+	window.location.assign(queryString);
 }
 
-function getProperties(prop_obj, feature_count){
-	representative = [];
-	partial = [];
-	for (var property_key in prop_obj){
-		if (prop_obj.hasOwnProperty(property_key)){
-			if (prop_obj[property_key] == feature_count){
-				representative.push(property_key);
-			} else {
-				partial.push(property_key);
-			}
-		}
-	}
-	return {"representative":representative.sort(), "partial":partial.sort()};
-}
-
-function selectProperty(value){
-	queryString = "?property=" + value;
+function selectCrop(value){
+	if (!property){
+		var property = getDefaultLayer();
+	} 
+	var val_parts = value.split("_");
+	var layer_string = encodeLayer(property.measure, val_parts[0], val_parts[1]);
+	
+	queryString = "?property=" + layer_string;
 	for (key in queryStringResult) {
 		if (key != 'property'){
 			queryString = queryString + "&" + key + "=" + queryStringResult[key];
@@ -107,6 +161,15 @@ function selectReverse(value){
 		}
 	}
 	window.location.assign(queryString);
+}
+
+function getLayerCode(prop_obj){
+	var code_candidate = encodeLayer(prop_obj.measure, prop_obj.type, prop_obj.code);
+	if (Object.keys(data.features[0].properties).indexOf(code_candidate) >= 0 ){
+		return code_candidate;
+	} else {
+		return false;
+	}
 }
 
 function getRange(data,property,method) {
@@ -197,8 +260,7 @@ function getJenksCategories(range, count){
 	return categories.slice(1, categories.length);
 }
 
-function capFirstLetter(string)
-{
+function capFirstLetter(string){
     //Shamelessly ripped from http://stackoverflow.com/questions/1026069/capitalize-the-first-letter-of-string-in-javascript
     if (string){
     	string = string.toString();
@@ -208,94 +270,59 @@ function capFirstLetter(string)
     }
 }
 
-var data = zonesData;
-// var data = statesData;
-var property_object = parseData(data);
-var properties = getProperties(property_object, data.features.length);
-
-if (queryStringResult.hasOwnProperty('property') && properties.representative.indexOf(queryStringResult['property']) >= 0){
-	var property = queryStringResult['property'];
+if (queryStringResult.hasOwnProperty('property')){
+	var property_object = parseLayer(queryStringResult['property']);
+	if (property_object != 0){
+		var property = property_object;
+	} else {
+		var property=getDefaultLayer();
+	}
 } else {
-	var property=properties.representative[0];
+	var property=getDefaultLayer();
 }
 
-var propertySelect=document.getElementById("propertySelect");
+var measureSelect=document.getElementById("measureSelect");
 
-for (key in properties.representative){
-	var opt = document.createElement("option");
-	opt.value = properties.representative[key];
-	opt.innerHTML = capFirstLetter(properties.representative[key]);
+for (key in dataMap){
+	var measureOpt = document.createElement("option");
+	measureOpt.value = key;
+	measureOpt.innerHTML = capFirstLetter(key);
 
-	if (properties.representative[key] == property){
-		opt.selected = true;
+	if (dataMap[key].data == null){
+		measureOpt.disabled = true;
 	}
 
-	propertySelect.appendChild(opt);
+	if (key == property.measure){
+		measureOpt.selected = true;
+	}
+
+	measureSelect.appendChild(measureOpt);
 }
 
-var schemes = {
-	//Darkest to most pale
-	"reds":{
-		"name":"Reds", 
-		"list":['#DE0A09', '#FA3A3E', '#F56B69', '#FAAFAC', '#FFD1CF' ]
-	},
-	"oranges":{
-		"name":"Oranges",
-		"list":['#DE520A', "#FA7836", "#F58B55", "#FAAC83", "#FFD1BA"]
-	},
-	"yellows":{
-		"name":"Yellows",
-		"list":["#DED404", "#FAF13D", "#F5EE5C", "#FAF68A", "#FFFCC1"]
-	},
-	"greens":{
-		"name":"Greens",
-		"list":["#0E5404", "#2A851E", "#5ED64C", "#87E077", "#C4FFBA"]
-	},
-	"ltblues":{
-		"name":"Light Blues",
-		"list":["#065438", "#218561", "#51D6A5", "#7DE0BA", "#C1FFE7"]
-	},
-	"blues":{
-		"name":"Blues",
-		"list":["#030654", "#1B1F85", "#484ED6", "#747AE0", "#B6BAFF"]
-	},
-	"purples":{
-		"name":"Purples",
-		"list":["#380354", "#5E1385", "#A03AD6", "#B465E0", "#DFA5FF"]
-	},
-	"pinks":{
-		"name":"Pinks",
-		"list":["#540542", "#850F68", "#D635B2", "#E05FC7", "#FF9FEB"]
-	},
+var cropSelect=document.getElementById("cropSelect");
 
-	//dark to lighter color
-	"red_yellow":{
-		"name":"Red Fade To Yellow",
-		"list":['#800026', '#BD0026', '#FC4E2A', '#FEB24C', '#FFEDA0' ]
-	},
-	"blue_yellow":{
-		"name":"Blue Fade To Yellow",
-		"list":['#1506FF', '#53A2B8', '#93FFB5', '#B6D65D', '#FFE083' ]
-	},
+var types = dataMap[property.measure].mapping.type;
 
-	//polar saturation
-	"blue_red":{
-		"name":"Blue To Red",
-		"list":["#0000FF", "#7A42D6", "#F7DEFF", "#FF59D5", "#FF000D"]
-	},
-	"green_blue":{
-		"name":"Green To Blue",
-		"list":["#12FF08", "#3BD689", "#D5FDFF", "#51A0FF", "#0E03FF"]
-	},
-	"yellow_blue":{
-		"name":"Yellow To Blue",
-		"list":["#FFE009", "#74D62C", "#C4FFE0", "#3FC9FF", "#1A0EFF"]
-	},
-	"red_green":{
-		"name":"Red To Green",
-		"list":["#FF0007", "#D66F33", "#FFEFCC", "#FFF747", "#4FFF16"]
+for (key in types){
+	var oGroup = document.createElement("optgroup");
+	oGroup.value = key;
+	oGroup.label = types[key].name;
+	for (subKey in types[key].options){
+		var typeOpt = document.createElement("option");
+		typeOpt.value = key + "_" + subKey;
+		typeOpt.innerHTML = capFirstLetter(types[key].options[subKey].name);
+
+		if (key == property.type && subKey == property.code){
+			typeOpt.selected = true;
+		}
+
+		if (!getLayerCode({"measure": property.measure, "type":key, "code":subKey})){
+			typeOpt.disabled = true;
+		}
+		oGroup.appendChild(typeOpt);
 	}
-};
+	cropSelect.appendChild(oGroup);
+}
 
 if (queryStringResult.hasOwnProperty('scheme') && schemes.hasOwnProperty(queryStringResult['scheme']) >= 0){
 	var color_scheme = schemes[queryStringResult['scheme']];
@@ -339,10 +366,9 @@ for (key in reverse_opts){
 	reverseSelect.appendChild(opt);
 }
 
-var num_categories=5;		//TODO: Currently this all we support
-var method = "jenks";
-// var method = null;		//TODO: get to choose between these
-var range=getRange(data,property,method);
+var layer_code = getLayerCode(property);
+
+var range=getRange(data,layer_code,method);
 if (method == "jenks"){
 	var categories=getJenksCategories(range, num_categories);	
 } else {
@@ -380,7 +406,7 @@ function getOpacity(value) {
 }
 
 function style(feature) {
-	value = feature.properties[property];
+	value = feature.properties[getLayerCode(property)];
 	return {
 		weight: 0,
 		opacity: 0.7,

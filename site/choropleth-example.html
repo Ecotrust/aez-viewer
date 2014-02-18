@@ -13,8 +13,11 @@
 </head>
 <body>
 	<form id="selectors">
-		Select an attribute to view:
-		<select id="propertySelect" onchange="selectProperty(this.value)">
+		Select a measure:
+		<select id="measureSelect" onchange="selectMeasure(this.value)">
+		</select>
+		Select a crop:
+		<select id="cropSelect" onchange="selectCrop(this.value)">
 		</select>
 		Select a color scheme:
 		<select id="schemeSelect" onchange="selectScheme(this.value)">
@@ -28,8 +31,8 @@
 	<script src="../dist/leaflet.js"></script>
 	<script src="../dist/simple_statistics.js"></script>
 
-	<script type="text/javascript" src="us-states.js"></script>
-	<script type="text/javascript" src="food_zones.js"></script>
+	<script type="text/javascript" src="food_zones/acresData.js"></script>
+	<script type="text/javascript" src="food_zones/data-map.js"></script>
 	<script type="text/javascript" src="choropleth.js"></script>
 </body>
 </html>
