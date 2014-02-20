@@ -515,14 +515,28 @@ legend.onAdd = function (map) {
 		from = grades[i];
 		to = grades[i + 1];
 
-		if (from == min_value || i == 0) {
-			labels.push(
-				'<i style="background:' + getColor(from, color_scheme, categories, reverse_scheme) + '"></i> ' +
-				'<=' + to);
+		if (i == 0) {
+			// labels.push(
+			// 	'<i style="background:' + getColor(from, color_scheme, categories, reverse_scheme) + '"></i> ' +
+			// 	'<=' + to);
+			labels.push('<i style="background:' + 
+				getColor(from, color_scheme, categories, reverse_scheme) + 
+				'"></i> ' +"Low");
 		} else {
-			labels.push(
-				'<i style="background:' + getColor(from, color_scheme, categories, reverse_scheme) + '"></i> ' +
-				from + (to ? '&ndash;' + to : '+'));
+			if (i == grades.length -1){
+				labels.push('<i style="background:' + 
+					getColor(from, color_scheme, categories, reverse_scheme) + 
+					'"></i> ' +	"High");
+			} else {
+				labels.push('<i style="background:' + 
+				getColor(from, color_scheme, categories, reverse_scheme) + 
+				'"></i> ' +	"");
+			}
+
+			// labels.push(
+			// 	'<i style="background:' + getColor(from, color_scheme, categories, reverse_scheme) + '"></i> ' +
+			// 	from + (to ? '&ndash;' + to : '+'));
+
 		}
 	}
 
