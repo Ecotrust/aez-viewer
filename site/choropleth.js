@@ -571,23 +571,17 @@ legend.onAdd = function (map) {
 			labels.push('<b>' + capFirstLetter(property.measure) + '</b>');
 		}
 	}
+	labels.push('<br />');
 
 	for (var i = 0; i < grades.length; i++) {
 		from = grades[i];
 		to = grades[i + 1];
 
 		if (i == 0) {
-
-			// labels.push(
-			// 	'<i style="background:' + getColor(from, color_scheme, categories, reverse_scheme) + '"></i> ' +
-			// 	'<=' + to);
-
-			labels.push('<i style="background:' + 
+			labels.push('Low <i style="background:' + 
 				getColor(from, color_scheme, categories, reverse_scheme) + 
-				'"></i> ' +"Low");
-
+				'"></i> ');
 		} else {
-
 			if (i == grades.length -1){
 				labels.push('<i style="background:' + 
 					getColor(from, color_scheme, categories, reverse_scheme) + 
@@ -597,15 +591,13 @@ legend.onAdd = function (map) {
 				getColor(from, color_scheme, categories, reverse_scheme) + 
 				'"></i> ' +	"");
 			}
-
-			// labels.push(
-			// 	'<i style="background:' + getColor(from, color_scheme, categories, reverse_scheme) + '"></i> ' +
-			// 	from + (to ? '&ndash;' + to : '+'));
-
 		}
 	}
 
-	div.innerHTML = '<h4>' + dataMap[property['measure']].mapping.type[property['type']].options[property['code']].name + '</h4>' + labels.join('<br>');
+	div.innerHTML = '<h4>' + 
+		dataMap[property['measure']].mapping.type[property['type']].options[property['code']].name + 
+		'</h4>' + 
+		labels.join('');
 	return div;
 };
 
