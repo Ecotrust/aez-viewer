@@ -1,5 +1,4 @@
 var mapping = dataMap;
-var data = acresData;
 var num_categories=5;		//TODO: Currently this all we support
 var method = "jenks";
 // var method = null;		//TODO: get to choose between these
@@ -89,11 +88,23 @@ info.onAdd = function (map) {
 
 info.update = function (props) {
 	var prop_name = (property ? 
-		dataMap[property['measure']].mapping.type[property['type']].options[property['code']].name + ' ' +
-		capFirstLetter(property.measure) : '');
-	this._div.innerHTML = '<h4>Zone Info: ' + (props ? capFirstLetter(props["IsoZone"]) : '') + '</h4>' +  (props ?
-		'<b>' + capFirstLetter(prop_name) + '</b><br />' + props[getLayerCode(property)] + ' '
-		: 'Hover over a zone');
+		dataMap[property['measure']].mapping.type[property['type']].options[property['code']].name + '<br />' +
+		capFirstLetter(primaryLabel) + ' ' + (property.unit ? capFirstLetter(property.unit) : capFirstLetter(property.measure)) : '');
+	var secondary_name = (property ?
+		capFirstLetter(secondaryLabel) + ' ' + (property.unit ? capFirstLetter(property.unit) : capFirstLetter(property.measure)) : '');
+	var secondary_property = (property ?
+		{measure:property.measure, type: property.type, code:property.code, label:secondaryLabel}
+		: {measure:'', type:'', code:'', label:secondaryLabel});
+	this._div.innerHTML = '<h4>Zone Info: ' + 
+		(props ? capFirstLetter(props["IsoZone"]) : '') + 
+		'</h4>' +  
+		(props ? 
+			'<b>' + capFirstLetter(prop_name) + '</b><br />' + 
+			props[getLayerCode(property)] + '<br />' +
+			'<b>' + capFirstLetter(secondary_name) + '</b><br />' +
+			props[getLayerCode(secondary_property)]
+		: 
+			'Hover over a zone');
 };
 
 info.addTo(map);
@@ -112,11 +123,30 @@ function queryObj() {
 
 var queryStringResult = queryObj();
 
+function getProperty() {
+
+	if (queryStringResult.hasOwnProperty('property')){
+		var property_object = parseLayer(queryStringResult['property']);
+		if (property_object != 0){
+			var property = property_object;
+		} else {
+			var property=getDefaultLayer();
+		}
+	} else {
+		var property=getDefaultLayer();
+	}
+	return property;
+}
+
+var property = getProperty();
+
+var data = dataMap[property.measure].data;
+
 function selectMeasure(value){
 	if (!property){
-		var property = getDefaultLayer();
+		var property = getProperty();
 	} 
-	var layer_string = encodeLayer(value, property.type, property.code);
+	var layer_string = encodeLayer(value, property.type, property.code, property.label);
 	
 	queryString = "?property=" + layer_string;
 	for (key in queryStringResult) {
@@ -129,10 +159,10 @@ function selectMeasure(value){
 
 function selectCrop(value){
 	if (!property){
-		var property = getDefaultLayer();
+		var property = getProperty();
 	} 
 	var val_parts = value.split("_");
-	var layer_string = encodeLayer(property.measure, val_parts[0], val_parts[1]);
+	var layer_string = encodeLayer(property.measure, val_parts[0], val_parts[1], property.label);
 	
 	queryString = "?property=" + layer_string;
 	for (key in queryStringResult) {
@@ -164,7 +194,7 @@ function selectReverse(value){
 }
 
 function getLayerCode(prop_obj){
-	var code_candidate = encodeLayer(prop_obj.measure, prop_obj.type, prop_obj.code);
+	var code_candidate = encodeLayer(prop_obj.measure, prop_obj.type, prop_obj.code, prop_obj.label);
 	if (Object.keys(data.features[0].properties).indexOf(code_candidate) >= 0 ){
 		return code_candidate;
 	} else {
@@ -195,7 +225,7 @@ function getRange(data,property,method) {
 				high = value;
 			}
 		}
-		return {"low":low,"high":high};
+		return {low:low, high:high};
 	}
 }
 
@@ -215,7 +245,7 @@ function simplifyNumber(high, dev){
 		high = Math.round(high/mask)*mask;
 	}
 
-	return {"dev":dev, "high":high};
+	return {dev:dev, high:high};
 }
 
 function getCategories(range, count){
@@ -285,7 +315,7 @@ function getJenksCategories(range, count){
 	} else {
 		var categories = ss.jenks(new_range, count);
 	}
-	categories = roundCategories(categories);
+	// categories = roundCategories(categories);
 
 	return categories.reverse().slice(slice_count, categories.length);
 }
@@ -298,17 +328,6 @@ function capFirstLetter(string){
     } else {
     	return '';
     }
-}
-
-if (queryStringResult.hasOwnProperty('property')){
-	var property_object = parseLayer(queryStringResult['property']);
-	if (property_object != 0){
-		var property = property_object;
-	} else {
-		var property=getDefaultLayer();
-	}
-} else {
-	var property=getDefaultLayer();
 }
 
 var measureSelect=document.getElementById("measureSelect");
@@ -346,7 +365,7 @@ for (key in types){
 			typeOpt.selected = true;
 		}
 
-		if (!getLayerCode({"measure": property.measure, "type":key, "code":subKey})){
+		if (!getLayerCode({measure: property.measure, type:key, code:subKey, label:primaryLabel})){
 			typeOpt.disabled = true;
 		}
 		oGroup.appendChild(typeOpt);
@@ -397,6 +416,9 @@ for (key in reverse_opts){
 }
 
 var layer_code = getLayerCode(property);
+if (!layer_code) {
+	alert("Layer " + encodeLayer(property.measure, property.type, property.code, property.label) + " does not exist. Please select another.")
+}
 
 var range=getRange(data,layer_code,method);
 if (method == "jenks"){
@@ -504,8 +526,8 @@ legend.onAdd = function (map) {
 		}
 
 	if (property) {
-		if (property.measure == 'quantity') {
-			labels.push('<b>' + dataMap[property['measure']].mapping.type[property['type']].options[property['code']].qty + '</b>');
+		if (property.unit) {
+			labels.push('<b>' + property.unit + '</b>');
 		} else {
 			labels.push('<b>' + capFirstLetter(property.measure) + '</b>');
 		}

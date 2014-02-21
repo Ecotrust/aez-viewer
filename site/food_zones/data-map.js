@@ -715,30 +715,46 @@ var dataMap = {
 		}
 	},
 	"farms": {
-		"data": null,
+		"data": farmsData,
 		"mapping": {
 			"type": types
 		}
 	},
 	"quantity":{
-		"data": null,
+		"data": yieldData,
 		"mapping": {
 			"type": types
 		}
 	}
 };
 
-function encodeLayer(measure, type, code) {
-	if (measure == 'acres') {
-		return "Acres_" + type + "_" + code + "_Z_ac";
+var primaryLabel = 'density';
+var secondaryLabel = 'count';
+
+function encodeLayer(measure, type, code, label) {
+	if (label == primaryLabel) {
+		if (measure == 'acres') {
+			return "Acres_" + type + "_" + code + "_dens";
+		}
+		if (measure == 'farms') {
+			return "Farms_" + type + "_" + code + "_dens";
+		}
+		if (measure == 'quantity') {
+			return "Qnty_" + type + "_" + code + "_dens";
+		}
+		return 0;
+	} else {
+		if (measure == 'acres') {
+			return "Acres_" + type + "_" + code + "_Z_ac";
+		}
+		if (measure == 'farms') {
+			return "Farms_" + type + "_" + code + "_Z_Fm";
+		}
+		if (measure == 'quantity') {
+			return "Qnty_" + type + "_" + code + "_Z_Qt";
+		}
+		return 0;
 	}
-	if (measure == 'farms') {
-		return "Farms_" + type + "_" + code + "_Z_fm";
-	}
-	if (measure == 'quantity') {
-		return "Count_" + type + "_" + code + "_Z_ct";
-	}
-	return 0;
 }
 
 function parseLayer(layername) {
@@ -758,21 +774,37 @@ function parseLayer(layername) {
 			"code": parts[2]
 		};
 	}
-	if (parts[0] == "Count"){
+	if (parts[0] == "Qnty"){
 		ret_val = {
 			"measure": 'quantity',
 			"type": parts[1],
 			"code": parts[2]
 		};
 	}
+	if (ret_val != 0) {
+		if (parts.length < 5) {
+			ret_val['label'] = primaryLabel;
+		} else {
+			ret_val['label'] = secondaryLabel;
+		}
+		if (parts[0] == "Qnty" && types[ret_val.type].options[ret_val.code].hasOwnProperty('qty')) {
+			ret_val['unit'] = types[ret_val.type].options[ret_val.code].qty;
+		} else {
+			ret_val['unit'] = false;
+		}
+	}
 	return ret_val;
 }
 
 function getDefaultLayer() {
-	var measure = Object.keys(dataMap)[0];
-	var type = Object.keys(dataMap[measure].mapping.type)[0];
-	var code = Object.keys(dataMap[measure].mapping.type[type].options)[0];
+	// var measure = Object.keys(dataMap)[0];
+	var measure = "acres";
+	// var type = Object.keys(dataMap[measure].mapping.type)[0];
+	var type = "fc";
+	// var code = Object.keys(dataMap[measure].mapping.type[type].options)[0];
+	var code = "FC01";
+	var label = primaryLabel;
 
-	return {"measure": measure, "type": type, "code": code};
+	return {"measure": measure, "type": type, "code": code, "label": label};
 }
 
