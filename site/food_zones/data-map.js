@@ -728,11 +728,24 @@ var dataMap = {
 	}
 };
 
-var primaryLabel = 'density';
-var secondaryLabel = 'count';
+var units = {
+	"density": {
+		"name":"Density",
+		"value":"density"
+	},
+	"count": {
+		"name":"Count",
+		"value":"count"
+	}
+};
 
-function encodeLayer(measure, type, code, label) {
-	if (label == primaryLabel) {
+// var primaryLabel = 'density';
+var defaultPrimaryUnit = 'density';
+// var secondaryLabel = 'count';
+var defaultSecondaryUnit = 'count';
+
+function encodeLayer(measure, type, code, unit) {
+	if (unit == 'density') {
 		if (measure == 'acres') {
 			return "Acres_" + type + "_" + code + "_dens";
 		}
@@ -783,14 +796,14 @@ function parseLayer(layername) {
 	}
 	if (ret_val != 0) {
 		if (parts.length < 5) {
-			ret_val['label'] = primaryLabel;
+			ret_val['unit'] = defaultPrimaryUnit;
 		} else {
-			ret_val['label'] = secondaryLabel;
+			ret_val['unit'] = defaultSecondaryUnit;
 		}
 		if (parts[0] == "Qnty" && types[ret_val.type].options[ret_val.code].hasOwnProperty('qty')) {
-			ret_val['unit'] = types[ret_val.type].options[ret_val.code].qty;
+			ret_val['label'] = types[ret_val.type].options[ret_val.code].qty;
 		} else {
-			ret_val['unit'] = false;
+			ret_val['label'] = false;
 		}
 	}
 	return ret_val;
@@ -803,8 +816,8 @@ function getDefaultLayer() {
 	var type = "fc";
 	// var code = Object.keys(dataMap[measure].mapping.type[type].options)[0];
 	var code = "FC01";
-	var label = primaryLabel;
+	var unit = defaultPrimaryUnit;
 
-	return {"measure": measure, "type": type, "code": code, "label": label};
+	return {"measure": measure, "type": type, "code": code, "unit": unit};
 }
 

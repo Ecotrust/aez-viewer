@@ -89,12 +89,12 @@ info.onAdd = function (map) {
 info.update = function (props) {
 	var prop_name = (property ? 
 		dataMap[property['measure']].mapping.type[property['type']].options[property['code']].name + '<br />' +
-		capFirstLetter(primaryLabel) + ' ' + (property.unit ? capFirstLetter(property.unit) : capFirstLetter(property.measure)) : '');
+		capFirstLetter(primaryUnit) + ' ' + (property.label ? capFirstLetter(property.label) : capFirstLetter(property.measure)) : '');
 	var secondary_name = (property ?
-		capFirstLetter(secondaryLabel) + ' ' + (property.unit ? capFirstLetter(property.unit) : capFirstLetter(property.measure)) : '');
+		capFirstLetter(secondaryUnit) + ' ' + (property.label ? capFirstLetter(property.label) : capFirstLetter(property.measure)) : '');
 	var secondary_property = (property ?
-		{measure:property.measure, type: property.type, code:property.code, label:secondaryLabel}
-		: {measure:'', type:'', code:'', label:secondaryLabel});
+		{measure:property.measure, type: property.type, code:property.code, unit:secondaryUnit}
+		: {measure:'', type:'', code:'', unit:secondaryUnit});
 	this._div.innerHTML = '<h4>Zone Info: ' + 
 		(props ? capFirstLetter(props["IsoZone"]) : '') + 
 		'</h4>' +  
@@ -135,6 +135,9 @@ function getProperty() {
 	} else {
 		var property=getDefaultLayer();
 	}
+	if (queryStringResult.hasOwnProperty('unit')){
+		property.unit = queryStringResult['unit'];
+	}
 	return property;
 }
 
@@ -142,11 +145,25 @@ var property = getProperty();
 
 var data = dataMap[property.measure].data;
 
+function selectUnit(value){
+	if (!property){
+		var property = getProperty();
+	} 
+
+	queryString = "?unit=" + value;
+	for (key in queryStringResult) {
+		if (key != 'unit'){
+			queryString = queryString + "&" + key + "=" + queryStringResult[key];
+		}
+	}
+	window.location.assign(queryString);
+}
+
 function selectMeasure(value){
 	if (!property){
 		var property = getProperty();
 	} 
-	var layer_string = encodeLayer(value, property.type, property.code, property.label);
+	var layer_string = encodeLayer(value, property.type, property.code, property.unit);
 	
 	queryString = "?property=" + layer_string;
 	for (key in queryStringResult) {
@@ -162,7 +179,7 @@ function selectCrop(value){
 		var property = getProperty();
 	} 
 	var val_parts = value.split("_");
-	var layer_string = encodeLayer(property.measure, val_parts[0], val_parts[1], property.label);
+	var layer_string = encodeLayer(property.measure, val_parts[0], val_parts[1], property.unit);
 	
 	queryString = "?property=" + layer_string;
 	for (key in queryStringResult) {
@@ -194,7 +211,7 @@ function selectReverse(value){
 }
 
 function getLayerCode(prop_obj){
-	var code_candidate = encodeLayer(prop_obj.measure, prop_obj.type, prop_obj.code, prop_obj.label);
+	var code_candidate = encodeLayer(prop_obj.measure, prop_obj.type, prop_obj.code, prop_obj.unit);
 	if (Object.keys(data.features[0].properties).indexOf(code_candidate) >= 0 ){
 		return code_candidate;
 	} else {
@@ -330,6 +347,28 @@ function capFirstLetter(string){
     }
 }
 
+if (queryStringResult.hasOwnProperty('unit') && units.hasOwnProperty(queryStringResult['unit']) >= 0){
+	var primaryUnit = queryStringResult['unit'];
+} else {
+	var primaryUnit = defaultPrimaryUnit;
+}
+
+var secondaryUnit = (primaryUnit == defaultPrimaryUnit ? defaultSecondaryUnit : defaultPrimaryUnit);
+
+var unitSelect=document.getElementById("unitSelect");
+
+for (key in units){
+	var unitOpt = document.createElement("option");
+	unitOpt.value = key;
+	unitOpt.innerHTML = units[key].name;
+
+	if (key == property.unit){
+		unitOpt.selected = true;
+	}
+
+	unitSelect.appendChild(unitOpt);
+}
+
 var measureSelect=document.getElementById("measureSelect");
 
 for (key in dataMap){
@@ -365,7 +404,7 @@ for (key in types){
 			typeOpt.selected = true;
 		}
 
-		if (!getLayerCode({measure: property.measure, type:key, code:subKey, label:primaryLabel})){
+		if (!getLayerCode({measure: property.measure, type:key, code:subKey, unit:primaryUnit})){
 			typeOpt.disabled = true;
 		}
 		oGroup.appendChild(typeOpt);
@@ -417,7 +456,7 @@ for (key in reverse_opts){
 
 var layer_code = getLayerCode(property);
 if (!layer_code) {
-	alert("Layer " + encodeLayer(property.measure, property.type, property.code, property.label) + " does not exist. Please select another.")
+	alert("Layer " + encodeLayer(property.measure, property.type, property.code, property.unit) + " does not exist. Please select another.")
 }
 
 var range=getRange(data,layer_code,method);
@@ -526,8 +565,8 @@ legend.onAdd = function (map) {
 		}
 
 	if (property) {
-		if (property.unit) {
-			labels.push('<b>' + property.unit + '</b>');
+		if (property.label) {
+			labels.push('<b>' + property.label + '</b>');
 		} else {
 			labels.push('<b>' + capFirstLetter(property.measure) + '</b>');
 		}
@@ -538,13 +577,17 @@ legend.onAdd = function (map) {
 		to = grades[i + 1];
 
 		if (i == 0) {
+
 			// labels.push(
 			// 	'<i style="background:' + getColor(from, color_scheme, categories, reverse_scheme) + '"></i> ' +
 			// 	'<=' + to);
+
 			labels.push('<i style="background:' + 
 				getColor(from, color_scheme, categories, reverse_scheme) + 
 				'"></i> ' +"Low");
+
 		} else {
+
 			if (i == grades.length -1){
 				labels.push('<i style="background:' + 
 					getColor(from, color_scheme, categories, reverse_scheme) + 
