@@ -580,16 +580,16 @@ legend.onAdd = function (map) {
 		if (i == 0) {
 			labels.push('Low <i style="background:' + 
 				getColor(from, color_scheme, categories, reverse_scheme) + 
-				'"></i> ');
+				'" data-toggle="tooltip" data-placement="top" title="<' + to + '"></i> ');
 		} else {
 			if (i == grades.length -1){
 				labels.push('<i style="background:' + 
 					getColor(from, color_scheme, categories, reverse_scheme) + 
-					'"></i> ' +	"High");
+					'" data-toggle="tooltip" data-placement="top" title="' + from + '+"></i> ' +	"High");
 			} else {
 				labels.push('<i style="background:' + 
-				getColor(from, color_scheme, categories, reverse_scheme) + 
-				'"></i> ' +	"");
+					getColor(from, color_scheme, categories, reverse_scheme) + 
+					'" data-toggle="tooltip" data-placement="top" title="' + from + '-' + to + '"></i> ' +	"");
 			}
 		}
 	}
