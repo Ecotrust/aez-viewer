@@ -201,7 +201,7 @@ var types = {
 				"qty": "Pounds"
 			},
 			"FS03": {
-				"name": "All Haylage, Grass Silage, and Greenchop",
+				"name": "All Haylage/Silage/Greenchop",
 				"qty": "Tons, Green"
 			},
 			"FS04": {
@@ -221,7 +221,7 @@ var types = {
 				"qty": "Pounds"
 			},
 			"FS08": {
-				"name": "Corn for Silage or Greenchop",
+				"name": "Corn for Silage/Greenchop",
 				"qty": "Tons"
 			},
 			"FS09": {
@@ -237,15 +237,15 @@ var types = {
 				"qty": null
 			},
 			"FS12": {
-				"name": "Forage Land Used for All Hay and All Haylage, Grass Silage, and Greenchop",
+				"name": "Forage Land for All Hay/Haylage/Silage/Greenchop",
 				"qty": "Tons, Dry Equivalent"
 			},
 			"FS13": {
-				"name": "Hay: All Hay including Alfalfa, Other Tame, Small Grain, and Wild",
+				"name": "Hay: All Hay including Alfalfa/Tame/Small Grain/Wild",
 				"qty": "Tons, Dry Equivalent"
 			},
 			"FS14": {
-				"name": "Haylage or Greenchop from Alfalfa or Alfalfa Mixtures",
+				"name": "Haylage/Greenchop from Alfalfa/Mixtures",
 				"qty": "Tons, Green"
 			},
 			"FS15": {
@@ -647,7 +647,7 @@ var types = {
 				"name": "Peas, Green (Excluding Southern)"
 			},
 			"VP38": {
-				"name": "Peas, Green Southern (Cowpeas) Blackeyed, Crowder, Etc"
+				"name": "Peas, Green Southern Blackeyed/Crowder/Etc"
 			},
 			"VP39": {
 				"name": "Peppers Other than Bell (Including Chile)"

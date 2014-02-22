@@ -17,25 +17,73 @@
 
 </head>
 <body>
-	<form id="selectors">
-		Select a unit:
-		<select id="unitSelect" onchange="selectUnit(this.value)">
-		</select><br />
-		Select a measure:
-		<select id="measureSelect" onchange="selectMeasure(this.value)">
-		</select><br />
-		Select a crop:
-		<select id="cropSelect" onchange="selectCrop(this.value)">
-		</select><br />
-		Select a color scheme:
-		<select id="schemeSelect" onchange="selectScheme(this.value)">
-		</select><br />
-		Reverse the color scheme:
-		<select id="reverseSelect" onchange="selectReverse(this.value)">
-		</select>
-	</form>
+	<div id="filter-container" class="well">
+		<div class="row-fluid">
+			<div class="span12">
+				<h1>Agricultural Zone Viewer</h1>
+			</div>
+			<!--
+			<span class="span4">
+				<img style="float:right" src="http://www.ecotrust.org/images/ecotrust_logo08.gif">
+			</span>
+			-->
+		</div>
+		<div class="row-fluid">
+			<div class="span12">
+				<form id="selectors">
+					<div class="row-fluid">
+						<div class="span4">
+							Unit:
+						</div>
+						<div class="span8">
+							<select id="unitSelect" onchange="selectUnit(this.value)">
+							</select>
+						</div>
+					</div>
+					<div class="row-fluid">
+						<div class="span4">
+							Measure:
+						</div>
+						<div class="span8">
+							<select id="measureSelect" onchange="selectMeasure(this.value)">
+							</select>
+						</div>
+					</div>
+					<div class="row-fluid">
+						<div class="span4">
+							Crop:
+						</div>
+						<div class="span8">
+							<select id="cropSelect" onchange="selectCrop(this.value)">
+							</select>
+						</div>
+					</div>
+					<!-- Select a color scheme: -->
+					<select style="display:none" id="schemeSelect" onchange="selectScheme(this.value)">
+					</select>
+					<!-- Reverse the color scheme: -->
+					<select style="display:none" id="reverseSelect" onchange="selectReverse(this.value)">
+					</select>
+				</form>
+			</div>
+		</div>
+	</div>
+	
 
-	<div id="map"></div>
+		<div id="map"></div>
+				<!--
+				<div class="layer-buttons" style="display:none">
+					<div class="row-fluid">
+						<div class="span12">
+							<div class="btn-group">
+								<button id="unitButton" type="button" class="btn btn-default dropdown-toggle layer-button" data-toggle="dropdown"></button>
+								<ul id="unitMenu" class="dropdown-menu" role="menu"></ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		-->
 
 	<script src="../dist/leaflet.js"></script>
 	<script src="../dist/simple_statistics.js"></script>

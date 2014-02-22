@@ -356,18 +356,29 @@ if (queryStringResult.hasOwnProperty('unit') && units.hasOwnProperty(queryString
 var secondaryUnit = (primaryUnit == defaultPrimaryUnit ? defaultSecondaryUnit : defaultPrimaryUnit);
 
 var unitSelect=document.getElementById("unitSelect");
+// var unitButton=document.getElementById("unitButton");
+// var unitMenu=document.getElementById("unitMenu");
 
 for (key in units){
 	var unitOpt = document.createElement("option");
 	unitOpt.value = key;
 	unitOpt.innerHTML = units[key].name;
 
+	// var unitMenuItem = document.createElement("li");
+
+	// unitMenuItem.onclick=function(){selectUnit(key);};
+	// unitMenuItem.appendChild(document.createTextNode(units[key].name));
+
+
 	if (key == property.unit){
 		unitOpt.selected = true;
+		// unitButton.appendChild(document.createTextNode("Unit: " + units[key].name));
 	}
 
 	unitSelect.appendChild(unitOpt);
+	// unitMenu.appendChild(unitMenuItem);
 }
+// unitMenu.setAttribute('style', "margin-left:" + unitButton.offsetWidth + "px; margin-top:-38px;");
 
 var measureSelect=document.getElementById("measureSelect");
 

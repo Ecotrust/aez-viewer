@@ -1,6 +1,11 @@
 #map {
-	width: 800px;
-	height: 550px;
+	width: 100%;
+	/*height: 550px;*/
+	/*width: 100%;*/
+	height: 100%;
+	min-height: 100%;
+	display: block;
+	position: fixed;
 }
 
 .info {
@@ -27,4 +32,50 @@
 	margin: 0 -2px;
 	opacity: 0.7;
 	display: inline-block;
+}
+
+.fill {
+	min-height: 100%;
+	height: 100%;
+}
+
+body {
+    /*padding-top:92px;*/
+	min-height: 100%;
+	height: 100%;
+    -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
+    -moz-box-sizing: border-box;    /* Firefox, other Gecko */
+    box-sizing: border-box;         /* Opera/IE 8+ */
+    /*margin-bottom: -50px;*/
+}
+
+html {
+	min-height: 100%;
+	height: 100%;
+}
+
+.layer-buttons {
+	z-index: 9999;
+	margin-left: 50px;
+}
+
+.layer-button {
+	z-index: 9999;
+}
+
+.dropdown-menu li {
+	cursor: pointer;
+}
+
+/*
+#selectors select {
+	margin-top: 10px;
+}
+*/
+
+#filter-container {
+    position: absolute;
+    left: 10px;
+    bottom: 12px;
+    z-index: 999;
 }
