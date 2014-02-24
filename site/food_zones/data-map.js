@@ -720,7 +720,7 @@ var dataMap = {
 			"type": types
 		}
 	},
-	"quantity":{
+	"yield":{
 		"data": yieldData,
 		"mapping": {
 			"type": types
@@ -752,7 +752,7 @@ function encodeLayer(measure, type, code, unit) {
 		if (measure == 'farms') {
 			return "Farms_" + type + "_" + code + "_dens";
 		}
-		if (measure == 'quantity') {
+		if (measure == 'yield') {
 			return "Qnty_" + type + "_" + code + "_dens";
 		}
 		return 0;
@@ -763,7 +763,7 @@ function encodeLayer(measure, type, code, unit) {
 		if (measure == 'farms') {
 			return "Farms_" + type + "_" + code + "_Z_Fm";
 		}
-		if (measure == 'quantity') {
+		if (measure == 'yield') {
 			return "Qnty_" + type + "_" + code + "_Z_Qt";
 		}
 		return 0;
@@ -789,7 +789,7 @@ function parseLayer(layername) {
 	}
 	if (parts[0] == "Qnty"){
 		ret_val = {
-			"measure": 'quantity',
+			"measure": 'yield',
 			"type": parts[1],
 			"code": parts[2]
 		};

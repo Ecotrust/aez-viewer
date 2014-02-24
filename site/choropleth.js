@@ -423,8 +423,12 @@ for (key in types){
 	cropSelect.appendChild(oGroup);
 }
 
-if (queryStringResult.hasOwnProperty('scheme') && schemes.hasOwnProperty(queryStringResult['scheme']) >= 0){
-	var color_scheme = schemes[queryStringResult['scheme']];
+if (property.measure == "acres"){
+	var color_scheme = schemes["greens"];
+} else if (property.measure == "farms") {
+	var color_scheme = schemes["reds"];
+} else if (property.measure == "yield") {
+	var color_scheme = schemes["purples"];
 } else {
 	var color_scheme = schemes["reds"];
 }
