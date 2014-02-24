@@ -98,13 +98,20 @@ if (queryStringResult.hasOwnProperty('lat') && queryStringResult.hasOwnProperty(
 
 var map = L.map('map').setView([initMapLat, initMapLng], initMapZoom);
 
-var cloudmade = L.tileLayer('http://{s}.tile.cloudmade.com/{key}/{styleId}/256/{z}/{x}/{y}.png', {
-	attribution: 'Map data &copy; 2011 OpenStreetMap contributors, Imagery &copy; 2011 CloudMade',
-	key: 'BC9A493B41014CAABB98F0471D759707',
-	styleId: 22677
+// var cloudmade = L.tileLayer('http://{s}.tile.cloudmade.com/{key}/{styleId}/256/{z}/{x}/{y}.png', {
+// 	attribution: 'Map data &copy; 2011 OpenStreetMap contributors, Imagery &copy; 2011 CloudMade',
+// 	key: '89a2e7b6275c4006b178cf8df1b016c0',
+// 	styleId: "choropleth-plain"
+// }).addTo(map);
+
+var esri = L.tileLayer('http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', 
+{
+    maxZoom: 12,
+    tileSize: 256,
+	continuousWorld: false
 }).addTo(map);
 
-// control that shows state info on hover
+
 var info = L.control();
 
 info.onAdd = function (map) {
