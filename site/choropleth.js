@@ -68,8 +68,35 @@ var schemes = {
 	}
 };
 
+function queryObj() {
+	var result = {};
+	keyValuePairs = location.search.slice(1).split('&');
 
-var map = L.map('map').setView([41, -116], 5);
+	keyValuePairs.forEach(function(keyValuePair) {
+		keyValuePair = keyValuePair.split('=');
+		result[keyValuePair[0]] = keyValuePair[1] || '';
+	});
+
+	return result;
+}
+
+var queryStringResult = queryObj();
+
+if (queryStringResult.hasOwnProperty('zoom')) {
+	var initMapZoom = queryStringResult.zoom;
+} else {
+	var initMapZoom = 5;
+}
+
+if (queryStringResult.hasOwnProperty('lat') && queryStringResult.hasOwnProperty('lng')) {
+	var initMapLat = queryStringResult.lat;
+	var initMapLng = queryStringResult.lng;
+} else {
+	var initMapLat = 41;
+	var initMapLng = -116;
+}
+
+var map = L.map('map').setView([initMapLat, initMapLng], initMapZoom);
 
 var cloudmade = L.tileLayer('http://{s}.tile.cloudmade.com/{key}/{styleId}/256/{z}/{x}/{y}.png', {
 	attribution: 'Map data &copy; 2011 OpenStreetMap contributors, Imagery &copy; 2011 CloudMade',
@@ -109,20 +136,6 @@ info.update = function (props) {
 
 info.addTo(map);
 
-function queryObj() {
-	var result = {};
-	keyValuePairs = location.search.slice(1).split('&');
-
-	keyValuePairs.forEach(function(keyValuePair) {
-		keyValuePair = keyValuePair.split('=');
-		result[keyValuePair[0]] = keyValuePair[1] || '';
-	});
-
-	return result;
-}
-
-var queryStringResult = queryObj();
-
 function getProperty() {
 
 	if (queryStringResult.hasOwnProperty('property')){
@@ -145,6 +158,17 @@ var property = getProperty();
 
 var data = dataMap[property.measure].data;
 
+function reload(queryString){
+
+	var zoom = map.getZoom();
+	var center = map.getCenter();
+
+	queryString = queryString + "&zoom=" + zoom +
+		"&lat=" + center.lat + "&lng=" + center.lng;
+
+	window.location.assign(queryString)
+}
+
 function selectUnit(value){
 	if (!property){
 		var property = getProperty();
@@ -156,7 +180,7 @@ function selectUnit(value){
 			queryString = queryString + "&" + key + "=" + queryStringResult[key];
 		}
 	}
-	window.location.assign(queryString);
+	reload(queryString);
 }
 
 function selectMeasure(value){
@@ -171,7 +195,7 @@ function selectMeasure(value){
 			queryString = queryString + "&" + key + "=" + queryStringResult[key];
 		}
 	}
-	window.location.assign(queryString);
+	reload(queryString);
 }
 
 function selectCrop(value){
@@ -187,7 +211,7 @@ function selectCrop(value){
 			queryString = queryString + "&" + key + "=" + queryStringResult[key];
 		}
 	}
-	window.location.assign(queryString);
+	reload(queryString);
 }
 
 function selectScheme(value){
@@ -197,7 +221,7 @@ function selectScheme(value){
 			queryString = queryString + "&" + key + "=" + queryStringResult[key];
 		}
 	}
-	window.location.assign(queryString);
+	reload(queryString);
 }
 
 function selectReverse(value){
@@ -207,7 +231,7 @@ function selectReverse(value){
 			queryString = queryString + "&" + key + "=" + queryStringResult[key];
 		}
 	}
-	window.location.assign(queryString);
+	reload(queryString);
 }
 
 function getLayerCode(prop_obj){
