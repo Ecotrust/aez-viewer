@@ -2,6 +2,14 @@ var num_categories=5;		//TODO: Currently this all we support
 var method = "jenks";
 // var method = null;		//TODO: get to choose between these
 var min_value = 0.00001; //Something nearly impossibly small
+var initMapZoom, initMapLat, initMapLng;
+var data;
+var property, mapping, map, esri, info;
+var categories;
+var primaryUnit, secondaryUnit;
+var color_scheme, reverse_scheme;
+var geojson;
+var first_load = true;
 
 var schemes = {
 	//Darkest to most pale
@@ -67,6 +75,12 @@ var schemes = {
 	}
 };
 
+var queryStringResult = queryObj();
+
+readQueryString(queryStringResult);
+setUpData();
+
+
 function queryObj() {
 	var result = {};
 	keyValuePairs = location.search.slice(1).split('&');
@@ -78,11 +92,6 @@ function queryObj() {
 
 	return result;
 }
-
-var queryStringResult = queryObj();
-
-
-var initMapZoom, initMapLat, initMapLng;
 
 function readQueryString(queryStringResult) {
 
@@ -101,7 +110,6 @@ function readQueryString(queryStringResult) {
 	}
 }
 
-readQueryString(queryStringResult);
 
 function getProperty() {
 
@@ -121,15 +129,39 @@ function getProperty() {
 	return property;
 }
 
-var property, mapping, data, map, esri, info;
-
 function setUpData() {
 
 	property = getProperty();
 
 	mapping = dataMap;
 
-	data = mapping[property.measure].data;
+	$.ajax({
+        type: 'GET',
+        url: getAjaxLocation(property.measure, property.type, property.code, property.unit, 'json'),
+        beforeSend: function(xhr){
+		    if (xhr.overrideMimeType) {
+		    	xhr.overrideMimeType("application/json");
+		    }
+		},
+		async: true,
+        dataType: 'text',
+        crossDomain: false,
+        data: {},
+        error: function(textStatus, errorThrown) {
+            alert("error");
+        },
+        success: function(ret_data, textStatus, request) {
+        	data_obj = JSON.parse(ret_data);
+			setData(data_obj);
+        }
+     });
+}
+
+function buildMap(){
+
+	if (map){
+		map.remove();
+	}
 
 	map = L.map('map').setView([initMapLat, initMapLng], initMapZoom);
 
@@ -171,12 +203,38 @@ function setUpData() {
 	};
 }
 
-setUpData();
+function setData(ret_obj){
+	data = featureData;
+	var attribute = '';
+	for (var i = 0; i < data.features.length; i++){
+		uid = data.features[i].properties[UID_key]
+		if (ret_obj.hasOwnProperty(uid.toString())){
+			for (var unit in ret_obj[uid.toString()]){
+				attribute = encodeLayer(property.measure, property.type, property.code, unit)
+				data.features[i].properties[attribute] = ret_obj[uid.toString()][unit];
+			}
+		}
+	}
+	buildMap();
+	finishLoad();
+}
 
-info.addTo(map);
+function finishLoad(){
+	info.addTo(map);
+	updateUnits();
+	if (first_load){
+		setUnits();
+		setMeasure();
+		setTypes();
+		first_load = false;
+	}
+	setColorScheme();
+	getLegendInfo();
+	loadGeoJson();
+	setLegend();
+}
 
 function reload(queryString){
-
 	var zoom = map.getZoom();
 	var center = map.getCenter();
 
@@ -184,9 +242,7 @@ function reload(queryString){
 		"&lat=" + center.lat + "&lng=" + center.lng;
 
 	window.history.pushState("", "", queryString);
-	map.remove();
 	loadData();
-
 }
 
 function selectUnit(value){
@@ -309,8 +365,6 @@ function simplifyNumber(high, dev){
 	return {dev:dev, high:high};
 }
 
-var categories;
-
 function getCategories(range, count){
 	if (count == 0){
 		alert("number of categories cannot be set to 0");
@@ -393,7 +447,6 @@ function capFirstLetter(string){
     }
 }
 
-var primaryUnit, secondaryUnit;
 
 function updateUnits() {
 	if (queryStringResult.hasOwnProperty('unit') && units.hasOwnProperty(queryStringResult['unit']) >= 0){
@@ -405,7 +458,6 @@ function updateUnits() {
 	secondaryUnit = (primaryUnit == defaultPrimaryUnit ? defaultSecondaryUnit : defaultPrimaryUnit);
 }
 
-updateUnits();
 
 function setUnits() {
 
@@ -435,7 +487,6 @@ function setUnits() {
 	// unitMenu.setAttribute('style', "margin-left:" + unitButton.offsetWidth + "px; margin-top:-38px;");
 }
 
-setUnits();
 
 function setMeasure() {
 	var measureSelect=document.getElementById("measureSelect");
@@ -457,7 +508,6 @@ function setMeasure() {
 	}
 }
 
-setMeasure();
 
 function setTypes() {
 	var cropSelect=document.getElementById("cropSelect");
@@ -486,9 +536,7 @@ function setTypes() {
 	}
 }
 
-setTypes();
 
-var color_scheme, reverse_scheme;
 
 function setColorScheme() {
 
@@ -539,7 +587,6 @@ function setColorScheme() {
 	}
 }
 
-setColorScheme();
 
 function getLegendInfo() {
 	var layer_code = getLayerCode(property);
@@ -558,7 +605,6 @@ function getLegendInfo() {
 	}
 }
 
-getLegendInfo();
 
 // get color depending on population density value
 function getColor(value, scheme, categories, reverse) {
@@ -615,7 +661,6 @@ function highlightFeature(e) {
 	info.update(layer.feature.properties);
 }
 
-var geojson;
 
 function resetHighlight(e) {
 	geojson.resetStyle(e.target);
@@ -641,7 +686,6 @@ function loadGeoJson() {
 	}).addTo(map);
 }
 
-loadGeoJson();
 
 //TODO: Get link to Ag census for attribution
 // map.attributionControl.addAttribution('Population data &copy; <a href="http://census.gov/">US Census Bureau</a>');
@@ -700,7 +744,6 @@ function setLegend() {
 	legend.addTo(map);
 }
 
-setLegend();
 
 function loadData() {
 	queryStringResult = queryObj();
@@ -708,21 +751,16 @@ function loadData() {
 
 	setUpData();
 
-	info.addTo(map);
+	// info.addTo(map);
 
-	updateUnits();
+	// updateUnits();
 
-	// setUnits();
 
-	// setMeasure();
+	// setColorScheme();
 
-	// setTypes();
+	// getLegendInfo();
 
-	setColorScheme();
+	// loadGeoJson();
 
-	getLegendInfo();
-
-	loadGeoJson();
-
-	setLegend();
+	// setLegend();
 }

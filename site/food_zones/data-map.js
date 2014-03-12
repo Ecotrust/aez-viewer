@@ -1,3 +1,40 @@
+var data_dir = 'food_zones/Data';
+var UID_key = 'IsoZone';
+
+function getUnitDir(measure, unit) {
+	if (unit == 'dens') {
+		return 'dens';
+	} else {
+		if (measure == 'acres'){
+			return 'ac';
+		} else if (measure == 'farms') {
+			return 'Fm';
+		} else if (measure == 'yield') {
+			return 'Qt';
+		} else {
+			alert('getUnitDir - measure: ' + measure + '; unit: ' + unit);
+			return false;
+		}
+	}
+}
+
+function getAjaxLocation(measure, type, code, unit, format){
+	var measure_dir;
+	switch(measure) {
+		case 'acres':
+			measure_dir = 'Acres';
+			break;
+		case 'farms':
+			measure_dir = 'Farms';
+			break;
+		default:
+			measure_dir = measure;
+			alert(measure);
+			debugger;
+	}
+	return data_dir + '/' + measure_dir + '/' + type + '_' + code + '.' + format;
+}
+
 var types = {
 	"br": {
 		"name": "Berries",
@@ -707,6 +744,11 @@ var types = {
 	}
 };
 
+var featureData = zoneData;
+var acresData = zoneData;
+var farmsData = zoneData;
+var yieldData = zoneData;
+
 var dataMap = {
 	"acres": {
 		"data": acresData,
@@ -745,7 +787,7 @@ var defaultPrimaryUnit = 'density';
 var defaultSecondaryUnit = 'count';
 
 function encodeLayer(measure, type, code, unit) {
-	if (unit == 'density') {
+	if (unit == 'density' || unit == 'dens') {
 		if (measure == 'acres') {
 			return "Acres_" + type + "_" + code + "_dens";
 		}
