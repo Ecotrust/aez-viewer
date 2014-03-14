@@ -4,6 +4,7 @@ var method = "jenks";
 var min_value = 0.00001; //Something nearly impossibly small
 var initMapZoom, initMapLat, initMapLng;
 var data;
+var max_digits = 5;
 var property, mapping, map, esri, info;
 var categories;
 var primaryUnit, secondaryUnit;
@@ -12,7 +13,7 @@ var geojson;
 var first_load = true;
 var unitSelect=document.getElementById("unitSelect");
 var measureSelect=document.getElementById("measureSelect");
-var typeSelect = document.getElementById("cropSelect");
+var typeSelect = document.getElementById("typeSelect");
 
 var schemes = {
 	//Darkest to most pale
@@ -186,9 +187,9 @@ function buildMap(){
 	info.update = function (props) {
 		var prop_name = (property ? 
 			mapping[property['measure']].mapping.type[property['type']].options[property['code']].name + '<br />' +
-			capFirstLetter(primaryUnit) + ' ' + (property.label ? capFirstLetter(property.label) : capFirstLetter(property.measure)) : '');
+			capFirstLetter(primaryUnit) + ' ' + (units[property.unit].label ? capFirstLetter(units[property.unit].label) : capFirstLetter(property.measure)) : '');
 		var secondary_name = (property ?
-			capFirstLetter(secondaryUnit) + ' ' + (property.label ? capFirstLetter(property.label) : capFirstLetter(property.measure)) : '');
+			capFirstLetter(secondaryUnit) + ' ' + (secondaryUnit && units[secondaryUnit].label ? capFirstLetter(units[secondaryUnit].label) : capFirstLetter(property.measure)) : '');
 		var secondary_property = (property ?
 			{measure:property.measure, type: property.type, code:property.code, unit:secondaryUnit}
 			: {measure:'', type:'', code:'', unit:secondaryUnit});
@@ -197,12 +198,22 @@ function buildMap(){
 			'</h4>' +  
 			(props ? 
 				'<b>' + capFirstLetter(prop_name) + '</b><br />' + 
-				props[getLayerCode(property)] + '<br />' +
+				roundDigits(props[getLayerCode(property)]) + '<br />' +
 				'<b>' + capFirstLetter(secondary_name) + '</b><br />' +
-				props[getLayerCode(secondary_property)]
+				roundDigits(props[getLayerCode(secondary_property)])
 			: 
 				'Hover over a zone');
 	};
+}
+
+function roundDigits(number){
+	if ($.inArray('.',number.toString()) != -1 && number != 0){
+		var dig_str = number.toString().split('.')[1];
+		if (dig_str.length > max_digits) {
+			return number.toFixed(max_digits);
+		}
+	}
+	return number;
 }
 
 function setData(ret_obj){

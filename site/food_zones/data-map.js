@@ -1186,11 +1186,13 @@ var dataMap = {
 var units = {
 	"density": {
 		"name":"Density",
-		"value":"density"
+		"value":"density",
+		"label":"% Area"
 	},
 	"count": {
 		"name":"Count",
-		"value":"count"
+		"value":"count",
+		"label": false
 	}
 };
 
