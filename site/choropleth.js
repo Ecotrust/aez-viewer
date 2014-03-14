@@ -10,6 +10,9 @@ var primaryUnit, secondaryUnit;
 var color_scheme, reverse_scheme;
 var geojson;
 var first_load = true;
+var unitSelect=document.getElementById("unitSelect");
+var measureSelect=document.getElementById("measureSelect");
+var typeSelect = document.getElementById("cropSelect");
 
 var schemes = {
 	//Darkest to most pale
@@ -109,7 +112,6 @@ function readQueryString(queryStringResult) {
 		initMapLng = -116;
 	}
 }
-
 
 function getProperty() {
 
@@ -223,11 +225,15 @@ function finishLoad(){
 	info.addTo(map);
 	updateUnits();
 	if (first_load){
-		setUnits();
-		setMeasure();
-		setTypes();
 		first_load = false;
+	} else {
+		clearUnits();
+		clearMeasures();
+		clearTypes();
 	}
+	setUnits();
+	setMeasure();
+	setTypes();
 	setColorScheme();
 	getLegendInfo();
 	loadGeoJson();
@@ -447,7 +453,6 @@ function capFirstLetter(string){
     }
 }
 
-
 function updateUnits() {
 	if (queryStringResult.hasOwnProperty('unit') && units.hasOwnProperty(queryStringResult['unit']) >= 0){
 		primaryUnit = queryStringResult['unit'];
@@ -458,47 +463,33 @@ function updateUnits() {
 	secondaryUnit = (primaryUnit == defaultPrimaryUnit ? defaultSecondaryUnit : defaultPrimaryUnit);
 }
 
-
 function setUnits() {
-
-	var unitSelect=document.getElementById("unitSelect");
-	// var unitButton=document.getElementById("unitButton");
-	// var unitMenu=document.getElementById("unitMenu");
-
-	for (key in units){
+	var curent_units = getUnits(property);
+	for (key in curent_units){
 		var unitOpt = document.createElement("option");
 		unitOpt.value = key;
-		unitOpt.innerHTML = units[key].name;
-
-		// var unitMenuItem = document.createElement("li");
-
-		// unitMenuItem.onclick=function(){selectUnit(key);};
-		// unitMenuItem.appendChild(document.createTextNode(units[key].name));
-
-
+		unitOpt.innerHTML = curent_units[key].name;
 		if (key == property.unit){
 			unitOpt.selected = true;
-			// unitButton.appendChild(document.createTextNode("Unit: " + units[key].name));
 		}
-
 		unitSelect.appendChild(unitOpt);
-		// unitMenu.appendChild(unitMenuItem);
 	}
-	// unitMenu.setAttribute('style', "margin-left:" + unitButton.offsetWidth + "px; margin-top:-38px;");
 }
 
+function clearUnits() {
+	while (unitSelect.firstChild){
+		unitSelect.removeChild(unitSelect.firstChild);
+	}
+}
 
 function setMeasure() {
-	var measureSelect=document.getElementById("measureSelect");
-
-	for (key in mapping){
+	var current_measures = getMeasures(property);
+	for (key in current_measures){
 		var measureOpt = document.createElement("option");
 		measureOpt.value = key;
-		measureOpt.innerHTML = capFirstLetter(key);
+		measureOpt.innerHTML = current_measures[key]['name'];
 
-		if (mapping[key].data == null){
-			measureOpt.disabled = true;
-		}
+		measureOpt.disabled = !current_measures[key].available;
 
 		if (key == property.measure){
 			measureOpt.selected = true;
@@ -508,11 +499,14 @@ function setMeasure() {
 	}
 }
 
+function clearMeasures() {
+	while (measureSelect.firstChild){
+		measureSelect.removeChild(measureSelect.firstChild);
+	}
+}
 
 function setTypes() {
-	var cropSelect=document.getElementById("cropSelect");
-
-	var types = mapping[property.measure].mapping.type;
+	var types = getTypes(property);
 
 	for (key in types){
 		var oGroup = document.createElement("optgroup");
@@ -527,16 +521,19 @@ function setTypes() {
 				typeOpt.selected = true;
 			}
 
-			if (!getLayerCode({measure: property.measure, type:key, code:subKey, unit:primaryUnit})){
-				typeOpt.disabled = true;
-			}
+			typeOpt.disabled = !types[key].options[subKey].available;
+
 			oGroup.appendChild(typeOpt);
 		}
-		cropSelect.appendChild(oGroup);
+		typeSelect.appendChild(oGroup);
 	}
 }
 
-
+function clearTypes() {
+	while (typeSelect.firstChild){
+		typeSelect.removeChild(typeSelect.firstChild);
+	}
+}
 
 function setColorScheme() {
 
@@ -587,7 +584,6 @@ function setColorScheme() {
 	}
 }
 
-
 function getLegendInfo() {
 	var layer_code = getLayerCode(property);
 	if (!layer_code) {
@@ -604,7 +600,6 @@ function getLegendInfo() {
 		alert("Pleace specify the number of categories in your settings.");
 	}
 }
-
 
 // get color depending on population density value
 function getColor(value, scheme, categories, reverse) {
@@ -661,7 +656,6 @@ function highlightFeature(e) {
 	info.update(layer.feature.properties);
 }
 
-
 function resetHighlight(e) {
 	geojson.resetStyle(e.target);
 	info.update();
@@ -685,7 +679,6 @@ function loadGeoJson() {
 		onEachFeature: onEachFeature
 	}).addTo(map);
 }
-
 
 //TODO: Get link to Ag census for attribution
 // map.attributionControl.addAttribution('Population data &copy; <a href="http://census.gov/">US Census Bureau</a>');
@@ -744,23 +737,8 @@ function setLegend() {
 	legend.addTo(map);
 }
 
-
 function loadData() {
 	queryStringResult = queryObj();
 	readQueryString(queryStringResult)
-
 	setUpData();
-
-	// info.addTo(map);
-
-	// updateUnits();
-
-
-	// setColorScheme();
-
-	// getLegendInfo();
-
-	// loadGeoJson();
-
-	// setLegend();
 }
