@@ -1187,7 +1187,7 @@ var units = {
 	"density": {
 		"name":"Density",
 		"value":"density",
-		"label":"% Area"
+		"label":"%"
 	},
 	"count": {
 		"name":"Count",
