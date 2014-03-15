@@ -187,12 +187,12 @@ function buildMap(){
 	info.update = function (props) {
 		var prop_name = (property ? 
 			mapping[property['measure']].mapping.type[property['type']].options[property['code']].name + '<br />' +
-			capFirstLetter(primaryUnit) + ' ' + (units[property.unit].label ? capFirstLetter(units[property.unit].label) : capFirstLetter(property.measure)) : '');
-		var secondary_name = (property ?
-			capFirstLetter(secondaryUnit) + ' ' + (secondaryUnit && units[secondaryUnit].label ? capFirstLetter(units[secondaryUnit].label) : capFirstLetter(property.measure)) : '');
+			(property ? getLabel(property) : '') : capFirstLetter(primaryUnit));
 		var secondary_property = (property ?
 			{measure:property.measure, type: property.type, code:property.code, unit:secondaryUnit}
 			: {measure:'', type:'', code:'', unit:secondaryUnit});
+		var secondary_name = (property ?
+			getLabel(secondary_property): capFirstLetter(secondaryUnit));
 		this._div.innerHTML = '<h4>Zone Info: ' + 
 			(props ? capFirstLetter(props["IsoZone"]) : '') + 
 			'</h4>' +  

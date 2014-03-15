@@ -1187,7 +1187,7 @@ var units = {
 	"density": {
 		"name":"Density",
 		"value":"density",
-		"label":"%"
+		"label":"Per Acre"
 	},
 	"count": {
 		"name":"Count",
@@ -1195,6 +1195,33 @@ var units = {
 		"label": false
 	}
 };
+
+function getLabel(property){
+	var label = capFirstLetter(property.measure);
+	if (property.unit == 'density') {
+		switch(property.measure){
+			case 'acres':
+				label = '% Area';
+				break;
+			case 'farms':
+				label = 'Farms Per Acre';
+				break;
+			case 'yield':
+				var qty = types[property.type].options[property.code].qty;
+				label = qty + ' Per Acre';
+				break;
+			default:
+				if (property.unit) {
+					label = property.unit.label;
+				}
+		}
+	} else {
+		if (property.measure == 'yield'){
+			label = capFirstLetter(types[property.type].options[property.code].qty);
+		}
+	}
+	return label;
+}
 
 function getUnits(property) {
 	//Units are the same regardless of selection
