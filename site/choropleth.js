@@ -645,8 +645,8 @@ function style(feature) {
 		opacity: 0.7,
 		color: 'white',
 		dashArray: '',
-		fillOpacity: getOpacity(value),
-		fillColor: getColor(value, color_scheme, categories, reverse_scheme)
+		fillColor: getColor(value, color_scheme, categories, reverse_scheme),
+		fillOpacity: getOpacity(value)
 	};
 }
 
@@ -656,8 +656,7 @@ function highlightFeature(e) {
 	layer.setStyle({
 		weight: 1,
 		color: '#666',
-		dashArray: '',
-		fillOpacity: 0.7
+		dashArray: ''
 	});
 
 	if (!L.Browser.ie && !L.Browser.opera) {
