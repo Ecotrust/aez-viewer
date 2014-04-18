@@ -7,13 +7,15 @@
 
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+	<link rel="stylesheet" href="../dist/select2/select2.css" />
 	<link rel="stylesheet" href="../dist/leaflet.css" />
 	<link rel="stylesheet" href="choropleth.css" />
 	<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" />
 	<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootswatch/3.1.1/spacelab/bootstrap.min.css" />
+
 	<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 	<script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script> 
-	
+	<script type="text/javascript" src="../dist/select2/select2.min.js"></script>
 
 </head>
 <body>
@@ -40,16 +42,10 @@
 							Crop:
 						</div>
 						<div class="span8">
-							<select id="typeSelect" onchange="selectCrop(this.value)">
+							<select id="typeSelect" onchange="selectCrop(this.value)" style="width:80%">
 							</select>
 						</div>
 					</div>
-					<!-- Select a color scheme: -->
-					<select style="display:none" id="schemeSelect" onchange="selectScheme(this.value)">
-					</select>
-					<!-- Reverse the color scheme: -->
-					<select style="display:none" id="reverseSelect" onchange="selectReverse(this.value)">
-					</select>
 				</form>
 			</div>
 		</div>
@@ -64,5 +60,6 @@
 	<script type="text/javascript" src="food_zones/featuresData.js"></script>
 	<script type="text/javascript" src="food_zones/data-map.js"></script>
 	<script type="text/javascript" src="choropleth.js"></script>
+
 </body>
 </html>

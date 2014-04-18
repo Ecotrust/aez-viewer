@@ -79,3 +79,8 @@ html {
     bottom: 12px;
     z-index: 999;
 }
+
+.select2-disabled {
+    color: gray;
+    cursor: default !important;
+}

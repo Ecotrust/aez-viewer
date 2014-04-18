@@ -481,6 +481,7 @@ function setTypes() {
 		}
 		typeSelect.appendChild(oGroup);
 	}
+	$("#typeSelect").select2();
 }
 
 function clearTypes() {
@@ -495,46 +496,8 @@ function setColorScheme() {
 		color_scheme = schemes["greens"];
 	} else if (property.measure == "farms") {
 		color_scheme = schemes["reds"];
-	} else if (property.measure == "yield") {
-		color_scheme = schemes["purples"];
 	} else {
 		color_scheme = schemes["reds"];
-	}
-
-	var schemeSelect=document.getElementById("schemeSelect");
-
-	for (key in schemes){
-		var opt = document.createElement("option");
-		opt.value = key;
-		opt.innerHTML = schemes[key].name;
-
-		if (schemes[key].name == color_scheme.name){
-			opt.selected = true;
-		}
-
-		schemeSelect.appendChild(opt);
-	}
-
-	if (queryStringResult.hasOwnProperty('reverse') && 
-		queryStringResult['reverse'] == "true") {
-		reverse_scheme = true;
-	} else {
-		reverse_scheme = false;
-	}
-
-	var reverseSelect=document.getElementById("reverseSelect");
-
-	reverse_opts = ['Normal', 'Reverse'];
-	for (key in reverse_opts){
-		var opt = document.createElement("option");
-		opt.value = (reverse_opts[key]=='Reverse');
-		opt.innerHTML = reverse_opts[key];
-
-		if ((reverse_opts[key] == 'Normal' && !reverse_scheme) || (reverse_opts[key] == 'Reverse' && reverse_scheme)){
-			opt.selected = true;
-		}
-
-		reverseSelect.appendChild(opt);
 	}
 }
 
