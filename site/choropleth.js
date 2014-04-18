@@ -107,9 +107,6 @@ function readQueryString(queryStringResult) {
 	if (queryStringResult.hasOwnProperty('lat') && queryStringResult.hasOwnProperty('lng')) {
 		initMapLat = queryStringResult.lat;
 		initMapLng = queryStringResult.lng;
-	} else {
-		initMapLat = 41;
-		initMapLng = -116;
 	}
 }
 
@@ -162,7 +159,16 @@ function buildMap(){
 		map.remove();
 	}
 
-	map = L.map('map').setView([initMapLat, initMapLng], initMapZoom);
+	map = L.map('map');
+	if (initMapLat || initMapLng) {
+		map.setView([initMapLat, initMapLng], initMapZoom);
+	} else {
+		map.fitBounds([
+			[50.574873, -126.994063],
+			[31.312113, -109.031419]
+		]);
+	}
+
 
 	esri = L.tileLayer('http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', 
 	{
