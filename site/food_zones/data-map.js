@@ -1,23 +1,6 @@
 var data_dir = 'food_zones/Data';
 var UID_key = 'IsoZone';
 
-function getUnitDir(measure, unit) {
-	if (unit == 'dens') {
-		return 'dens';
-	} else {
-		if (measure == 'acres'){
-			return 'ac';
-		} else if (measure == 'farms') {
-			return 'Fm';
-		} else if (measure == 'yield') {
-			return 'Qt';
-		} else {
-			alert('getUnitDir - measure: ' + measure + '; unit: ' + unit);
-			return false;
-		}
-	}
-}
-
 function getAjaxLocation(measure, type, code, unit, format){
 	var measure_dir;
 	switch(measure) {
@@ -26,9 +9,6 @@ function getAjaxLocation(measure, type, code, unit, format){
 			break;
 		case 'farms':
 			measure_dir = 'Farms';
-			break;
-		case 'yield':
-			measure_dir = 'Qnty';
 			break;
 		default:
 			measure_dir = measure;
@@ -1083,84 +1063,12 @@ var files = {
 			"vpm_VP11",
 			"vpm_VP39"
 		]
-	},
-	"yield": {
-		"options": [
-			"fc_COUNT",
-			"fc_FC08",
-			"fc_FC21",
-			"fc_FC31",
-			"fs_COUNT",
-			"fs_FS11",
-			"fs_FS20",
-			"fs_Sum",
-			"oc_OC11",
-			"fc_FC01",
-			"fc_FC09",
-			"fc_FC22",
-			"fc_FC32",
-			"fs_FS01",
-			"fs_FS12",
-			"fs_FS21",
-			"fs_VALUE",
-			"oc_Sum",
-			"fc_FC02",
-			"fc_FC10",
-			"fc_FC24",
-			"fc_FC33",
-			"fs_FS02",
-			"fs_FS13",
-			"fs_FS22",
-			"oc_COUNT",
-			"oc_VALUE",
-			"fc_FC03",
-			"fc_FC13",
-			"fc_FC25",
-			"fc_FC34",
-			"fs_FS03",
-			"fs_FS14",
-			"fs_FS23",
-			"oc_OC04",
-			"fc_FC04",
-			"fc_FC14",
-			"fc_FC27",
-			"fc_FC35",
-			"fs_FS04",
-			"fs_FS15",
-			"fs_FS24",
-			"oc_OC06",
-			"fc_FC05",
-			"fc_FC15",
-			"fc_FC28",
-			"fc_FC36",
-			"fs_FS08",
-			"fs_FS16",
-			"fs_FS27",
-			"oc_OC07",
-			"fc_FC06",
-			"fc_FC16",
-			"fc_FC29",
-			"fc_Sum",
-			"fs_FS09",
-			"fs_FS18",
-			"fs_FS28",
-			"oc_OC08",
-			"fc_FC07",
-			"fc_FC18",
-			"fc_FC30",
-			"fc_VALUE",
-			"fs_FS10",
-			"fs_FS19",
-			"fs_FS30",
-			"oc_OC09"
-		]
 	}
 }
 
 var featureData = zoneData;
 var acresData = zoneData;
 var farmsData = zoneData;
-var yieldData = zoneData;
 
 var dataMap = {
 	"acres": {
@@ -1174,12 +1082,6 @@ var dataMap = {
 		"mapping": {
 			"type": types
 		}
-	},
-	"yield":{
-		"data": yieldData,
-		"mapping": {
-			"type": types
-		}
 	}
 };
 
@@ -1188,11 +1090,6 @@ var units = {
 		"name":"Density",
 		"value":"density",
 		"label":"Per Acre"
-	},
-	"count": {
-		"name":"Count",
-		"value":"count",
-		"label": false
 	}
 };
 
@@ -1206,18 +1103,10 @@ function getLabel(property){
 			case 'farms':
 				label = 'Farms Per Acre';
 				break;
-			case 'yield':
-				var qty = types[property.type].options[property.code].qty;
-				label = qty + ' Per Acre';
-				break;
 			default:
 				if (property.unit) {
 					label = property.unit.label;
 				}
-		}
-	} else {
-		if (property.measure == 'yield'){
-			label = capFirstLetter(types[property.type].options[property.code].qty);
 		}
 	}
 	return label;
@@ -1234,9 +1123,6 @@ var measures = {
 	},
 	"farms": {
 		"name": "Farms"
-	},
-	"yield": {
-		"name": "Yield"
 	}
 }
 
@@ -1260,10 +1146,8 @@ function getTypes(property){
 	return available_types;
 }
 
-// var primaryLabel = 'density';
 var defaultPrimaryUnit = 'density';
-// var secondaryLabel = 'count';
-var defaultSecondaryUnit = 'count';
+var defaultSecondaryUnit = 'density';
 
 function encodeLayer(measure, type, code, unit) {
 	if (unit == 'density' || unit == 'dens') {
@@ -1273,9 +1157,6 @@ function encodeLayer(measure, type, code, unit) {
 		if (measure == 'farms') {
 			return "Farms_" + type + "_" + code + "_dens";
 		}
-		if (measure == 'yield') {
-			return "Qnty_" + type + "_" + code + "_dens";
-		}
 		return 0;
 	} else {
 		if (measure == 'acres') {
@@ -1283,9 +1164,6 @@ function encodeLayer(measure, type, code, unit) {
 		}
 		if (measure == 'farms') {
 			return "Farms_" + type + "_" + code + "_Z_Fm";
-		}
-		if (measure == 'yield') {
-			return "Qnty_" + type + "_" + code + "_Z_Qt";
 		}
 		return 0;
 	}
@@ -1308,34 +1186,20 @@ function parseLayer(layername) {
 			"code": parts[2]
 		};
 	}
-	if (parts[0] == "Qnty"){
-		ret_val = {
-			"measure": 'yield',
-			"type": parts[1],
-			"code": parts[2]
-		};
-	}
 	if (ret_val != 0) {
 		if (parts.length < 5) {
 			ret_val['unit'] = defaultPrimaryUnit;
 		} else {
 			ret_val['unit'] = defaultSecondaryUnit;
 		}
-		if (parts[0] == "Qnty" && types[ret_val.type].options[ret_val.code].hasOwnProperty('qty')) {
-			ret_val['label'] = types[ret_val.type].options[ret_val.code].qty;
-		} else {
-			ret_val['label'] = false;
-		}
+		ret_val['label'] = false;
 	}
 	return ret_val;
 }
 
 function getDefaultLayer() {
-	// var measure = Object.keys(dataMap)[0];
 	var measure = "acres";
-	// var type = Object.keys(dataMap[measure].mapping.type)[0];
 	var type = "fc";
-	// var code = Object.keys(dataMap[measure].mapping.type[type].options)[0];
 	var code = "FC01";
 	var unit = defaultPrimaryUnit;
 

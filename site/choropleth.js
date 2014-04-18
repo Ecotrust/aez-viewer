@@ -7,11 +7,10 @@ var data;
 var max_digits = 5;
 var property, mapping, map, esri, info;
 var categories;
-var primaryUnit, secondaryUnit;
+var primaryUnit;
 var color_scheme, reverse_scheme;
 var geojson;
 var first_load = true;
-var unitSelect=document.getElementById("unitSelect");
 var measureSelect=document.getElementById("measureSelect");
 var typeSelect = document.getElementById("typeSelect");
 
@@ -126,9 +125,6 @@ function getProperty() {
 	} else {
 		var property=getDefaultLayer();
 	}
-	if (queryStringResult.hasOwnProperty('unit')){
-		property.unit = queryStringResult['unit'];
-	}
 	return property;
 }
 
@@ -188,19 +184,12 @@ function buildMap(){
 		var prop_name = (property ? 
 			mapping[property['measure']].mapping.type[property['type']].options[property['code']].name + '<br />' +
 			(property ? getLabel(property) : '') : capFirstLetter(primaryUnit));
-		var secondary_property = (property ?
-			{measure:property.measure, type: property.type, code:property.code, unit:secondaryUnit}
-			: {measure:'', type:'', code:'', unit:secondaryUnit});
-		var secondary_name = (property ?
-			getLabel(secondary_property): capFirstLetter(secondaryUnit));
 		this._div.innerHTML = '<h4>Zone Info: ' + 
 			(props ? capFirstLetter(props["IsoZone"]) : '') + 
 			'</h4>' +  
 			(props ? 
 				'<b>' + capFirstLetter(prop_name) + '</b><br />' + 
-				roundDigits(props[getLayerCode(property)]) + '<br />' +
-				'<b>' + capFirstLetter(secondary_name) + '</b><br />' +
-				roundDigits(props[getLayerCode(secondary_property)])
+				roundDigits(props[getLayerCode(property)]) + '<br />'
 			: 
 				'Hover over a zone');
 	};
@@ -234,15 +223,12 @@ function setData(ret_obj){
 
 function finishLoad(){
 	info.addTo(map);
-	updateUnits();
 	if (first_load){
 		first_load = false;
 	} else {
-		clearUnits();
 		clearMeasures();
 		clearTypes();
 	}
-	setUnits();
 	setMeasure();
 	setTypes();
 	setColorScheme();
@@ -260,20 +246,6 @@ function reload(queryString){
 
 	window.history.pushState("", "", queryString);
 	loadData();
-}
-
-function selectUnit(value){
-	if (!property){
-		var property = getProperty();
-	} 
-
-	queryString = "?unit=" + value;
-	for (key in queryStringResult) {
-		if (key != 'unit'){
-			queryString = queryString + "&" + key + "=" + queryStringResult[key];
-		}
-	}
-	reload(queryString);
 }
 
 function selectMeasure(value){
@@ -462,35 +434,6 @@ function capFirstLetter(string){
     } else {
     	return '';
     }
-}
-
-function updateUnits() {
-	if (queryStringResult.hasOwnProperty('unit') && units.hasOwnProperty(queryStringResult['unit']) >= 0){
-		primaryUnit = queryStringResult['unit'];
-	} else {
-		primaryUnit = defaultPrimaryUnit;
-	}
-
-	secondaryUnit = (primaryUnit == defaultPrimaryUnit ? defaultSecondaryUnit : defaultPrimaryUnit);
-}
-
-function setUnits() {
-	var curent_units = getUnits(property);
-	for (key in curent_units){
-		var unitOpt = document.createElement("option");
-		unitOpt.value = key;
-		unitOpt.innerHTML = curent_units[key].name;
-		if (key == property.unit){
-			unitOpt.selected = true;
-		}
-		unitSelect.appendChild(unitOpt);
-	}
-}
-
-function clearUnits() {
-	while (unitSelect.firstChild){
-		unitSelect.removeChild(unitSelect.firstChild);
-	}
 }
 
 function setMeasure() {
