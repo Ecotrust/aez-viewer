@@ -1,1 +1,4 @@
 data
+site/choropleth-local.css
+site/local-vars.js
+dist/fonts

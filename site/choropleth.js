@@ -197,7 +197,7 @@ function buildMap(){
 				'<b>' + capFirstLetter(prop_name) + '</b><br />' + 
 				roundDigits(props[getLayerCode(property)]) + '<br />'
 			: 
-				'Hover over a zone');
+				'<p>Hover over a zone</p>');
 	};
 }
 

@@ -8,41 +8,53 @@
 	position: fixed;
 }
 
+#title {
+    margin-top: 0;
+}
+
 .info {
-	padding: 6px 8px;
-	font: 14px/16px Arial, Helvetica, sans-serif;
-	background: white;
-	background: rgba(255,255,255,0.8);
-	box-shadow: 0 0 15px rgba(0,0,0,0.2);
-	border-radius: 5px;
+    padding: 10px 12px;
+    font: 14px/16px;
+    background: white;
+    background: rgba(255,255,255,0.8);
+    box-shadow: 0 0 15px rgba(0,0,0,0.2);
+    border-radius: 5px;
 }
 .info h4 {
-	margin: 0 0 5px;
-	color: #777;
+    margin: 0 0 5px;
+    color: #777;
+}
+.info p {
+    padding: 0;
+    margin: 0;
+}
+.leaflet-container {
+    font-family:"Rotis Serif", Georgia, sans-serif !important;
+    font-size: 16px;
 }
 
 .legend {
-	text-align: left;
-	line-height: 18px;
-	color: #555;
+    text-align: left;
+    line-height: 18px;
+    color: #555;
 }
 .legend i {
-	width: 18px;
-	height: 18px;
-	margin: 0 -2px;
-	opacity: 0.7;
-	display: inline-block;
+    width: 18px;
+    height: 18px;
+    margin: 0 -2px;
+    opacity: 0.7;
+    display: inline-block;
 }
 
 .fill {
-	min-height: 100%;
-	height: 100%;
+    min-height: 100%;
+    height: 100%;
 }
 
 body {
     /*padding-top:92px;*/
-	min-height: 100%;
-	height: 100%;
+    min-height: 100%;
+    height: 100%;
     -webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
     -moz-box-sizing: border-box;    /* Firefox, other Gecko */
     box-sizing: border-box;         /* Opera/IE 8+ */
@@ -50,26 +62,26 @@ body {
 }
 
 html {
-	min-height: 100%;
-	height: 100%;
+    min-height: 100%;
+    height: 100%;
 }
 
 .layer-buttons {
-	z-index: 9999;
-	margin-left: 50px;
+    z-index: 9999;
+    margin-left: 50px;
 }
 
 .layer-button {
-	z-index: 9999;
+    z-index: 9999;
 }
 
 .dropdown-menu li {
-	cursor: pointer;
+    cursor: pointer;
 }
 
 /*
 #selectors select {
-	margin-top: 10px;
+    margin-top: 10px;
 }
 */
 
@@ -83,4 +95,23 @@ html {
 .select2-disabled {
     color: gray;
     cursor: default !important;
+}
+
+body {
+    font-family:"Rotis Serif", Georgia, sans-serif !important;
+}
+
+h1, h2, h3, h4 {
+
+    font-family:"Rotis Serif", Georgia, sans-serif;
+}
+
+i, em, cite {
+    font-family: "Rotis Serif Italic", Georgia, sans-serif;
+    font-style: normal; /* This is important! Otherwise, faux italic italics. Terrible. */
+}
+
+strong {
+    font-family:"Rotis Serif Bold", Georgia, sans-serif;
+    font-weight: normal; /* Rotis doesn’t actually seem to care about this one but just in case. */
 }
