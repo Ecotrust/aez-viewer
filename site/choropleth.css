@@ -37,6 +37,7 @@
     text-align: left;
     line-height: 18px;
     color: #555;
+    margin-top: 15px;
 }
 .legend i {
     width: 18px;
@@ -88,7 +89,7 @@ html {
 #filter-container {
     position: absolute;
     left: 10px;
-    bottom: 12px;
+    top: 12px;
     z-index: 999;
 }
 

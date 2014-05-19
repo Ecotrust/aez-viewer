@@ -159,7 +159,8 @@ function buildMap(){
 		map.remove();
 	}
 
-	map = L.map('map');
+	map = L.map('map', {zoomControl: false});
+	setZoomControl();
 	if (initMapLat || initMapLng) {
 		map.setView([initMapLat, initMapLng], initMapZoom);
 	} else {
@@ -605,58 +606,58 @@ function loadGeoJson() {
 //TODO: Get link to Ag census for attribution
 // map.attributionControl.addAttribution('Population data &copy; <a href="http://census.gov/">US Census Bureau</a>');
 
+function setZoomControl() {
+	var zoomControl = L.control.zoom({position:'bottomright'});
+	map.addControl(zoomControl);
+}
+
 function setLegend() {
 
-	var legend = L.control({position: 'bottomright'});
 
-	legend.onAdd = function (map) {
+	for(var i=0; $('.legend').length > 0; i++) {
+		$('.legend')[0].remove();
+	}
 
-		var div = L.DomUtil.create('div', 'info legend'),
-			grades = [],
-			labels = [],
-			from, to;
-			for (var index = categories.length-1; index > -1; index--){
-				grades.push(categories[index]);
-			}
-
-		if (property) {
-			if (property.label) {
-				labels.push('<b>' + property.label + '</b>');
-			} else {
-				labels.push('<b>' + capFirstLetter(property.measure) + '</b>');
-			}
+	var div = L.DomUtil.create('div', 'legend'),
+		grades = [],
+		labels = [],
+		from, to;
+		for (var index = categories.length-1; index > -1; index--){
+			grades.push(categories[index]);
 		}
-		labels.push('<br />');
 
-		for (var i = 0; i < grades.length; i++) {
-			from = grades[i];
-			to = grades[i + 1];
+	if (property) {
+		if (property.label) {
+			labels.push('<b>' + property.label + '</b>');
+		} else {
+			labels.push('<b>' + capFirstLetter(property.measure) + '</b>');
+		}
+	}
+	labels.push('<br />');
 
-			if (i == 0) {
-				labels.push('Low <i style="background:' + 
+	for (var i = 0; i < grades.length; i++) {
+		from = grades[i];
+		to = grades[i + 1];
+
+		if (i == 0) {
+			labels.push('Low <i style="background:' + 
+				getColor(from, color_scheme, categories, reverse_scheme) + 
+				'" data-toggle="tooltip" data-placement="top" title="<' + to + '"></i> ');
+		} else {
+			if (i == grades.length -1){
+				labels.push('<i style="background:' + 
 					getColor(from, color_scheme, categories, reverse_scheme) + 
-					'" data-toggle="tooltip" data-placement="top" title="<' + to + '"></i> ');
+					'" data-toggle="tooltip" data-placement="top" title="' + from + '+"></i> ' +	"High");
 			} else {
-				if (i == grades.length -1){
-					labels.push('<i style="background:' + 
-						getColor(from, color_scheme, categories, reverse_scheme) + 
-						'" data-toggle="tooltip" data-placement="top" title="' + from + '+"></i> ' +	"High");
-				} else {
-					labels.push('<i style="background:' + 
-						getColor(from, color_scheme, categories, reverse_scheme) + 
-						'" data-toggle="tooltip" data-placement="top" title="' + from + '-' + to + '"></i> ' +	"");
-				}
+				labels.push('<i style="background:' + 
+					getColor(from, color_scheme, categories, reverse_scheme) + 
+					'" data-toggle="tooltip" data-placement="top" title="' + from + '-' + to + '"></i> ' +	"");
 			}
 		}
+	}
 
-		div.innerHTML = '<h4>' + 
-			mapping[property['measure']].mapping.type[property['type']].options[property['code']].name + 
-			'</h4>' + 
-			labels.join('');
-		return div;
-	};
-
-	legend.addTo(map);
+	div.innerHTML = labels.join('');
+	$('#filter-container').append(div);
 }
 
 function loadData() {
