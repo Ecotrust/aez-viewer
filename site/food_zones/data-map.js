@@ -1122,7 +1122,7 @@ var measures = {
 		"name": "% of Area"
 	},
 	"farms": {
-		"name": "# of Farms"
+		"name": "Farms Per Acre"
 	}
 }
 

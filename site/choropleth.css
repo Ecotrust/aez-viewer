@@ -114,6 +114,10 @@ html {
   display: inline-block;
 }
 
+#s2id_typeSelect {
+    width: 100% !important;
+}
+
 .select2-disabled {
     color: gray;
     cursor: default !important;
