@@ -445,9 +445,14 @@ function capFirstLetter(string){
 
 function setMeasure() {
 	var current_measures = getMeasures(property);
+		var row = L.DomUtil.create('div', 'row');
+		var span = L.DomUtil.create('div', 'col-md-12');
+		var table = L.DomUtil.create('table', 'measureTable');
+		var trow = L.DomUtil.create('tr', 'measureTableRow');
 
 	for (key in current_measures){
 
+		var td = L.DomUtil.create('td', 'measureTableCell');
 		var label = document.createElement("label");
 
 		var measureButton = document.createElement("input");
@@ -463,8 +468,13 @@ function setMeasure() {
 		label.appendChild(measureButton);
 		label.innerHTML += current_measures[key]['name'];
 
-		measureSelect.appendChild(label);
+		td.appendChild(label);
+		trow.appendChild(td);
 	}
+	table.appendChild(trow);
+	span.appendChild(table);
+	row.appendChild(span);
+	measureSelect.appendChild(row);
 }
 
 function clearMeasures() {
