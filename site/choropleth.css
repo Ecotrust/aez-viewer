@@ -119,6 +119,14 @@ html {
     cursor: default !important;
 }
 
+#legendTable table {
+    width: 100%;
+}
+
+#legendLabels .end {
+    text-align: right;
+}
+
 body {
     font-family:"Rotis Serif", Georgia, sans-serif !important;
 }

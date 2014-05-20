@@ -624,6 +624,9 @@ function setLegend() {
 		$('.legend')[0].remove();
 	}
 
+	var row = L.DomUtil.create('div', 'row');
+	var span = L.DomUtil.create('div', 'col-md-12');
+
 	var div = L.DomUtil.create('div', 'legend'),
 		grades = [],
 		labels = [],
@@ -640,30 +643,41 @@ function setLegend() {
 		}
 	}
 	labels.push('<br />');
+	labels.push('<div class="row">');
+	labels.push('	<div class="col-md-12" id="legendTable">');
+	labels.push('		<table><tr>');
 
 	for (var i = 0; i < grades.length; i++) {
 		from = grades[i];
 		to = grades[i + 1];
 
-		if (i == 0) {
-			labels.push('Low <i style="background:' + 
-				getColor(from, color_scheme, categories, reverse_scheme) + 
-				'" data-toggle="tooltip" data-placement="top" title="<' + to + '"></i> ');
-		} else {
-			if (i == grades.length -1){
-				labels.push('<i style="background:' + 
-					getColor(from, color_scheme, categories, reverse_scheme) + 
-					'" data-toggle="tooltip" data-placement="top" title="' + from + '+"></i> ' +	"High");
-			} else {
-				labels.push('<i style="background:' + 
-					getColor(from, color_scheme, categories, reverse_scheme) + 
-					'" data-toggle="tooltip" data-placement="top" title="' + from + '-' + to + '"></i> ' +	"");
-			}
-		}
+		labels.push('<td style="background:' + 
+			getColor(from, color_scheme, categories, reverse_scheme) + 
+			'" data-toggle="tooltip" data-placement="top" title="' + 
+			( i==0 ? '<' + to : 
+				( i == grades.length-1 ? '>' + from : 
+					from + ' - ' + to 
+				)
+			) + '">&nbsp;</td> '
+		);
 	}
 
+	labels.push('		</tr></table>');
+	labels.push('	</div>');
+	labels.push('</div>');
+	labels.push('<div class="row" id="legendLabels">');
+	labels.push('	<div class="col-md-2 start">');
+	labels.push('		Low');
+	labels.push('	</div>');
+	labels.push('	<div class="col-md-2 col-md-offset-8 end">');
+	labels.push('		High');
+	labels.push('	</div>');
+	labels.push('</div>');
+
 	div.innerHTML = labels.join('');
-	$('#filter-container').append(div);
+	span.appendChild(div);
+	row.appendChild(span)
+	$('#filter-container').append(row);
 }
 
 function loadData() {
