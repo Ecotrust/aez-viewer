@@ -93,6 +93,27 @@ html {
     z-index: 999;
 }
 
+#measureSelect {
+    height: 35px;
+    text-align: justify;
+    min-width: 250px;
+}
+
+#measureSelect label {
+    display: inline-block;
+    width: 150px;       /* Be sure to update this in the local css file if more than 2 options */
+    height: 30px;
+}
+
+#measureSelect input[type="radio"] {
+    margin: 6px 6px 0 6px;
+}
+
+#measureSelect:after {
+  content: '';
+  display: inline-block;
+}
+
 .select2-disabled {
     color: gray;
     cursor: default !important;

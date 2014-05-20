@@ -1119,10 +1119,10 @@ function getUnits(property) {
 
 var measures = {
 	"acres": {
-		"name": "Acres"
+		"name": "% of Area"
 	},
 	"farms": {
-		"name": "Farms"
+		"name": "# of Farms"
 	}
 }
 
