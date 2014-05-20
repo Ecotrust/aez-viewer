@@ -445,18 +445,25 @@ function capFirstLetter(string){
 
 function setMeasure() {
 	var current_measures = getMeasures(property);
-	for (key in current_measures){
-		var measureOpt = document.createElement("option");
-		measureOpt.value = key;
-		measureOpt.innerHTML = current_measures[key]['name'];
 
-		measureOpt.disabled = !current_measures[key].available;
+	for (key in current_measures){
+
+		var label = document.createElement("label");
+
+		var measureButton = document.createElement("input");
+		measureButton.type = 'radio';
+		measureButton.value = key;
+		measureButton.name = 'measure';
+		measureButton.setAttribute('onclick', 'selectMeasure(this.value)');
 
 		if (key == property.measure){
-			measureOpt.selected = true;
+			measureButton.setAttribute('checked', true);
 		}
+		
+		label.appendChild(measureButton);
+		label.innerHTML += current_measures[key]['name'];
 
-		measureSelect.appendChild(measureOpt);
+		measureSelect.appendChild(label);
 	}
 }
 
@@ -612,7 +619,6 @@ function setZoomControl() {
 }
 
 function setLegend() {
-
 
 	for(var i=0; $('.legend').length > 0; i++) {
 		$('.legend')[0].remove();
