@@ -97,6 +97,11 @@ html {
     width: 100%;
 }
 
+#measureSelect input[type="radio"] {
+    margin: 0px 6px 2px 6px;
+    vertical-align: middle;
+}
+
 #s2id_typeSelect {
     width: 100% !important;
 }
