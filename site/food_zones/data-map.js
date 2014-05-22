@@ -1126,6 +1126,15 @@ var measures = {
 	}
 }
 
+var popUpDescriptions = {
+	"acres": {
+		"name": "% area planted in "
+	},
+	"farms": {
+		"name": "Farms per acre that grow "
+	}
+}
+
 function getMeasures(property) {
 	var available_measures = measures;
 	for (m_key in measures){

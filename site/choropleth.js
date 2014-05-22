@@ -13,6 +13,7 @@ var geojson;
 var first_load = true;
 var measureSelect=document.getElementById("measureSelect");
 var typeSelect = document.getElementById("typeSelect");
+var highlightedFeature = false;
 
 var schemes = {
 	//Darkest to most pale
@@ -581,6 +582,10 @@ function style(feature) {
 }
 
 function highlightFeature(e) {
+	if (highlightedFeature) {
+		resetHighlight();
+	}
+
 	var layer = e.target;
 
 	layer.setStyle({
@@ -593,11 +598,21 @@ function highlightFeature(e) {
 		layer.bringToFront();
 	}
 
+	highlightedFeature = layer;
+
+}
+
+function updateInfo(e) {
+	var layer = e.target;
 	info.update(layer.feature.properties);
 }
 
-function resetHighlight(e) {
-	geojson.resetStyle(e.target);
+function resetHighlight() {
+	geojson.resetStyle(highlightedFeature);
+	highlightedFeature = false;
+}
+
+function resetInfo(e) {
 	info.update();
 }
 
@@ -605,11 +620,137 @@ function zoomToFeature(e) {
 	map.fitBounds(e.target.getBounds());
 }
 
+function getPopupHtml(feature) {
+	var popDiv = L.DomUtil.create('div', 'popup');
+	var topPop = L.DomUtil.create('div', 'row');
+
+	// ---- Top of the popup
+	var topPopSpan = L.DomUtil.create('div', 'col-md-12');
+
+	var topZoneNameRow = L.DomUtil.create('div', 'row popZoneName');
+	var topZoneNameSpan = L.DomUtil.create('div', 'col-md-10 col-md-offset-1');
+	topZoneNameSpan.innerHTML ='Zone #' + 
+		feature.properties.IsoZone.toString();
+	topZoneNameRow.appendChild(topZoneNameSpan);
+	topPopSpan.appendChild(topZoneNameRow);
+
+	var topAcresRow = L.DomUtil.create('div', 'row');
+	var topAcresSpan = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 popAcres');
+	topAcresSpan.innerHTML = '&lt;Not Available Yet&gt; acres';
+	topAcresRow.appendChild(topAcresSpan);
+	topPopSpan.appendChild(topAcresRow);
+
+	var topValueRow = L.DomUtil.create('div', 'row');
+	var topValueSpan = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 popValue');
+	topValueSpan.innerHTML = roundDigits(feature.properties[getLayerCode(property)]).toString();
+	topValueRow.appendChild(topValueSpan);
+	topPopSpan.appendChild(topValueRow);
+
+	var topValueDescriptionRow = L.DomUtil.create('div', 'row');
+	var topValueDescriptionSpan = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 popDescription');
+	var prop_name = mapping[property['measure']].mapping.type[property['type']].options[property['code']].name;
+	topValueDescriptionSpan.innerHTML = popUpDescriptions[property.measure]['name'] +
+		prop_name
+	topValueDescriptionRow.appendChild(topValueDescriptionSpan);
+	topPopSpan.appendChild(topValueDescriptionRow);
+
+	topPop.appendChild(topPopSpan);
+	popDiv.appendChild(topPop);
+
+	// ---- Bottom of the popup
+
+	var botPop = L.DomUtil.create('div', 'row well botPop');
+	var botPopSpan = L.DomUtil.create('div', 'col-md-12');
+
+	var botThemeRow = L.DomUtil.create('div', 'row')
+	var botThemeSpan = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 popTheme');
+	botThemeSpan.innerHTML = '<i>Top five crops</i>';
+	botThemeRow.appendChild(botThemeSpan);
+	botPopSpan.appendChild(botThemeRow);
+
+	//1
+	var topFiveRow1Name = L.DomUtil.create('div', 'row');
+	var topFiveSpan1Name = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 top5Name');
+	topFiveSpan1Name.innerHTML = '&ltNot yet implemented&gt;';
+	topFiveRow1Name.appendChild(topFiveSpan1Name);
+	botPopSpan.appendChild(topFiveRow1Name);
+
+	var topFiveRow1Value = L.DomUtil.create('div', 'row');
+	var topFiveSpan1Value = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 top5Value');
+	topFiveSpan1Value.innerHTML = '&ltNot yet implemented&gt; ' +
+		getLabel(property).toLowerCase();
+	topFiveRow1Value.appendChild(topFiveSpan1Value);
+	botPopSpan.appendChild(topFiveRow1Value);
+
+	//2
+	var topFiveRow2Name = L.DomUtil.create('div', 'row');
+	var topFiveSpan2Name = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 top5Name');
+	topFiveSpan2Name.innerHTML = '&ltNot yet implemented&gt;';
+	topFiveRow2Name.appendChild(topFiveSpan2Name);
+	botPopSpan.appendChild(topFiveRow2Name);
+
+	var topFiveRow2Value = L.DomUtil.create('div', 'row');
+	var topFiveSpan2Value = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 top5Value');
+	topFiveSpan2Value.innerHTML = '&ltNot yet implemented&gt; ' +
+		getLabel(property).toLowerCase();
+	topFiveRow2Value.appendChild(topFiveSpan2Value);
+	botPopSpan.appendChild(topFiveRow2Value);
+
+	//3
+	var topFiveRow3Name = L.DomUtil.create('div', 'row');
+	var topFiveSpan3Name = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 top5Name');
+	topFiveSpan3Name.innerHTML = '&ltNot yet implemented&gt;';
+	topFiveRow3Name.appendChild(topFiveSpan3Name);
+	botPopSpan.appendChild(topFiveRow3Name);
+
+	var topFiveRow3Value = L.DomUtil.create('div', 'row');
+	var topFiveSpan3Value = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 top5Value');
+	topFiveSpan3Value.innerHTML = '&ltNot yet implemented&gt; ' +
+		getLabel(property).toLowerCase();
+	topFiveRow3Value.appendChild(topFiveSpan3Value);
+	botPopSpan.appendChild(topFiveRow3Value);
+
+	//4
+	var topFiveRow4Name = L.DomUtil.create('div', 'row');
+	var topFiveSpan4Name = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 top5Name');
+	topFiveSpan4Name.innerHTML = '&ltNot yet implemented&gt;';
+	topFiveRow4Name.appendChild(topFiveSpan4Name);
+	botPopSpan.appendChild(topFiveRow4Name);
+
+	var topFiveRow4Value = L.DomUtil.create('div', 'row');
+	var topFiveSpan4Value = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 top5Value');
+	topFiveSpan4Value.innerHTML = '&ltNot yet implemented&gt; ' +
+		getLabel(property).toLowerCase();
+	topFiveRow4Value.appendChild(topFiveSpan4Value);
+	botPopSpan.appendChild(topFiveRow4Value);
+
+	//5
+	var topFiveRow5Name = L.DomUtil.create('div', 'row');
+	var topFiveSpan5Name = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 top5Name');
+	topFiveSpan5Name.innerHTML = '&ltNot yet implemented&gt;';
+	topFiveRow5Name.appendChild(topFiveSpan5Name);
+	botPopSpan.appendChild(topFiveRow5Name);
+
+	var topFiveRow5Value = L.DomUtil.create('div', 'row');
+	var topFiveSpan5Value = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 top5Value');
+	topFiveSpan5Value.innerHTML = '&ltNot yet implemented&gt; ' +
+		getLabel(property).toLowerCase();
+	topFiveRow5Value.appendChild(topFiveSpan5Value);
+	botPopSpan.appendChild(topFiveRow5Value);
+
+	botPop.appendChild(botPopSpan);
+	popDiv.appendChild(botPop);
+
+	return popDiv;
+}
+
 function onEachFeature(feature, layer) {
+	layer.bindPopup(getPopupHtml(feature), {offset: new L.Point(135, 150)});
 	layer.on({
-		mouseover: highlightFeature,
-		mouseout: resetHighlight,
-		click: zoomToFeature
+		click: highlightFeature,
+		mouseover: updateInfo,
+		mouseout: resetInfo
+		// click: zoomToFeature
 	});
 }
 
