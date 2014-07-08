@@ -545,7 +545,9 @@ function getLegendInfo() {
 
 // get color depending on population density value
 function getColor(value, scheme, categories, reverse) {
-
+	if (value == null) {
+		value = 0;
+	}
 	if (reverse==true){
 		return 	value >= categories[0] ? scheme.list[4] :
 				value >= categories[1] ? scheme.list[3] :
@@ -562,6 +564,9 @@ function getColor(value, scheme, categories, reverse) {
 }
 
 function getOpacity(value) {
+	if (value == null) {
+		value = 0;
+	}
 	if (value == 0){
 		return 0;
 	} else {
@@ -642,7 +647,11 @@ function getPopupHtml(feature) {
 
 	var topValueRow = L.DomUtil.create('div', 'row');
 	var topValueSpan = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 popValue');
-	topValueSpan.innerHTML = roundDigits(feature.properties[getLayerCode(property)]).toString();
+	if (feature.properties[getLayerCode(property)] == null) {
+		topValueSpan.innerHTML = roundDigits(0).toString();
+	} else {
+		topValueSpan.innerHTML = roundDigits(feature.properties[getLayerCode(property)]).toString();
+	}
 	topValueRow.appendChild(topValueSpan);
 	topPopSpan.appendChild(topValueRow);
 
