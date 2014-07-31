@@ -197,7 +197,7 @@ function buildMap(){
 			'</h4>' +  
 			(props ? 
 				'<b>' + capFirstLetter(prop_name) + '</b><br />' + 
-				roundDigits(props[getLayerCode(property)]) + '<br />'
+				roundDigits(props[getLayerCode(property)]) + ' ' + getQuanity(property['measure'], property['type'], property['code']) + '<br />'
 			: 
 				'<p>Hover over a zone</p>');
 	};
@@ -446,10 +446,10 @@ function capFirstLetter(string){
 
 function setMeasure() {
 	var current_measures = getMeasures(property);
-		var row = L.DomUtil.create('div', 'row');
-		var span = L.DomUtil.create('div', 'col-md-12');
-		var table = L.DomUtil.create('table', 'measureTable');
-		var trow = L.DomUtil.create('tr', 'measureTableRow');
+	var row = L.DomUtil.create('div', 'row');
+	var span = L.DomUtil.create('div', 'col-md-12');
+	var table = L.DomUtil.create('table', 'measureTable');
+	var trow = L.DomUtil.create('tr', 'measureTableRow');
 
 	for (key in current_measures){
 
@@ -521,6 +521,8 @@ function setColorScheme() {
 		color_scheme = schemes["greens"];
 	} else if (property.measure == "farms") {
 		color_scheme = schemes["reds"];
+	} else if (property.measure == "yield") {
+		color_scheme = schemes["purples"];
 	} else {
 		color_scheme = schemes["reds"];
 	}

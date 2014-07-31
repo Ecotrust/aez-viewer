@@ -10,6 +10,9 @@ function getAjaxLocation(measure, type, code, unit, format){
 		case 'farms':
 			measure_dir = 'Farms';
 			break;
+		case 'yield':
+			measure_dir = 'Qnty';
+			break;
 		default:
 			measure_dir = measure;
 			alert(measure);
@@ -1063,12 +1066,170 @@ var files = {
 			"vpm_VP11",
 			"vpm_VP39"
 		]
+	},
+	"yield": {
+		"options": [
+			"fc_FC08",
+			"fc_FC34",
+			"fn_FN22",
+			"fn_FN46",
+			"fs_FS13",
+			"oc_OC07",
+			"vpm_VP12",
+			"vpm_VP40",
+			"fc_FC09",
+			"fc_FC35",
+			"fn_FN23",
+			"fn_FN47",
+			"fs_FS14",
+			"oc_OC08",
+			"vpm_VP13",
+			"vpm_VP41",
+			"fc_FC10",
+			"fc_FC36",
+			"fn_FN24",
+			"fn_FN48",
+			"fs_FS15",
+			"oc_OC09",
+			"vpm_VP14",
+			"vpm_VP42",
+			"fc_FC13",
+			"fc_Sum",
+			"fn_FN25",
+			"fn_FN49",
+			"fs_FS16",
+			"oc_OC11",
+			"vpm_VP17",
+			"vpm_VP44",
+			"fc_FC14",
+			"fc_VALUE",
+			"fn_FN26",
+			"fn_FN50",
+			"fs_FS18",
+			"oc_Sum",
+			"vpm_VP19",
+			"vpm_VP45",
+			"fc_FC15",
+			"fn_COUNT",
+			"fn_FN28",
+			"fn_FN51",
+			"fs_FS19",
+			"oc_VALUE",
+			"vpm_VP20",
+			"vpm_VP46",
+			"fc_FC16",
+			"fn_FN01",
+			"fn_FN30",
+			"fn_FN52",
+			"fs_FS20",
+			"vpm_COUNT",
+			"vpm_VP21",
+			"vpm_VP47",
+			"fc_FC18",
+			"fn_FN02",
+			"fn_FN33",
+			"fn_Sum",
+			"fs_FS21",
+			"vpm_Sum",
+			"vpm_VP23",
+			"vpm_VP48",
+			"fc_FC21",
+			"fn_FN03",
+			"fn_FN34",
+			"fn_VALUE",
+			"fs_FS22",
+			"vpm_VALUE",
+			"vpm_VP24",
+			"vpm_VP49",
+			"fc_FC22",
+			"fn_FN04",
+			"fn_FN35",
+			"fs_COUNT",
+			"fs_FS23",
+			"vpm_VP01",
+			"vpm_VP27",
+			"vpm_VP51",
+			"fc_FC24",
+			"fn_FN06",
+			"fn_FN36",
+			"fs_FS01",
+			"fs_FS24",
+			"vpm_VP02",
+			"vpm_VP28",
+			"vpm_VP54",
+			"fc_COUNT",
+			"fc_FC25",
+			"fn_FN09",
+			"fn_FN37",
+			"fs_FS02",
+			"fs_FS27",
+			"vpm_VP03",
+			"vpm_VP29",
+			"vpm_VP56",
+			"fc_FC01",
+			"fc_FC27",
+			"fn_FN10",
+			"fn_FN38",
+			"fs_FS03",
+			"fs_FS28",
+			"vpm_VP04",
+			"vpm_VP30",
+			"fc_FC02",
+			"fc_FC28",
+			"fn_FN11",
+			"fn_FN39",
+			"fs_FS04",
+			"fs_FS30",
+			"vpm_VP05",
+			"vpm_VP33",
+			"fc_FC03",
+			"fc_FC29",
+			"fn_FN12",
+			"fn_FN40",
+			"fs_FS08",
+			"fs_Sum",
+			"vpm_VP06",
+			"vpm_VP34",
+			"fc_FC04",
+			"fc_FC30",
+			"fn_FN13",
+			"fn_FN42",
+			"fs_FS09",
+			"fs_VALUE",
+			"vpm_VP07",
+			"vpm_VP35",
+			"fc_FC05",
+			"fc_FC31",
+			"fn_FN15",
+			"fn_FN43",
+			"fs_FS10",
+			"oc_COUNT",
+			"vpm_VP08",
+			"vpm_VP36",
+			"fc_FC06",
+			"fc_FC32",
+			"fn_FN16",
+			"fn_FN44",
+			"fs_FS11",
+			"oc_OC04",
+			"vpm_VP09",
+			"vpm_VP37",
+			"fc_FC07",
+			"fc_FC33",
+			"fn_FN18",
+			"fn_FN45",
+			"fs_FS12",
+			"oc_OC06",
+			"vpm_VP11",
+			"vpm_VP39"
+		]
 	}
 }
 
 var featureData = zoneData;
 var acresData = zoneData;
 var farmsData = zoneData;
+var yieldData = zoneData;
 
 var dataMap = {
 	"acres": {
@@ -1079,6 +1240,12 @@ var dataMap = {
 	},
 	"farms": {
 		"data": farmsData,
+		"mapping": {
+			"type": types
+		}
+	},
+	"yield": {
+		"data": yieldData,
 		"mapping": {
 			"type": types
 		}
@@ -1103,6 +1270,9 @@ function getLabel(property){
 			case 'farms':
 				label = 'Farms Per Acre';
 				break;
+			case 'yield':
+				label = 'Yield';
+				break;
 			default:
 				if (property.unit) {
 					label = property.unit.label;
@@ -1123,6 +1293,9 @@ var measures = {
 	},
 	"farms": {
 		"name": "Farms Per Acre"
+	},
+	"yield": {
+		"name": "Yield Per Acre"
 	}
 }
 
@@ -1132,6 +1305,9 @@ var popUpDescriptions = {
 	},
 	"farms": {
 		"name": "Farms per acre that grow "
+	},
+	"yield": {
+		"name": "Total yield of "
 	}
 }
 
@@ -1166,6 +1342,9 @@ function encodeLayer(measure, type, code, unit) {
 		if (measure == 'farms') {
 			return "Farms_" + type + "_" + code + "_dens";
 		}
+		if (measure == 'yield') {
+			return "Qnty_" + type + "_" + code + "_dens";
+		}
 		return 0;
 	} else {
 		if (measure == 'acres') {
@@ -1173,6 +1352,9 @@ function encodeLayer(measure, type, code, unit) {
 		}
 		if (measure == 'farms') {
 			return "Farms_" + type + "_" + code + "_Z_Fm";
+		}
+		if (measure = 'yield') {
+			return "Qnty_" + type + "_" + code + "_Z_Qt";
 		}
 		return 0;
 	}
@@ -1191,6 +1373,13 @@ function parseLayer(layername) {
 	if (parts[0] == "Farms"){
 		ret_val = {
 			"measure": 'farms',
+			"type": parts[1],
+			"code": parts[2]
+		};
+	}
+	if (parts[0] == "Qnty"){
+		ret_val = {
+			"measure": 'yield',
 			"type": parts[1],
 			"code": parts[2]
 		};
@@ -1215,3 +1404,9 @@ function getDefaultLayer() {
 	return {"measure": measure, "type": type, "code": code, "unit": unit};
 }
 
+function getQuanity(measure, type, code) {
+	if (measure == 'yield') {
+		return dataMap[measure]['mapping']['type'][type]['options'][code]['qty'];
+	}
+	return '';
+}
