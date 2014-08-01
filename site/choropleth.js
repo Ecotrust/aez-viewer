@@ -193,7 +193,7 @@ function buildMap(){
 			mapping[property['measure']].mapping.type[property['type']].options[property['code']].name + '<br />' +
 			(property ? getLabel(property) : '') : capFirstLetter(primaryUnit));
 		this._div.innerHTML = '<h4>Zone Info: ' + 
-			(props ? capFirstLetter(props["IsoZone"]) : '') + 
+			(props ? capFirstLetter(props[UID_key]) : '') + 
 			'</h4>' +  
 			(props ? 
 				'<b>' + capFirstLetter(prop_name) + '</b><br />' + 
@@ -596,8 +596,8 @@ function highlightFeature(e) {
 	var layer = e.target;
 
 	layer.setStyle({
-		weight: 1,
-		color: '#666',
+		weight: 3,
+		color: '#444',
 		dashArray: ''
 	});
 
@@ -637,7 +637,7 @@ function getPopupHtml(feature) {
 	var topZoneNameRow = L.DomUtil.create('div', 'row popZoneName');
 	var topZoneNameSpan = L.DomUtil.create('div', 'col-md-10 col-md-offset-1');
 	topZoneNameSpan.innerHTML ='Zone #' + 
-		feature.properties.IsoZone.toString();
+		feature.properties[UID_key].toString();
 	topZoneNameRow.appendChild(topZoneNameSpan);
 	topPopSpan.appendChild(topZoneNameRow);
 

@@ -1,13 +1,13 @@
 import json, os, csv
 
 data_dir = 'Data'
-measurements = ['Acres', 'Farms', 'Qnty']
+measurements = ['acres', 'farms', 'qnty']
 # units = ['ac', 'Fm', 'Qt', 'dens']
 # parsed_code_start_index = 1     ## [measure]_[type]_[typecode]_[(?)z_][unit]
 # parsed_code_end_index = 2       ## code = type + '_' + typecode
-uid_prop = 'IsoZone'
+uid_prop = 'zone_id'
 
-json_data = open('food_zones_all.geojson')
+json_data = open('food_zones.geojson')
 data = json.load(json_data)
 
 for measure in measurements:
