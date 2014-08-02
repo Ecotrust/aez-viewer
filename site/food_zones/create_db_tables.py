@@ -1,4 +1,4 @@
-import os
+import os, csv
 # importing pyspatialite
 from pyspatialite import dbapi2 as db
 from dbfpy.dbf import Dbf as dbf        #http://sourceforge.net/projects/dbfpy/files/dbfpy/
@@ -9,6 +9,10 @@ measures = ["Acres", "Farms", "Qnty"]
 crop_types = ["br", "fc", "fn", "fs", "oc", "vpm"]
 shapefile = "iso_02272014"
 db_file = "food_zones_all.sqlite"      #TODO - Remove "test"
+lookup_file = "Subzone_lookup.csv"
+lookup_table = 'subzone_lookup'
+lookup_dict = {}
+lookup_ignore_column = 1
 table_name = "food_zones_all"
 zone_details = {}
 zone_header = 'ISOZONE'
@@ -51,7 +55,18 @@ print 'Connecting to DB'
 conn = db.connect(db_file)
 cur = conn.cursor()
 
-print 'Adding columns'
+print 'Write lookup table'
+with open('%s%s' % (dbf_location, lookup_file), 'rb') as csvfile:
+    reader = csv.reader(csvfile, delimiter=',', quotechar='|')
+    lookup_headers = reader.next()
+    del lookup_headers[lookup_ignore_column]
+    cur.execute('CREATE TABLE %s (%s);' % (lookup_table, ', '.join(lookup_headers)))
+    for row in reader:
+        del row[lookup_ignore_column]
+        cur.execute('INSERT INTO %s (%s) VALUES (%s)' % (lookup_table, ', '.join(lookup_headers), ', '.join(row)))
+    conn.commit()
+
+print 'Adding columns to master table'
 query = 'ALTER TABLE %s ADD COLUMN' % table_name
 for header in headers:
     label = header.split()[0]
@@ -59,7 +74,7 @@ for header in headers:
     col_query = "%s %s %s;" % (query, label, col_type)
     cur.execute(col_query.lower())
 
-print 'Updating table'
+print 'Updating master table'
 for zone_id in zone_details.keys():
     zone = zone_details[zone_id]
     query = 'UPDATE %s SET' % table_name
