@@ -7,13 +7,13 @@ var data;
 var max_digits = 5;
 var property, mapping, map, esri, info;
 var categories;
-var primaryUnit, secondaryUnit;
+var primaryUnit;
 var color_scheme, reverse_scheme;
 var geojson;
 var first_load = true;
-var unitSelect=document.getElementById("unitSelect");
 var measureSelect=document.getElementById("measureSelect");
 var typeSelect = document.getElementById("typeSelect");
+var highlightedFeature = false;
 
 var schemes = {
 	//Darkest to most pale
@@ -108,9 +108,6 @@ function readQueryString(queryStringResult) {
 	if (queryStringResult.hasOwnProperty('lat') && queryStringResult.hasOwnProperty('lng')) {
 		initMapLat = queryStringResult.lat;
 		initMapLng = queryStringResult.lng;
-	} else {
-		initMapLat = 41;
-		initMapLng = -116;
 	}
 }
 
@@ -125,9 +122,6 @@ function getProperty() {
 		}
 	} else {
 		var property=getDefaultLayer();
-	}
-	if (queryStringResult.hasOwnProperty('unit')){
-		property.unit = queryStringResult['unit'];
 	}
 	return property;
 }
@@ -166,7 +160,17 @@ function buildMap(){
 		map.remove();
 	}
 
-	map = L.map('map').setView([initMapLat, initMapLng], initMapZoom);
+	map = L.map('map', {zoomControl: false});
+	setZoomControl();
+	if (initMapLat || initMapLng) {
+		map.setView([initMapLat, initMapLng], initMapZoom);
+	} else {
+		map.fitBounds([
+			[50.574873, -126.994063],
+			[31.312113, -109.031419]
+		]);
+	}
+
 
 	esri = L.tileLayer('http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', 
 	{
@@ -188,21 +192,14 @@ function buildMap(){
 		var prop_name = (property ? 
 			mapping[property['measure']].mapping.type[property['type']].options[property['code']].name + '<br />' +
 			(property ? getLabel(property) : '') : capFirstLetter(primaryUnit));
-		var secondary_property = (property ?
-			{measure:property.measure, type: property.type, code:property.code, unit:secondaryUnit}
-			: {measure:'', type:'', code:'', unit:secondaryUnit});
-		var secondary_name = (property ?
-			getLabel(secondary_property): capFirstLetter(secondaryUnit));
 		this._div.innerHTML = '<h4>Zone Info: ' + 
-			(props ? capFirstLetter(props["IsoZone"]) : '') + 
+			(props ? capFirstLetter(props[UID_key]) : '') + 
 			'</h4>' +  
 			(props ? 
 				'<b>' + capFirstLetter(prop_name) + '</b><br />' + 
-				roundDigits(props[getLayerCode(property)]) + '<br />' +
-				'<b>' + capFirstLetter(secondary_name) + '</b><br />' +
-				roundDigits(props[getLayerCode(secondary_property)])
+				roundDigits(props[getLayerCode(property)]) + ' ' + getQuanity(property['measure'], property['type'], property['code']) + '<br />'
 			: 
-				'Hover over a zone');
+				'<p>Hover over a zone</p>');
 	};
 }
 
@@ -234,15 +231,12 @@ function setData(ret_obj){
 
 function finishLoad(){
 	info.addTo(map);
-	updateUnits();
 	if (first_load){
 		first_load = false;
 	} else {
-		clearUnits();
 		clearMeasures();
 		clearTypes();
 	}
-	setUnits();
 	setMeasure();
 	setTypes();
 	setColorScheme();
@@ -260,20 +254,6 @@ function reload(queryString){
 
 	window.history.pushState("", "", queryString);
 	loadData();
-}
-
-function selectUnit(value){
-	if (!property){
-		var property = getProperty();
-	} 
-
-	queryString = "?unit=" + value;
-	for (key in queryStringResult) {
-		if (key != 'unit'){
-			queryString = queryString + "&" + key + "=" + queryStringResult[key];
-		}
-	}
-	reload(queryString);
 }
 
 function selectMeasure(value){
@@ -464,50 +444,38 @@ function capFirstLetter(string){
     }
 }
 
-function updateUnits() {
-	if (queryStringResult.hasOwnProperty('unit') && units.hasOwnProperty(queryStringResult['unit']) >= 0){
-		primaryUnit = queryStringResult['unit'];
-	} else {
-		primaryUnit = defaultPrimaryUnit;
-	}
-
-	secondaryUnit = (primaryUnit == defaultPrimaryUnit ? defaultSecondaryUnit : defaultPrimaryUnit);
-}
-
-function setUnits() {
-	var curent_units = getUnits(property);
-	for (key in curent_units){
-		var unitOpt = document.createElement("option");
-		unitOpt.value = key;
-		unitOpt.innerHTML = curent_units[key].name;
-		if (key == property.unit){
-			unitOpt.selected = true;
-		}
-		unitSelect.appendChild(unitOpt);
-	}
-}
-
-function clearUnits() {
-	while (unitSelect.firstChild){
-		unitSelect.removeChild(unitSelect.firstChild);
-	}
-}
-
 function setMeasure() {
 	var current_measures = getMeasures(property);
-	for (key in current_measures){
-		var measureOpt = document.createElement("option");
-		measureOpt.value = key;
-		measureOpt.innerHTML = current_measures[key]['name'];
+	var row = L.DomUtil.create('div', 'row');
+	var span = L.DomUtil.create('div', 'col-md-12');
+	var table = L.DomUtil.create('table', 'measureTable');
+	var trow = L.DomUtil.create('tr', 'measureTableRow');
 
-		measureOpt.disabled = !current_measures[key].available;
+	for (key in current_measures){
+
+		var td = L.DomUtil.create('td', 'measureTableCell');
+		var label = document.createElement("label");
+
+		var measureButton = document.createElement("input");
+		measureButton.type = 'radio';
+		measureButton.value = key;
+		measureButton.name = 'measure';
+		measureButton.setAttribute('onclick', 'selectMeasure(this.value)');
 
 		if (key == property.measure){
-			measureOpt.selected = true;
+			measureButton.setAttribute('checked', true);
 		}
+		
+		label.appendChild(measureButton);
+		label.innerHTML += current_measures[key]['name'];
 
-		measureSelect.appendChild(measureOpt);
+		td.appendChild(label);
+		trow.appendChild(td);
 	}
+	table.appendChild(trow);
+	span.appendChild(table);
+	row.appendChild(span);
+	measureSelect.appendChild(row);
 }
 
 function clearMeasures() {
@@ -538,6 +506,7 @@ function setTypes() {
 		}
 		typeSelect.appendChild(oGroup);
 	}
+	$("#typeSelect").select2();
 }
 
 function clearTypes() {
@@ -556,42 +525,6 @@ function setColorScheme() {
 		color_scheme = schemes["purples"];
 	} else {
 		color_scheme = schemes["reds"];
-	}
-
-	var schemeSelect=document.getElementById("schemeSelect");
-
-	for (key in schemes){
-		var opt = document.createElement("option");
-		opt.value = key;
-		opt.innerHTML = schemes[key].name;
-
-		if (schemes[key].name == color_scheme.name){
-			opt.selected = true;
-		}
-
-		schemeSelect.appendChild(opt);
-	}
-
-	if (queryStringResult.hasOwnProperty('reverse') && 
-		queryStringResult['reverse'] == "true") {
-		reverse_scheme = true;
-	} else {
-		reverse_scheme = false;
-	}
-
-	var reverseSelect=document.getElementById("reverseSelect");
-
-	reverse_opts = ['Normal', 'Reverse'];
-	for (key in reverse_opts){
-		var opt = document.createElement("option");
-		opt.value = (reverse_opts[key]=='Reverse');
-		opt.innerHTML = reverse_opts[key];
-
-		if ((reverse_opts[key] == 'Normal' && !reverse_scheme) || (reverse_opts[key] == 'Reverse' && reverse_scheme)){
-			opt.selected = true;
-		}
-
-		reverseSelect.appendChild(opt);
 	}
 }
 
@@ -614,7 +547,9 @@ function getLegendInfo() {
 
 // get color depending on population density value
 function getColor(value, scheme, categories, reverse) {
-
+	if (value == null) {
+		value = 0;
+	}
 	if (reverse==true){
 		return 	value >= categories[0] ? scheme.list[4] :
 				value >= categories[1] ? scheme.list[3] :
@@ -631,6 +566,9 @@ function getColor(value, scheme, categories, reverse) {
 }
 
 function getOpacity(value) {
+	if (value == null) {
+		value = 0;
+	}
 	if (value == 0){
 		return 0;
 	} else {
@@ -651,11 +589,15 @@ function style(feature) {
 }
 
 function highlightFeature(e) {
+	if (highlightedFeature) {
+		resetHighlight();
+	}
+
 	var layer = e.target;
 
 	layer.setStyle({
-		weight: 1,
-		color: '#666',
+		weight: 3,
+		color: '#444',
 		dashArray: ''
 	});
 
@@ -663,11 +605,21 @@ function highlightFeature(e) {
 		layer.bringToFront();
 	}
 
+	highlightedFeature = layer;
+
+}
+
+function updateInfo(e) {
+	var layer = e.target;
 	info.update(layer.feature.properties);
 }
 
-function resetHighlight(e) {
-	geojson.resetStyle(e.target);
+function resetHighlight() {
+	geojson.resetStyle(highlightedFeature);
+	highlightedFeature = false;
+}
+
+function resetInfo(e) {
 	info.update();
 }
 
@@ -675,11 +627,141 @@ function zoomToFeature(e) {
 	map.fitBounds(e.target.getBounds());
 }
 
+function getPopupHtml(feature) {
+	var popDiv = L.DomUtil.create('div', 'popup');
+	var topPop = L.DomUtil.create('div', 'row');
+
+	// ---- Top of the popup
+	var topPopSpan = L.DomUtil.create('div', 'col-md-12');
+
+	var topZoneNameRow = L.DomUtil.create('div', 'row popZoneName');
+	var topZoneNameSpan = L.DomUtil.create('div', 'col-md-10 col-md-offset-1');
+	topZoneNameSpan.innerHTML ='Zone #' + 
+		feature.properties[UID_key].toString();
+	topZoneNameRow.appendChild(topZoneNameSpan);
+	topPopSpan.appendChild(topZoneNameRow);
+
+	var topAcresRow = L.DomUtil.create('div', 'row');
+	var topAcresSpan = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 popAcres');
+	topAcresSpan.innerHTML = '&lt;Not Available Yet&gt; acres';
+	topAcresRow.appendChild(topAcresSpan);
+	topPopSpan.appendChild(topAcresRow);
+
+	var topValueRow = L.DomUtil.create('div', 'row');
+	var topValueSpan = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 popValue');
+	if (feature.properties[getLayerCode(property)] == null) {
+		topValueSpan.innerHTML = roundDigits(0).toString();
+	} else {
+		topValueSpan.innerHTML = roundDigits(feature.properties[getLayerCode(property)]).toString();
+	}
+	topValueRow.appendChild(topValueSpan);
+	topPopSpan.appendChild(topValueRow);
+
+	var topValueDescriptionRow = L.DomUtil.create('div', 'row');
+	var topValueDescriptionSpan = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 popDescription');
+	var prop_name = mapping[property['measure']].mapping.type[property['type']].options[property['code']].name;
+	topValueDescriptionSpan.innerHTML = popUpDescriptions[property.measure]['name'] +
+		prop_name
+	topValueDescriptionRow.appendChild(topValueDescriptionSpan);
+	topPopSpan.appendChild(topValueDescriptionRow);
+
+	topPop.appendChild(topPopSpan);
+	popDiv.appendChild(topPop);
+
+	// ---- Bottom of the popup
+
+	var botPop = L.DomUtil.create('div', 'row well botPop');
+	var botPopSpan = L.DomUtil.create('div', 'col-md-12');
+
+	var botThemeRow = L.DomUtil.create('div', 'row')
+	var botThemeSpan = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 popTheme');
+	botThemeSpan.innerHTML = '<i>Top five crops</i>';
+	botThemeRow.appendChild(botThemeSpan);
+	botPopSpan.appendChild(botThemeRow);
+
+	//1
+	var topFiveRow1Name = L.DomUtil.create('div', 'row');
+	var topFiveSpan1Name = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 top5Name');
+	topFiveSpan1Name.innerHTML = '&ltNot yet implemented&gt;';
+	topFiveRow1Name.appendChild(topFiveSpan1Name);
+	botPopSpan.appendChild(topFiveRow1Name);
+
+	var topFiveRow1Value = L.DomUtil.create('div', 'row');
+	var topFiveSpan1Value = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 top5Value');
+	topFiveSpan1Value.innerHTML = '&ltNot yet implemented&gt; ' +
+		getLabel(property).toLowerCase();
+	topFiveRow1Value.appendChild(topFiveSpan1Value);
+	botPopSpan.appendChild(topFiveRow1Value);
+
+	//2
+	var topFiveRow2Name = L.DomUtil.create('div', 'row');
+	var topFiveSpan2Name = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 top5Name');
+	topFiveSpan2Name.innerHTML = '&ltNot yet implemented&gt;';
+	topFiveRow2Name.appendChild(topFiveSpan2Name);
+	botPopSpan.appendChild(topFiveRow2Name);
+
+	var topFiveRow2Value = L.DomUtil.create('div', 'row');
+	var topFiveSpan2Value = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 top5Value');
+	topFiveSpan2Value.innerHTML = '&ltNot yet implemented&gt; ' +
+		getLabel(property).toLowerCase();
+	topFiveRow2Value.appendChild(topFiveSpan2Value);
+	botPopSpan.appendChild(topFiveRow2Value);
+
+	//3
+	var topFiveRow3Name = L.DomUtil.create('div', 'row');
+	var topFiveSpan3Name = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 top5Name');
+	topFiveSpan3Name.innerHTML = '&ltNot yet implemented&gt;';
+	topFiveRow3Name.appendChild(topFiveSpan3Name);
+	botPopSpan.appendChild(topFiveRow3Name);
+
+	var topFiveRow3Value = L.DomUtil.create('div', 'row');
+	var topFiveSpan3Value = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 top5Value');
+	topFiveSpan3Value.innerHTML = '&ltNot yet implemented&gt; ' +
+		getLabel(property).toLowerCase();
+	topFiveRow3Value.appendChild(topFiveSpan3Value);
+	botPopSpan.appendChild(topFiveRow3Value);
+
+	//4
+	var topFiveRow4Name = L.DomUtil.create('div', 'row');
+	var topFiveSpan4Name = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 top5Name');
+	topFiveSpan4Name.innerHTML = '&ltNot yet implemented&gt;';
+	topFiveRow4Name.appendChild(topFiveSpan4Name);
+	botPopSpan.appendChild(topFiveRow4Name);
+
+	var topFiveRow4Value = L.DomUtil.create('div', 'row');
+	var topFiveSpan4Value = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 top5Value');
+	topFiveSpan4Value.innerHTML = '&ltNot yet implemented&gt; ' +
+		getLabel(property).toLowerCase();
+	topFiveRow4Value.appendChild(topFiveSpan4Value);
+	botPopSpan.appendChild(topFiveRow4Value);
+
+	//5
+	var topFiveRow5Name = L.DomUtil.create('div', 'row');
+	var topFiveSpan5Name = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 top5Name');
+	topFiveSpan5Name.innerHTML = '&ltNot yet implemented&gt;';
+	topFiveRow5Name.appendChild(topFiveSpan5Name);
+	botPopSpan.appendChild(topFiveRow5Name);
+
+	var topFiveRow5Value = L.DomUtil.create('div', 'row');
+	var topFiveSpan5Value = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 top5Value');
+	topFiveSpan5Value.innerHTML = '&ltNot yet implemented&gt; ' +
+		getLabel(property).toLowerCase();
+	topFiveRow5Value.appendChild(topFiveSpan5Value);
+	botPopSpan.appendChild(topFiveRow5Value);
+
+	botPop.appendChild(botPopSpan);
+	popDiv.appendChild(botPop);
+
+	return popDiv;
+}
+
 function onEachFeature(feature, layer) {
+	layer.bindPopup(getPopupHtml(feature), {offset: new L.Point(135, 150)});
 	layer.on({
-		mouseover: highlightFeature,
-		mouseout: resetHighlight,
-		click: zoomToFeature
+		click: highlightFeature,
+		mouseover: updateInfo,
+		mouseout: resetInfo
+		// click: zoomToFeature
 	});
 }
 
@@ -693,58 +775,71 @@ function loadGeoJson() {
 //TODO: Get link to Ag census for attribution
 // map.attributionControl.addAttribution('Population data &copy; <a href="http://census.gov/">US Census Bureau</a>');
 
+function setZoomControl() {
+	var zoomControl = L.control.zoom({position:'bottomright'});
+	map.addControl(zoomControl);
+}
+
 function setLegend() {
 
-	var legend = L.control({position: 'bottomright'});
+	for(var i=0; $('.legend').length > 0; i++) {
+		$('.legend')[0].remove();
+	}
 
-	legend.onAdd = function (map) {
+	var row = L.DomUtil.create('div', 'row');
+	var span = L.DomUtil.create('div', 'col-md-12');
 
-		var div = L.DomUtil.create('div', 'info legend'),
-			grades = [],
-			labels = [],
-			from, to;
-			for (var index = categories.length-1; index > -1; index--){
-				grades.push(categories[index]);
-			}
-
-		if (property) {
-			if (property.label) {
-				labels.push('<b>' + property.label + '</b>');
-			} else {
-				labels.push('<b>' + capFirstLetter(property.measure) + '</b>');
-			}
-		}
-		labels.push('<br />');
-
-		for (var i = 0; i < grades.length; i++) {
-			from = grades[i];
-			to = grades[i + 1];
-
-			if (i == 0) {
-				labels.push('Low <i style="background:' + 
-					getColor(from, color_scheme, categories, reverse_scheme) + 
-					'" data-toggle="tooltip" data-placement="top" title="<' + to + '"></i> ');
-			} else {
-				if (i == grades.length -1){
-					labels.push('<i style="background:' + 
-						getColor(from, color_scheme, categories, reverse_scheme) + 
-						'" data-toggle="tooltip" data-placement="top" title="' + from + '+"></i> ' +	"High");
-				} else {
-					labels.push('<i style="background:' + 
-						getColor(from, color_scheme, categories, reverse_scheme) + 
-						'" data-toggle="tooltip" data-placement="top" title="' + from + '-' + to + '"></i> ' +	"");
-				}
-			}
+	var div = L.DomUtil.create('div', 'legend'),
+		grades = [],
+		labels = [],
+		from, to;
+		for (var index = categories.length-1; index > -1; index--){
+			grades.push(categories[index]);
 		}
 
-		div.innerHTML = '<h4>' + 
-			mapping[property['measure']].mapping.type[property['type']].options[property['code']].name + 
-			'</h4>' + 
-			labels.join('');
-		return div;
-	};
+	if (property) {
+		if (property.label) {
+			labels.push('<b>' + property.label + '</b>');
+		} else {
+			labels.push('<b>' + capFirstLetter(property.measure) + '</b>');
+		}
+	}
+	labels.push('<br />');
+	labels.push('<div class="row">');
+	labels.push('	<div class="col-md-12" id="legendTable">');
+	labels.push('		<table><tr>');
 
-	legend.addTo(map);
+	for (var i = 0; i < grades.length; i++) {
+		from = grades[i];
+		to = grades[i + 1];
+
+		labels.push('<td style="background:' + 
+			getColor(from, color_scheme, categories, reverse_scheme) + 
+			'" data-toggle="tooltip" data-placement="top" title="' + 
+			( i==0 ? '<' + to : 
+				( i == grades.length-1 ? '>' + from : 
+					from + ' - ' + to 
+				)
+			) + '">&nbsp;</td> '
+		);
+	}
+
+	labels.push('		</tr></table>');
+	labels.push('	</div>');
+	labels.push('</div>');
+	labels.push('<div class="row" id="legendLabels">');
+	labels.push('	<div class="col-md-2 start">');
+	labels.push('		Low');
+	labels.push('	</div>');
+	labels.push('	<div class="col-md-2 col-md-offset-8 end">');
+	labels.push('		High');
+	labels.push('	</div>');
+	labels.push('</div>');
+
+	div.innerHTML = labels.join('');
+	span.appendChild(div);
+	row.appendChild(span)
+	$('#filter-container').append(row);
 }
 
 function loadData() {

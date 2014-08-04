@@ -1,0 +1,28 @@
+
+@font-face{
+    /*font-family:"Rotis Serif W01";*/
+    font-family:"Rotis Serif";
+    src:url(".eot?#iefix");
+    src:url(".eot?#iefix") format("eot"), 
+        url(".woff") format("woff"), 
+          url(".ttf") format("truetype"),
+          url(".svg#xxxxxxxxxx") format("svg");
+}
+@font-face{
+    /*font-family:"Rotis Serif W01 Italic";*/
+    font-family:"Rotis Serif Italic";
+    src:url(".eot?#iefix");
+    src:url(".eot?#iefix") format("eot"),
+          url(".woff") format("woff"),
+          url(".ttf") format("truetype"),
+          url(".svg#xxxxxxxxxx") format("svg");
+}
+@font-face{
+    /*font-family:"Rotis Serif W01 Bold";*/
+    font-family:"Rotis Serif Bold";
+    src:url(".eot?#iefix");
+    src:url(".eot?#iefix") format("eot"),
+          url(".woff") format("woff"),
+          url(".ttf") format("truetype"),
+          url(".svg#xxxxxxxxxx") format("svg");
+}

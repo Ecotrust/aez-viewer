@@ -2,101 +2,89 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Leaflet Layers Control Example</title>
+	<title>Agricultural Zone Viewer</title>
 	<meta charset="utf-8" />
 
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+	<link rel="stylesheet" href="../dist/select2/select2.css" />
 	<link rel="stylesheet" href="../dist/leaflet.css" />
-	<link rel="stylesheet" href="choropleth.css" />
 	<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" />
 	<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootswatch/3.1.1/spacelab/bootstrap.min.css" />
+	<link rel="stylesheet" href="choropleth-local.css" />
+	<link rel="stylesheet" href="choropleth.css" />
+
 	<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 	<script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script> 
-	
+	<script type="text/javascript" src="../dist/select2/select2.min.js"></script>
+	<script type="text/javascript" src="local-vars.js"></script>
 
 </head>
 <body>
-	<!-- 
-	<div id="load-screen" class="well">
-		<h1>Loading the data...</h1>
-		<h2>Please Wait.</h2>
-		<img src="img/ajax-loader.gif"/>
-	</div> 
-	-->
 	<div id="filter-container" class="well">
-		<div class="row-fluid">
-			<div class="span12">
-				<h1>Agricultural Zone Viewer</h1>
+		<div class="row">
+			<div class="col-md-12">
+				<h2 id="title">Agricultural Zone Viewer</h2>
 			</div>
-			<!--
-			<span class="span4">
-				<img style="float:right" src="http://www.ecotrust.org/images/ecotrust_logo08.gif">
-			</span>
-			-->
 		</div>
-		<div class="row-fluid">
-			<div class="span12">
+		<div class="row">
+			<div class="col-md-12">
+				<p>Viewing the West's agriculture by zone.</p>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<div class="row">
+					<div class="col-md-2">
+						Measure:
+					</div>
+					<div class="col-md-10">
+						<form id="measureSelect">
+						</form>
+					</div>
+				</div>
 				<form id="selectors">
-					<div class="row-fluid">
-						<div class="span4">
-							Unit:
-						</div>
-						<div class="span8">
-							<select id="unitSelect" onchange="selectUnit(this.value)">
-							</select>
-						</div>
-					</div>
-					<div class="row-fluid">
-						<div class="span4">
-							Measure:
-						</div>
-						<div class="span8">
-							<select id="measureSelect" onchange="selectMeasure(this.value)">
-							</select>
-						</div>
-					</div>
-					<div class="row-fluid">
-						<div class="span4">
+					<div class="row">
+						<div class="col-md-2">
 							Crop:
 						</div>
-						<div class="span8">
+						<div class="col-md-10">
 							<select id="typeSelect" onchange="selectCrop(this.value)">
 							</select>
 						</div>
 					</div>
-					<!-- Select a color scheme: -->
-					<select style="display:none" id="schemeSelect" onchange="selectScheme(this.value)">
-					</select>
-					<!-- Reverse the color scheme: -->
-					<select style="display:none" id="reverseSelect" onchange="selectReverse(this.value)">
-					</select>
 				</form>
 			</div>
 		</div>
 	</div>
 	
 
-		<div id="map"></div>
-				<!--
-				<div class="layer-buttons" style="display:none">
-					<div class="row-fluid">
-						<div class="span12">
-							<div class="btn-group">
-								<button id="unitButton" type="button" class="btn btn-default dropdown-toggle layer-button" data-toggle="dropdown"></button>
-								<ul id="unitMenu" class="dropdown-menu" role="menu"></ul>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		-->
+	<div id="map"></div>
 
 	<script src="../dist/leaflet.js"></script>
 	<script src="../dist/simple_statistics.js"></script>
 
 	<script type="text/javascript" src="food_zones/featuresData.js"></script>
+	<script type="text/javascript" src="food_zones/data-map-gen.js"></script>
 	<script type="text/javascript" src="food_zones/data-map.js"></script>
 	<script type="text/javascript" src="choropleth.js"></script>
+	<script type="text/javascript">
+	    var MTUserId=rotisUser;
+	    var MTFontIds = new Array();
+
+	    MTFontIds.push("735476"); // Rotis® Serif W01 55 Roman 
+	    MTFontIds.push("735473"); // Rotis® Serif W01 56 Italic 
+	    MTFontIds.push("735470"); // Rotis® Serif W01 65 Bold 
+
+	    (function() {
+	        var mtTracking = document.createElement('script');
+	        mtTracking.type='text/javascript';
+	        mtTracking.async='true';
+	        mtTracking.src=('https:'==document.location.protocol?'https:':'http:')+'//fast.fonts.net/lt/trackingCode.js';
+
+	(document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(mtTracking);
+	    })();
+	</script>
+
 </body>
 </html>
