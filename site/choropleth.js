@@ -643,7 +643,7 @@ function getPopupHtml(feature) {
 
 	var topAcresRow = L.DomUtil.create('div', 'row');
 	var topAcresSpan = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 popAcres');
-	topAcresSpan.innerHTML = '&lt;Not Available Yet&gt; acres';
+	topAcresSpan.innerHTML = roundDigits(feature.properties['area_in_acres']).toString() + ' acres';
 	topAcresRow.appendChild(topAcresSpan);
 	topPopSpan.appendChild(topAcresRow);
 
