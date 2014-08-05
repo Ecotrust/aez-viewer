@@ -4,7 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>SelectFeature Control on Layer.Vector</title> 
+    <title>Explore Agricultural Zones</title> 
     <link rel="stylesheet" href="../dist/ol_style.css" type="text/css">
     <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" />
     <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootswatch/3.1.1/spacelab/bootstrap.min.css" />
@@ -33,7 +33,8 @@
             width: 270px;
         }
         .node {
-            border: solid 1px #bbb;
+            border: solid 1px #ccc;
+            white-space: nowrap;
             /*font: 10px sans-serif;*/
             font-size:80%;
             /*padding-top: 8px;*/
@@ -97,7 +98,7 @@
     <script type="text/javascript">
         var map, selectControl;
         var width = 250;
-        var height = 450;
+        var height = 550;
         var margin = {top: 0, right: 0, bottom: 0, left: 0};
         var selectedValue = 'acres';
         var nSelected = 0;
@@ -357,6 +358,13 @@
                     if (catname == "fs") { continue; }
                     
                     var cropname = parts[1];
+                    var fullname = getFullName(catname, cropname);
+                    // Ignore crops ending with ", All" 
+                    var bad = ", All"
+                    if (fullname.indexOf(bad, fullname.length - bad.length) !== -1) {
+                        continue;
+                    }
+
                     var catidx = false;
                     for (a in treeDataTemplate.children) {
                         if (treeDataTemplate.children[a].name == 'catname') {
@@ -369,7 +377,7 @@
                     }
                     treeDataTemplate.children[catidx].children.push(
                         { name: cropname, 
-                          fullname: getFullName(catname, cropname),
+                          fullname: fullname,
                           acres: 0,
                           yield: 0}
                     );
