@@ -79,15 +79,15 @@ for zone_id in zone_details.keys():
     zone = zone_details[zone_id]
     query = 'UPDATE %s SET' % table_name
     for header in [str(x).split()[0] for x in headers]:
-        query += " %s = %s," % (header.lower, zone[header])
+        query += " %s = %s," % (header.lower(), zone[header])
     query = query [:-1] # remove final comma
     query += ' WHERE %s = %s;' % (zone_header, zone_id)
+    cur.execute(query);
     print '%s updated' % zone_id
 
 conn.commit()
 conn.close()
 
 print 'Complete'
-
 quit()
 

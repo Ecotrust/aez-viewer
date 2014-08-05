@@ -10,9 +10,11 @@ feature_data_table = 'feature_data'
 spatialite_file = 'food_zones_all_test.sqlite'
 in_table = 'food_zones_all'
 out_table = 'food_zones'
+out_srid = 4326
 lookup_table = 'subzone_lookup'
 zone_id = 'ISOZONE'
-lookup_id = 'iso_maj3_27'
+lookup_subzone_id = 'iso'
+lookup_zone_id = 'iso_maj3_27'
 area_id = 'acres_fc_sum_f_area'
 pixels_id = 'acres_br_count'
 
@@ -84,11 +86,11 @@ except:
 print 'Creating new table...'
 query = "CREATE TABLE '%s' AS \n\
 SELECT \n\
-    master.%s AS zone_id, \n\
-    CastToMultiPolygon(Collect(master.GEOMETRY)) AS GEOMETRY, \n\
+    lookup.%s AS zone_id, \n\
+    CastToMultiPolygon(Collect(TRANSFORM(master.GEOMETRY, %s))) AS GEOMETRY, \n\
     Sum(master.%s) AS area_in_acres, \n\
     Sum(master.%s) AS pixels, \n\
-    Count(master.id) AS poly_count" % (out_table, zone_id, area_id, pixels_id)
+    Count(master.id) AS poly_count" % (out_table, lookup_zone_id, out_srid, area_id, pixels_id)
 
 for measure in measures:
     for type in measure['types']:
@@ -101,17 +103,15 @@ for measure in measures:
     %s, \n\
     %s" % (raw_column, dens_column)
 
-query += ", lookup.%s" % lookup_id
-
 query += " \n\
 FROM %s AS master, %s AS lookup \n\
 WHERE master.%s = lookup.%s \n\
-GROUP BY master.%s;" % (in_table, lookup_table, zone_id, lookup_id, zone_id)
+GROUP BY lookup.%s;" % (in_table, lookup_table, zone_id, lookup_subzone_id, lookup_zone_id)
 
 cur.execute(query)
 
 print 'Adding geometry column...'
-query = "SELECT RecoverGeometryColumn('%s', 'GEOMETRY', 4326, 'MULTIPOLYGON')" % out_table
+query = "SELECT RecoverGeometryColumn('%s', 'GEOMETRY', %s, 'MULTIPOLYGON');" % (out_table, out_srid)
 cur.execute(query)
 
 conn.commit()
