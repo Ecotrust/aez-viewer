@@ -4,8 +4,10 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>SelectFeature Control on Layer.Vector</title> 
+    <title>Explore Agricultural Zones</title> 
     <link rel="stylesheet" href="../dist/ol_style.css" type="text/css">
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootswatch/3.1.1/spacelab/bootstrap.min.css" />
     <style type="text/css">
         html, body, #map {
             margin: 0;
@@ -17,20 +19,74 @@
         }
         #info {
             position: absolute;
-            right: 0px;
-            top: 0px;
+            right: 8px;
+            top: 8px;
+            left: auto;
             z-index: 9999;
             background: rgba(255,255,255,0.5);
             padding:10px;
+            font: 14px/16px;
+            background: white;
+            background: rgba(255,255,255,0.8);
+            box-shadow: 0 0 15px rgba(0,0,0,0.2);
+            border-radius: 5px;
+            width: 270px;
         }
         .node {
-          border: solid 1px #bbb;
-          font: 10px sans-serif;
-          line-height: 12px;
-          overflow: hidden;
-          position: absolute;
-          text-indent: 2px;
+            border: solid 1px #ccc;
+            white-space: nowrap;
+            /*font: 10px sans-serif;*/
+            font-size:80%;
+            /*padding-top: 8px;*/
+            color: black;
+            line-height: 12px;
+            overflow: hidden;
+            position: absolute;
+            text-indent: 2px;
+            filter: alpha(opacity=50);
         }
+        div.olControlZoom, div.olControlTextButtonPanel {
+            /* position: absolute; */
+            bottom: 8px;
+            right: 8px;
+            background: rgba(255,255,255,0.4);
+            border-radius: 4px;
+            padding: 2px;
+            top: auto;
+            left: auto;
+        }
+        div.olControlZoom a:hover, div.olControlTextButtonPanel .olButton:hover {
+            /*background: #130085;*/
+            background: rgba(255, 255, 255, 0.7);
+            filter: alpha(opacity=100);
+        }
+        div.olControlZoom a, div.olControlTextButtonPanel .olButton {
+
+            display: block;
+            margin: 1px;
+            color: black;
+            padding: 4px;
+            font-family: 'Lucida Grande', Verdana, Geneva, Lucida, Arial, Helvetica, sans-serif;
+            font-weight: bold;
+            text-decoration: none;
+            text-align: center;
+            background: #fff;
+            /*background: rgba(0, 60, 136, 0.5);*/
+            filter: alpha(opacity=80);
+        }
+        #title {
+            margin-top: 0;
+        }
+        #filter-container {
+            width:430px;
+            padding: 19px;
+            position: absolute;
+            left: 10px;
+            top: 12px;
+            z-index: 999;
+        }
+
+
     </style>
     <script src="../dist/OpenLayers.js"></script>
     <script src="../dist/d3.v3.min.js"></script>
@@ -41,9 +97,9 @@
 
     <script type="text/javascript">
         var map, selectControl;
-        var width = 150;
-        var height = 450;
-        var margin = {top: 65, right: 10, bottom: 10, left: 10};
+        var width = 250;
+        var height = 550;
+        var margin = {top: 0, right: 0, bottom: 0, left: 0};
         var selectedValue = 'acres';
         var nSelected = 0;
         var acresSelected = 0;
@@ -87,6 +143,14 @@
             }
         }
 
+
+        function clearSelection() {
+            suspendRedraw = true;
+            selectControl.unselectAll();
+            redrawTreemap(selectedValue);
+            suspendRedraw = false;
+        }
+        
         function selectRegion(region) {
             suspendRedraw = true;
             selectControl.unselectAll();
@@ -199,7 +263,7 @@
                 {
                     clickout: true, 
                     toggle: true,
-                    multiple: false,
+                    multiple: true,
                     hover: false,
                     toggleKey: "ctrlKey", // ctrl key removes from selection
                     multipleKey: "shiftKey", // shift key adds to selection
@@ -302,6 +366,13 @@
                     if (catname == "fs") { continue; }
                     
                     var cropname = parts[1];
+                    var fullname = getFullName(catname, cropname);
+                    // Ignore crops ending with ", All" 
+                    var bad = ", All"
+                    if (fullname.indexOf(bad, fullname.length - bad.length) !== -1) {
+                        continue;
+                    }
+
                     var catidx = false;
                     for (a in treeDataTemplate.children) {
                         if (treeDataTemplate.children[a].name == 'catname') {
@@ -314,7 +385,7 @@
                     }
                     treeDataTemplate.children[catidx].children.push(
                         { name: cropname, 
-                          fullname: getFullName(catname, cropname),
+                          fullname: fullname,
                           acres: 0,
                           yield: 0}
                     );
@@ -335,10 +406,11 @@
                 .value(function (d) { return d.acres; });
 
 
-            var div = d3.select("body").append("div")
-                .style("position", "absolute")
+            // var div = d3.select("body").append("div")
+            var div = d3.select("#treemap")
+                .style("position", "relative")
                 .style("z-index", "9999")
-                .attr("id", "treemap")
+                //.attr("id", "treemap")
                 .style("display", "none")
                 .style("width", (width + margin.left + margin.right) + "px")
                 .style("height", (height + margin.top + margin.bottom) + "px")
@@ -360,22 +432,32 @@
   </head>
 
   <body onload="init()">
+    <div id="filter-container" class="well">
+        <h2 id="title">Explore Agricultural Zones</h2>
+        <div>
+            <p> Select or Deselect zones with mouse click 
+                <br>
+                <em>or</em>
+                select a pre-defined region </p>
+            <ul>
+                <li> <a href="#" onclick="selectRegion(3)">North</a> </li>
+                <li> <a href="#" onclick="selectRegion(2)">Central</a> </li>
+                <li> <a href="#" onclick="selectRegion(1)">South</a> </li>
+            </ul>
+            <hr>
+            <ul>
+                <li> <a href="#" onclick="clearSelection()">Clear Selection</a> </li>
+            </ul>
+
+        </div>
+    </div>
     <div id="map" class="bigmap"></div>
     <div id="info">
         <div>
             <span id="counter">0</span> zones selected,
             <span id="acres">0</span> acres
         </div>
-        <hr>
-        <div>
-            <p> Select zones with click <br> (use shift to add, ctl to remove) OR</p>
-            <p> Select a pre-defined region </p>
-            <ul>
-                <li> <a href="#" onclick="selectRegion(3)">North</a> </li>
-                <li> <a href="#" onclick="selectRegion(2)">Central</a> </li>
-                <li> <a href="#" onclick="selectRegion(1)">South</a> </li>
-            </ul>
-        </div>
+        <div id="treemap"></div> 
     </div>
   </body>
 </html>
