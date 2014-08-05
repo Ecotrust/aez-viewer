@@ -8,7 +8,7 @@ dbf_location = "./input/"
 measures = ["Acres", "Farms", "Qnty"]
 crop_types = ["br", "fc", "fn", "fs", "oc", "vpm"]
 shapefile = "iso_02272014"
-db_file = "food_zones_all.sqlite"      #TODO - Remove "test"
+db_file = "food_zones_all_test.sqlite"      #TODO - Remove "test"
 lookup_file = "Subzone_lookup.csv"
 lookup_table = 'subzone_lookup'
 lookup_dict = {}
@@ -35,8 +35,8 @@ print 'consolidating input files'
 for measure in measures:
     print "%s" % measure
     for crop_type in crop_types:
-        print "    %s" % crop_type
         if os.path.isfile('%s%s_%s.dbf' % (dbf_location, measure, crop_type)):
+            print "    %s" % crop_type
             data = dbf('%s%s_%s.dbf' % (dbf_location, measure, crop_type))
             headers +=  ["%s_%s_%s" % (measure, crop_type, str(x)) for x in data.fieldDefs]
             for rec in data:
@@ -79,15 +79,15 @@ for zone_id in zone_details.keys():
     zone = zone_details[zone_id]
     query = 'UPDATE %s SET' % table_name
     for header in [str(x).split()[0] for x in headers]:
-        query += " %s = %s," % (header.lower, zone[header])
+        query += " %s = %s," % (header.lower(), zone[header])
     query = query [:-1] # remove final comma
     query += ' WHERE %s = %s;' % (zone_header, zone_id)
+    cur.execute(query);
     print '%s updated' % zone_id
 
 conn.commit()
 conn.close()
 
 print 'Complete'
-
 quit()
 

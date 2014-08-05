@@ -6,23 +6,17 @@ food_zone_out_name = 'food_zones.geojson'
 food_zone_out = './%s' % food_zone_out_name
 feature_data_out_name = 'featuresData.js'
 feature_data_out = './%s' % feature_data_out_name
-
-# creating/connecting the test_db
-conn = db.connect('food_zones_all.sqlite')
-
-# creating a Cursor
-cur = conn.cursor()
-
-try:
-    print 'Dropping old table...'
-    cur.execute('DROP TABLE food_zones;')
-except:
-    pass
-
-try:
-    cur.execute('DROP TABLE feature_data;')
-except:
-    pass
+feature_data_table = 'feature_data'
+spatialite_file = 'food_zones_all_test.sqlite'
+in_table = 'food_zones_all'
+out_table = 'food_zones'
+out_srid = 4326
+lookup_table = 'subzone_lookup'
+zone_id = 'ISOZONE'
+lookup_subzone_id = 'iso'
+lookup_zone_id = 'iso_maj3_27'
+area_id = 'acres_fc_sum_f_area'
+pixels_id = 'acres_br_count'
 
 measures = [
     {
@@ -41,7 +35,7 @@ measures = [
         "name": 'yield',
         "prefix": 'qnty_',
         "postfix": '_z_qt',
-        "types": ['fc','fn','fs','oc','vpm']
+        "types": ['fc','fs','oc'] # fn and vpm only at work
     }
 ]
 
@@ -72,62 +66,80 @@ types = {
     }
 }
 
+# creating/connecting the test_db
+conn = db.connect(spatialite_file)
+
+# creating a Cursor
+cur = conn.cursor()
+
+try:
+    print 'Dropping old table...'
+    cur.execute('DROP TABLE %s;' % out_table)
+except:
+    pass
+
+try:
+    cur.execute('DROP TABLE %s;' % feature_data_table)
+except:
+    pass
+
 print 'Creating new table...'
-query = "CREATE TABLE 'food_zones' AS \n\
+query = "CREATE TABLE '%s' AS \n\
 SELECT \n\
-    subzone_lookup_iso_maj3_27 AS zone_id, \n\
-    CastToMultiPolygon(Collect(GEOMETRY)) AS GEOMETRY, \n\
-    Sum(acres_fc_sum_f_area) AS area_in_acres, \n\
-    Sum(acres_br_count) AS pixels, \n\
-    Count(id) AS poly_count"
+    lookup.%s AS zone_id, \n\
+    CastToMultiPolygon(Collect(TRANSFORM(master.GEOMETRY, %s))) AS GEOMETRY, \n\
+    Sum(master.%s) AS area_in_acres, \n\
+    Sum(master.%s) AS pixels, \n\
+    Count(master.id) AS poly_count" % (out_table, lookup_zone_id, out_srid, area_id, pixels_id)
 
 for measure in measures:
     for type in measure['types']:
         label = types[type]['label']
         for id in types[type]['ids']:
             raw_header = "%s%s%s%s" % (measure['prefix'], label, id, measure['postfix'])
-            raw_column = "Sum(%s) AS %s" % (raw_header, raw_header)
-            dens_column = "Sum(%s)/Sum(acres_fc_sum_f_area) AS %s%s%s_dens" % (raw_header, measure['prefix'], label, id)
+            raw_column = "Sum(master.%s) AS %s" % (raw_header, raw_header)
+            dens_column = "Sum(master.%s)/Sum(master.%s) AS %s%s%s_dens" % (raw_header, area_id, measure['prefix'], label, id)
             query += ", \n\
     %s, \n\
     %s" % (raw_column, dens_column)
 
 query += " \n\
-FROM food_zones_all \n\
-GROUP BY subzone_lookup_iso_maj3_27;"
+FROM %s AS master, %s AS lookup \n\
+WHERE master.%s = lookup.%s \n\
+GROUP BY lookup.%s;" % (in_table, lookup_table, zone_id, lookup_subzone_id, lookup_zone_id)
 
 cur.execute(query)
 
 print 'Adding geometry column...'
-query = "SELECT RecoverGeometryColumn('food_zones', 'GEOMETRY', 4326, 'MULTIPOLYGON')"
+query = "SELECT RecoverGeometryColumn('%s', 'GEOMETRY', %s, 'MULTIPOLYGON');" % (out_table, out_srid)
 cur.execute(query)
 
 conn.commit()
 
 print 'Creating featureData table'
 
-query = "CREATE TABLE 'feature_data' AS \n\
+query = "CREATE TABLE '%s' AS \n\
 SELECT \n\
     zone_id, \n\
     GEOMETRY, \n\
     area_in_acres, \n\
     pixels, \n\
     poly_count \n\
-FROM food_zones;"
+FROM %s;" % (feature_data_table, out_table)
 
 cur.execute(query)
 
 print 'Adding geometry column...'
-query = "SELECT RecoverGeometryColumn('feature_data', 'GEOMETRY', 4326, 'MULTIPOLYGON')"
+query = "SELECT RecoverGeometryColumn('%s', 'GEOMETRY', 4326, 'MULTIPOLYGON')" % feature_data_table
 
 cur.execute(query)
 conn.commit()
 
 if os.path.isfile(feature_data_out):
     os.remove(feature_data_out)
-os.system('ogr2ogr -f "GEOJSON" %s food_zones_all.sqlite feature_data' % feature_data_out_name)
+os.system('ogr2ogr -f "GEOJSON" %s %s %s' % (feature_data_out_name, spatialite_file, feature_data_table))
 
-query = 'DROP TABLE feature_data;'
+query = 'DROP TABLE %s;' % feature_data_table
 cur.execute(query)
 conn.commit()
 
@@ -142,11 +154,11 @@ conn.close()
 
 print 'Creating new table complete\n\n\n'
 
-print 'Writing food zone table to geojson'
+print 'Writing zone table to geojson'
 
 if os.path.isfile(food_zone_out):
     os.remove(food_zone_out)
-os.system('ogr2ogr -f "GEOJSON" %s food_zones_all.sqlite food_zones' % food_zone_out_name)
+os.system('ogr2ogr -f "GEOJSON" %s %s %s' % (food_zone_out_name, spatialite_file, out_table))
 
 print 'Creating custom settings...'
 
