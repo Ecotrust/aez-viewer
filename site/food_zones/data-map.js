@@ -1,4 +1,4 @@
-var data_dir = 'food_zones/Data';
+var data_dir = 'site/food_zones/Data';
 var UID_key = 'zone_id';
 
 function getAjaxLocation(measure, type, code, unit, format){
