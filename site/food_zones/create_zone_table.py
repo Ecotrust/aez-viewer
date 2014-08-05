@@ -130,7 +130,7 @@ FROM %s;" % (feature_data_table, out_table)
 cur.execute(query)
 
 print 'Adding geometry column...'
-query = "SELECT RecoverGeometryColumn('%s', 'GEOMETRY', 4326, 'MULTIPOLYGON')" % feature_data_table
+query = "SELECT RecoverGeometryColumn('%s', 'GEOMETRY', %s, 'MULTIPOLYGON')" % (feature_data_table, out_srid)
 
 cur.execute(query)
 conn.commit()
