@@ -143,6 +143,14 @@
             }
         }
 
+
+        function clearSelection() {
+            suspendRedraw = true;
+            selectControl.unselectAll();
+            redrawTreemap(selectedValue);
+            suspendRedraw = false;
+        }
+        
         function selectRegion(region) {
             suspendRedraw = true;
             selectControl.unselectAll();
@@ -436,6 +444,11 @@
                 <li> <a href="#" onclick="selectRegion(2)">Central</a> </li>
                 <li> <a href="#" onclick="selectRegion(1)">South</a> </li>
             </ul>
+            <hr>
+            <ul>
+                <li> <a href="#" onclick="clearSelection()">Clear Selection</a> </li>
+            </ul>
+
         </div>
     </div>
     <div id="map" class="bigmap"></div>
