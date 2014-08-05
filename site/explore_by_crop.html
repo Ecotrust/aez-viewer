@@ -1,0 +1,90 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Agricultural Zone Viewer</title>
+	<meta charset="utf-8" />
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<link rel="stylesheet" href="../dist/select2/select2.css" />
+	<link rel="stylesheet" href="../dist/leaflet.css" />
+	<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" />
+	<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootswatch/3.1.1/spacelab/bootstrap.min.css" />
+	<link rel="stylesheet" href="./choropleth-local.css" />
+	<link rel="stylesheet" href="./choropleth.css" />
+
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+	<script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script> 
+	<script type="text/javascript" src="../dist/select2/select2.min.js"></script>
+	<script type="text/javascript" src="./local-vars.js"></script>
+
+</head>
+<body>
+	<div id="filter-container" class="well">
+		<div class="row">
+			<div class="col-md-12">
+				<h2 id="title">Agricultural Zone Viewer</h2>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<p>Viewing the West's agriculture by zone.</p>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<div class="row">
+					<div class="col-md-2">
+						Measure:
+					</div>
+					<div class="col-md-10">
+						<form id="measureSelect">
+						</form>
+					</div>
+				</div>
+				<form id="selectors">
+					<div class="row">
+						<div class="col-md-2">
+							Crop:
+						</div>
+						<div class="col-md-10">
+							<select id="typeSelect" onchange="selectCrop(this.value)">
+							</select>
+						</div>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	
+
+	<div id="map"></div>
+
+	<script src="../dist/leaflet.js"></script>
+	<script src="../dist/simple_statistics.js"></script>
+
+	<script type="text/javascript" src="./food_zones/featuresData.js"></script>
+	<script type="text/javascript" src="./food_zones/data-map-gen.js"></script>
+	<script type="text/javascript" src="./food_zones/data-map.js"></script>
+	<script type="text/javascript" src="./choropleth.js"></script>
+	<script type="text/javascript">
+	    var MTUserId=rotisUser;
+	    var MTFontIds = new Array();
+
+	    MTFontIds.push("735476"); // Rotis® Serif W01 55 Roman 
+	    MTFontIds.push("735473"); // Rotis® Serif W01 56 Italic 
+	    MTFontIds.push("735470"); // Rotis® Serif W01 65 Bold 
+
+	    (function() {
+	        var mtTracking = document.createElement('script');
+	        mtTracking.type='text/javascript';
+	        mtTracking.async='true';
+	        mtTracking.src=('https:'==document.location.protocol?'https:':'http:')+'//fast.fonts.net/lt/trackingCode.js';
+
+	(document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(mtTracking);
+	    })();
+	</script>
+
+</body>
+</html>
