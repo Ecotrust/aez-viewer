@@ -31,6 +31,35 @@
           position: absolute;
           text-indent: 2px;
         }
+        div.olControlZoom, div.olControlTextButtonPanel {
+        /* position: absolute; */
+        bottom: 8px;
+        right: 8px;
+        background: rgba(255,255,255,0.4);
+        border-radius: 4px;
+        padding: 2px;
+        top: auto;
+        left: auto;
+        }
+        div.olControlZoom a:hover, div.olControlTextButtonPanel .olButton:hover {
+            /*background: #130085;*/
+            background: rgba(255, 255, 255, 0.7);
+            filter: alpha(opacity=100);
+        }
+        div.olControlZoom a, div.olControlTextButtonPanel .olButton {
+
+            display: block;
+            margin: 1px;
+            color: black;
+            padding: 4px;
+            font-family: 'Lucida Grande', Verdana, Geneva, Lucida, Arial, Helvetica, sans-serif;
+            font-weight: bold;
+            text-decoration: none;
+            text-align: center;
+            background: #fff;
+            /*background: rgba(0, 60, 136, 0.5);*/
+            filter: alpha(opacity=80);
+        }
     </style>
     <script src="../dist/OpenLayers.js"></script>
     <script src="../dist/d3.v3.min.js"></script>
@@ -199,8 +228,8 @@
                 {
                     clickout: true, 
                     toggle: true,
-                    multiple: false,
-                    hover: false,
+                    multiple: true,
+                    hover: true,
                     toggleKey: "ctrlKey", // ctrl key removes from selection
                     multipleKey: "shiftKey", // shift key adds to selection
                     //box: true
