@@ -15,9 +15,9 @@ for measure in measurements:
         os.makedirs(data_dir + '/' + measure)
 
 codes = {}
+count = 0
 for feature in data['features']:
     uid = feature['properties'][uid_prop]
-    print uid
     for prop_key in feature['properties']:
         parsed_prop = prop_key.split("_")
         measurement = parsed_prop[0]

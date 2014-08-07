@@ -135,6 +135,12 @@ html {
     margin-top: 10px;
 }
 
+.popCropName {
+    font-style: italic;
+    font-size: 20px;
+    color: black;
+}
+
 .popAcres, .popDescription {
     font-size: 12px;
     color: gray;
