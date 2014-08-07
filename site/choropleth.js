@@ -138,7 +138,6 @@ function setUpData() {
 	}
 
 	for (var i = 0; i < measure_keys.length; i++) {
-		console.log(measure_keys[i]);
 		getMeasureData(measure_keys[i]);
 	}
 }
@@ -167,9 +166,6 @@ function getMeasureData(measure) {
 }
 
 function setMeasureData(measure, measure_data){
-
-	console.log("setting " + measure);
-
 	mapped_measures[measure] = measure_data;
 
 	var allMeasuresCollected = true;
@@ -701,7 +697,13 @@ function getPopupHtml(feature) {
 	if (layer_code_val == null) {
 		topValueSpan.innerHTML = roundDigits(0).toString() + quantity_text;
 	} else {
-		topValueSpan.innerHTML = roundDigits(layer_code_val).toString() + quantity_text;
+		if (layer_code_val == 0) {
+			topValueSpan.innerHTML = '0';
+		} else if (layer_code_val < 0.001) {
+			topValueSpan.innerHTML = layer_code_val.toExponential(3).toString() + quantity_text;
+		} else {
+			topValueSpan.innerHTML = layer_code_val.toPrecision(4).toString() + quantity_text;
+		}
 	}
 	topValueRow.appendChild(topValueSpan);
 	topPopSpan.appendChild(topValueRow);
@@ -741,7 +743,13 @@ function getPopupHtml(feature) {
 		if (pu_code_val == null) {
 			valueSpan.innerHTML = quantity_text;
 		} else {
-			valueSpan.innerHTML = roundDigits(pu_code_val).toString() + " " + quantity_text;
+			if (pu_code_val == 0) {
+				valueSpan.innerHTML = '0';
+			} else if (pu_code_val < 0.001) {
+				valueSpan.innerHTML = pu_code_val.toExponential(3).toString() + " " + quantity_text;
+			} else {
+				valueSpan.innerHTML = pu_code_val.toFixed(2).toString() + " " + quantity_text;
+			}
 		}
 		valueRow.appendChild(valueSpan);
 		topPopSpan.appendChild(valueRow);
