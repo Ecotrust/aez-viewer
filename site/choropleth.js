@@ -157,7 +157,7 @@ function getMeasureData(measure) {
         crossDomain: false,
         data: {},
         error: function(textStatus, errorThrown) {
-            alert("error");
+            setMeasureData(measure, null)
         },
         success: function(ret_data, textStatus, request) {
         	data_obj = JSON.parse(ret_data);
@@ -250,7 +250,7 @@ function setData(ret_obj){
 		uid = data.features[i].properties[UID_key];
 		for (var meas_index = 0; meas_index < Object.keys(ret_obj).length; meas_index++) {
 			meas = Object.keys(ret_obj)[meas_index];
-			if (ret_obj[meas].hasOwnProperty(uid.toString())){
+			if (ret_obj[meas] && ret_obj[meas].hasOwnProperty(uid.toString())){
 				for (var unit in ret_obj[meas][uid.toString()]){
 					attribute = encodeLayer(meas, property.type, property.code, unit);
 					data.features[i].properties[attribute] = ret_obj[meas][uid.toString()][unit];
@@ -727,17 +727,21 @@ function getPopupHtml(feature) {
 		var pu_code_val = feature.properties[pu_code];
 
 		if (showQuantity(item[2])){
-			var quantity_text = " " + types[property['type']]['options'][property['code']]['qty'];
+			var quantity_text = types[property['type']]['options'][property['code']]['qty'];
 		} else {
 			var quantity_text = "";
+		}
+
+		if (quantity_text == undefined) {
+			quantity_text = "No data available";
 		}
 
 		var valueRow = L.DomUtil.create('div', 'row');
 		var valueSpan = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 popValue');
 		if (pu_code_val == null) {
-			valueSpan.innerHTML = roundDigits(0).toString() + quantity_text;
+			valueSpan.innerHTML = quantity_text;
 		} else {
-			valueSpan.innerHTML = roundDigits(pu_code_val).toString() + quantity_text;
+			valueSpan.innerHTML = roundDigits(pu_code_val).toString() + " " + quantity_text;
 		}
 		valueRow.appendChild(valueSpan);
 		topPopSpan.appendChild(valueRow);
