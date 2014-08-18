@@ -193,18 +193,18 @@ function init(){
         {
             clickout: true, 
             toggle: true,
-            multiple: true,
+            multiple: false,
             hover: false,
-            toggleKey: "ctrlKey", // ctrl key removes from selection
-            multipleKey: "shiftKey", // shift key adds to selection
-            //box: true
+            // toggleKey: "ctrlKey", // ctrl key removes from selection
+            multipleKey: "ctrlKey", // shift key adds to selection
+            // box: true
         }
     );            
     
     // click-drag to move map
     // Unfortunately this makes shift-select behave oddly (zooms after selection)
     // For now we turn this off
-    // selectControl.handlers.feature.stopDown = false;
+    selectControl.handlers.feature.stopDown = false;
 
     map.addControl(selectControl);
     map.setCenter(
