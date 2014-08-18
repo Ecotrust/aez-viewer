@@ -862,5 +862,26 @@ function loadData() {
 }
 
 function viewByZone(querystring) {
-	window.location.assign('/site/explore_by_zone.html' + querystring);
+	var zoom = map.getZoom();
+    var center = map.getCenter();
+
+    qlist = querystring.slice(1).split('&');
+    var updated_querystring = "?";
+    for (var i = 0; i < qlist.length; i++) {
+        switch(qlist[i].split('=')[0]) {
+            case 'zoom':
+                updated_querystring += (updated_querystring.length == 1?'':'&') + 'zoom=' + zoom;
+                break;
+            case 'lat':
+                updated_querystring += (updated_querystring.length == 1?'':'&') + 'lat=' + center.lat;
+                break;
+            case 'lng':
+                updated_querystring += (updated_querystring.length == 1?'':'&') + 'lng=' + center.lng;
+                break;
+            default:
+                updated_querystring += (updated_querystring.length == 1?'':'&') + qlist[i];
+        }
+    }
+
+	window.location.assign('/site/explore_by_zone.html' + updated_querystring);
 }

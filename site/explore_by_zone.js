@@ -45,7 +45,6 @@ function calcCharts(feature, type) {
     }
 }
 
-
 function clearSelection() {
     suspendRedraw = true;
     selectControl.unselectAll();
@@ -117,7 +116,36 @@ var featureUnselected = function(feature) {
     }
 }
 
+function queryObj() {
+    var result = {};
+    keyValuePairs = location.search.slice(1).split('&');
+
+    keyValuePairs.forEach(function(keyValuePair) {
+        keyValuePair = keyValuePair.split('=');
+        result[keyValuePair[0]] = keyValuePair[1] || '';
+    });
+
+    return result;
+}
+
+function readQueryString(queryStringResult) {
+
+    if (queryStringResult.hasOwnProperty('zoom')) {
+        initMapZoom = queryStringResult.zoom;
+    } else {
+        initMapZoom = 5;
+    }
+
+    if (queryStringResult.hasOwnProperty('lat') && queryStringResult.hasOwnProperty('lng')) {
+        initMapLat = queryStringResult.lat;
+        initMapLng = queryStringResult.lng;
+    }
+}
+
 function init(){
+    
+    readQueryString(queryObj());
+
     map = new OpenLayers.Map('map');
 
     var baseLayer = new OpenLayers.Layer.XYZ( "ESRI",
@@ -179,7 +207,13 @@ function init(){
     // selectControl.handlers.feature.stopDown = false;
 
     map.addControl(selectControl);
-    map.setCenter(new OpenLayers.LonLat(-120, 42).transform("EPSG:4326", "EPSG:900913"), 5);
+    map.setCenter(
+        new OpenLayers.LonLat(
+            (typeof initMapLng === 'undefined'?-120:initMapLng), 
+            (typeof initMapLat === 'undefined'?42:initMapLat)
+        ).transform("EPSG:4326", "EPSG:900913"), 
+        (typeof initMapZoom === 'undefined'?5:initMapZoom)
+    );
     selectControl.activate();     
 }
 
@@ -331,5 +365,27 @@ function initTreemap() {
 }
 
 function viewByCrop(querystring) {
-    window.location.assign('/site/explore_by_crop.html' + querystring);
+    var zoom = map.getZoom();
+    var center = map.getCenter();
+    center.transform("EPSG:900913","EPSG:4326");
+
+    qlist = querystring.slice(1).split('&');
+    var updated_querystring = "?";
+    for (var i = 0; i < qlist.length; i++) {
+        switch(qlist[i].split('=')[0]) {
+            case 'zoom':
+                updated_querystring += (updated_querystring.length == 1?'':'&') + 'zoom=' + zoom;
+                break;
+            case 'lat':
+                updated_querystring += (updated_querystring.length == 1?'':'&') + 'lat=' + center.lat;
+                break;
+            case 'lng':
+                updated_querystring += (updated_querystring.length == 1?'':'&') + 'lng=' + center.lon;
+                break;
+            default:
+                updated_querystring += (updated_querystring.length == 1?'':'&') + qlist[i];
+        }
+    }
+
+    window.location.assign('/site/explore_by_crop.html' + updated_querystring);
 }
