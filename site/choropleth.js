@@ -860,3 +860,7 @@ function loadData() {
 
 	setUpData();
 }
+
+function viewByZone(querystring) {
+	window.location.assign('/site/explore_by_zone.html' + querystring);
+}
