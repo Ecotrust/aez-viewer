@@ -887,5 +887,5 @@ function viewByZone(querystring) {
         }
     }
 
-	window.location.assign('/site/explore_by_zone.html' + updated_querystring);
+	window.location.assign('./explore_by_zone.html' + updated_querystring);
 }

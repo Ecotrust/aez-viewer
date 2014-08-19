@@ -388,5 +388,5 @@ function viewByCrop(querystring) {
         }
     }
 
-    window.location.assign('/site/explore_by_crop.html' + updated_querystring);
+    window.location.assign('explore_by_crop.html' + updated_querystring);
 }
