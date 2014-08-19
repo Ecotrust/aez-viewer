@@ -91,6 +91,8 @@ html {
 */
 
 #filter-container {
+    min-width: 430px;
+    padding: 19px;
     position: absolute;
     left: 10px;
     top: 12px;

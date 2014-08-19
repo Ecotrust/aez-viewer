@@ -78,3 +78,22 @@ div.olControlZoom a, div.olControlTextButtonPanel .olButton {
 .view-buttons {
     margin-bottom: 10px;
 }
+
+body {
+    font-family:"Rotis Serif", Georgia, sans-serif !important;
+}
+
+h1, h2, h3, h4 {
+
+    font-family:"Rotis Serif", Georgia, sans-serif;
+}
+
+i, em, cite {
+    font-family: "Rotis Serif Italic", Georgia, sans-serif;
+    font-style: normal; /* This is important! Otherwise, faux italic italics. Terrible. */
+}
+
+strong {
+    font-family:"Rotis Serif Bold", Georgia, sans-serif;
+    font-weight: normal; /* Rotis doesn’t actually seem to care about this one but just in case. */
+}
