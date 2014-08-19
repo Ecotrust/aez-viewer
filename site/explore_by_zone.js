@@ -183,6 +183,7 @@ function init(){
         'featureunselected': featureUnselected,
         "loadend": function(e) {
             initTreemap();
+            $('#init-modal').modal('hide');
         }
     });
 

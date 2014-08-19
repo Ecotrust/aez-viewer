@@ -8,6 +8,11 @@
 	position: fixed;
 }
 
+#init-modal {
+    margin-top: 20%;   
+    overflow: hidden;
+}
+
 #title {
     margin-top: 0;
 }
@@ -96,7 +101,7 @@ html {
     position: absolute;
     left: 10px;
     top: 12px;
-    z-index: 999;
+    z-index: 998;
 }
 
 .measureTable {

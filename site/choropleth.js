@@ -84,7 +84,6 @@ var queryStringResult = queryObj();
 readQueryString(queryStringResult);
 setUpData();
 
-
 function queryObj() {
 	var result = {};
 	keyValuePairs = location.search.slice(1).split('&');
@@ -777,11 +776,16 @@ function onEachFeature(feature, layer) {
 	});
 }
 
+function killWaiting(layer) {
+	initModal.modal('hide');
+}
+
 function loadGeoJson() {
 	geojson = L.geoJson(data, {
 		style: style,
 		onEachFeature: onEachFeature
 	}).addTo(map);
+	killWaiting(geojson.getLayers());
 }
 
 //TODO: Get link to Ag census for attribution

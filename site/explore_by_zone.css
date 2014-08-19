@@ -6,6 +6,10 @@ html, body, #map {
 li {
     list-style: none;
 }
+#init-modal {
+    margin-top: 20%;   
+    overflow: hidden;
+}
 #info {
     position: absolute;
     right: 8px;
