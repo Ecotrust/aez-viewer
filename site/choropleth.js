@@ -671,7 +671,8 @@ function getPopupHtml(feature) {
 
 	var topAcresRow = L.DomUtil.create('div', 'row');
 	var topAcresSpan = L.DomUtil.create('div', 'col-md-12 popAcres');
-	topAcresSpan.innerHTML = roundDigits(feature.properties['area_in_acres']).toString() + ' acres';
+	// topAcresSpan.innerHTML = roundDigits(feature.properties['area_in_acres']).toString() + ' acres';
+	topAcresSpan.innerHTML = Humanize.intComma(feature.properties['area_in_acres']) + ' acres';
 	topAcresRow.appendChild(topAcresSpan);
 	topPopSpan.appendChild(topAcresRow);
 
@@ -698,10 +699,10 @@ function getPopupHtml(feature) {
 	} else {
 		if (layer_code_val == 0) {
 			topValueSpan.innerHTML = '0';
-		} else if (layer_code_val < 0.001) {
-			topValueSpan.innerHTML = layer_code_val.toExponential(3).toString() + quantity_text;
+		} else if (layer_code_val < 0.01) {
+			topValueSpan.innerHTML = "Less than 0.01";
 		} else {
-			topValueSpan.innerHTML = layer_code_val.toPrecision(4).toString() + quantity_text;
+			topValueSpan.innerHTML = Humanize.formatNumber(layer_code_val,2) + quantity_text;
 		}
 	}
 	topValueRow.appendChild(topValueSpan);
@@ -747,7 +748,11 @@ function getPopupHtml(feature) {
 			} else if (pu_code_val < 0.001) {
 				valueSpan.innerHTML = pu_code_val.toExponential(3).toString() + " " + quantity_text;
 			} else {
-				valueSpan.innerHTML = pu_code_val.toFixed(2).toString() + " " + quantity_text;
+				if (pu_code_val < 1) {
+					valueSpan.innerHTML = pu_code_val.toFixed(2).toString() + " " + quantity_text;
+				} else {
+					valueSpan.innerHTML = Humanize.intComma(pu_code_val)
+				}
 			}
 		}
 		valueRow.appendChild(valueSpan);
@@ -814,10 +819,12 @@ function setLegend() {
 		}
 
 	if (property) {
+		var current_measures = getMeasures(property);
+		var label = current_measures[property.measure]['name'];
 		if (property.label) {
 			labels.push('<b>' + property.label + '</b>');
 		} else {
-			labels.push('<b>' + capFirstLetter(property.measure) + '</b>');
+			labels.push('<b>' + capFirstLetter(label) + '</b>');
 		}
 	}
 	labels.push('<br />');
