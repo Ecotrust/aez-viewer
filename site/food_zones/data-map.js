@@ -945,3 +945,12 @@ function getQuanity(measure, type, code) {
 	}
 	return '';
 }
+
+function getDisplayValue(properties, key) {
+	var key_parts = key.split('_');
+	if (key_parts[0] == 'acres' && key_parts[3] == 'dens') {	//We display "percentages", not density values for this.
+		return 100*properties[key];
+	}
+	return properties[key];
+
+}

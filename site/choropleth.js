@@ -671,13 +671,12 @@ function getPopupHtml(feature) {
 
 	var topAcresRow = L.DomUtil.create('div', 'row');
 	var topAcresSpan = L.DomUtil.create('div', 'col-md-12 popAcres');
-	// topAcresSpan.innerHTML = roundDigits(feature.properties['area_in_acres']).toString() + ' acres';
 	topAcresSpan.innerHTML = Humanize.intComma(feature.properties['area_in_acres']) + ' acres';
 	topAcresRow.appendChild(topAcresSpan);
 	topPopSpan.appendChild(topAcresRow);
 
 	var layer_code = getLayerCode(property);
-	var layer_code_val = feature.properties[layer_code];
+	var layer_code_val = getDisplayValue(feature.properties,layer_code);
 	var prop_name = mapping[property['measure']].mapping.type[property['type']].options[property['code']].name;
 
 	var topPropRow = L.DomUtil.create('div', 'row');
@@ -726,7 +725,7 @@ function getPopupHtml(feature) {
 		var item = pop_up_list[item_id];
 
 		var pu_code = [item[0], type_code, crop_code, item[1]].join('_');
-		var pu_code_val = feature.properties[pu_code];
+		var pu_code_val = getDisplayValue(feature.properties,pu_code);
 
 		if (showQuantity(item[2])){
 			var quantity_text = types[property['type']]['options'][property['code']]['qty'];
@@ -832,16 +831,23 @@ function setLegend() {
 	labels.push('	<div class="col-md-12" id="legendTable">');
 	labels.push('		<table><tr>');
 
+	var layer_code = getLayerCode(property);
 	for (var i = 0; i < grades.length; i++) {
+		var from_obj = {};
+		var to_obj = {};
+		from_obj[layer_code] = grades[i];
+		to_obj[layer_code] = grades[i+1];
+		from_label = Humanize.formatNumber(getDisplayValue(from_obj, layer_code),2);
 		from = grades[i];
-		to = grades[i + 1];
+		to_label = Humanize.formatNumber(getDisplayValue(to_obj, layer_code),2);
+		to = grades[i+1];
 
 		labels.push('<td style="background:' + 
 			getColor(from, color_scheme, categories, reverse_scheme) + 
 			'" data-toggle="tooltip" data-placement="top" title="' + 
-			( i==0 ? '<' + to : 
-				( i == grades.length-1 ? '>' + from : 
-					from + ' - ' + to 
+			( i==0 ? '<' + to_label : 
+				( i == grades.length-1 ? '>' + from_label : 
+					from_label + ' - ' + to_label 
 				)
 			) + '">&nbsp;</td> '
 		);
