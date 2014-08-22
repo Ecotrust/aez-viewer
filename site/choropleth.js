@@ -656,21 +656,36 @@ function zoomToFeature(e) {
 }
 
 function getPopupHtml(feature) {
-	var popDiv = L.DomUtil.create('div', 'popup');
-	var topPop = L.DomUtil.create('div', 'row');
+	// var popDiv = L.DomUtil.create('div', 'popup');
+	var popDiv = document.createElement("div");
+	// var topPop = L.DomUtil.create('div', 'row');
+	var topPop = document.createElement("div");
+	topPop.classList.add("row");
 
 	// ---- Top of the popup
-	var topPopSpan = L.DomUtil.create('div', 'col-md-12');
+	// var topPopSpan = L.DomUtil.create('div', 'col-md-12');
+	var topPopSpan = document.createElement('div');
+	topPopSpan.classList.add('col-md-12');
 
-	var topZoneNameRow = L.DomUtil.create('div', 'row popZoneName');
-	var topZoneNameSpan = L.DomUtil.create('div', 'col-md-12');
+	// var topZoneNameRow = L.DomUtil.create('div', 'row popZoneName');
+	var topZoneNameRow = document.createElement('div');
+	topZoneNameRow.classList.add('row');
+	topZoneNameRow.classList.add('popZoneName');
+	// var topZoneNameSpan = L.DomUtil.create('div', 'col-md-12');
+	var topZoneNameSpan = document.createElement('div');
+	topZoneNameSpan.classList.add('col-md-12');
 	topZoneNameSpan.innerHTML ='Zone #' + 
 		feature.properties[UID_key].toString();
 	topZoneNameRow.appendChild(topZoneNameSpan);
 	topPopSpan.appendChild(topZoneNameRow);
 
-	var topAcresRow = L.DomUtil.create('div', 'row');
-	var topAcresSpan = L.DomUtil.create('div', 'col-md-12 popAcres');
+	// var topAcresRow = L.DomUtil.create('div', 'row');
+	var topAcresRow = document.createElement('div');
+	topAcresRow.classList.add('row');
+	// var topAcresSpan = L.DomUtil.create('div', 'col-md-12 popAcres');
+	var topAcresSpan = document.createElement('div');
+	topAcresSpan.classList.add('col-md-12');
+	topAcresSpan.classList.add('popAcres');
 	topAcresSpan.innerHTML = Humanize.intComma(feature.properties['area_in_acres']) + ' acres';
 	topAcresRow.appendChild(topAcresSpan);
 	topPopSpan.appendChild(topAcresRow);
@@ -679,15 +694,26 @@ function getPopupHtml(feature) {
 	var layer_code_val = getDisplayValue(feature.properties,layer_code);
 	var prop_name = mapping[property['measure']].mapping.type[property['type']].options[property['code']].name;
 
-	var topPropRow = L.DomUtil.create('div', 'row');
-	var topPropSpan = L.DomUtil.create('div', 'col-md-12 popCropName');
+	// var topPropRow = L.DomUtil.create('div', 'row');
+	var topPropRow = document.createElement('div');
+	topPropRow.classList.add('row');
+	// var topPropSpan = L.DomUtil.create('div', 'col-md-12 popCropName');
+	var topPropSpan = document.createElement('div');
+	topPropSpan.classList.add('col-md-12');
+	topPropSpan.classList.add('popCropName');
 	topPropSpan.innerHTML = prop_name;
 	topPropRow.appendChild(topPropSpan);
 	topPopSpan.appendChild(topPropRow);
 
 	// Requested topic density display
-	var topValueRow = L.DomUtil.create('div', 'row');
-	var topValueSpan = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 popValue');
+	// var topValueRow = L.DomUtil.create('div', 'row');
+	var topValueRow = document.createElement('div');
+	topValueRow.classList.add('row');
+	// var topValueSpan = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 popValue');
+	var topValueSpan = document.createElement('div');
+	topValueSpan.classList.add('col-md-10');
+	topValueSpan.classList.add('col-md-offset-1');
+	topValueSpan.classList.add('popValue');
 	if (showQuantity(property.measure)){
 		var quantity_text = " " + types[property['type']]['options'][property['code']]['qty'];
 	} else {
@@ -707,8 +733,14 @@ function getPopupHtml(feature) {
 	topValueRow.appendChild(topValueSpan);
 	topPopSpan.appendChild(topValueRow);
 
-	var topValueDescriptionRow = L.DomUtil.create('div', 'row');
-	var topValueDescriptionSpan = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 popDescription');
+	// var topValueDescriptionRow = L.DomUtil.create('div', 'row');
+	var topValueDescriptionRow = document.createElement('div');
+	topValueDescriptionRow.classList.add('row');
+	// var topValueDescriptionSpan = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 popDescription');
+	var topValueDescriptionSpan = document.createElement('div');
+	topValueDescriptionSpan.classList.add('col-md-10');
+	topValueDescriptionSpan.classList.add('col-md-offset-1');
+	topValueDescriptionSpan.classList.add('popDescription');
 	topValueDescriptionSpan.innerHTML = popUpDescriptions[property.measure][defaultPrimaryUnit]['name'];
 	topValueDescriptionRow.appendChild(topValueDescriptionSpan);
 	topPopSpan.appendChild(topValueDescriptionRow);
@@ -737,8 +769,14 @@ function getPopupHtml(feature) {
 			quantity_text = "No data available";
 		}
 
-		var valueRow = L.DomUtil.create('div', 'row');
-		var valueSpan = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 popValue');
+		// var valueRow = L.DomUtil.create('div', 'row');
+		var valueRow = document.createElement('div');
+		valueRow.classList.add('row');
+		// var valueSpan = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 popValue');
+		var valueSpan = document.createElement('div');
+		valueSpan.classList.add('col-md-10');
+		valueSpan.classList.add('col-md-offset-1');
+		valueSpan.classList.add('popValue');
 		if (pu_code_val == null) {
 			valueSpan.innerHTML = quantity_text;
 		} else {
@@ -757,8 +795,14 @@ function getPopupHtml(feature) {
 		valueRow.appendChild(valueSpan);
 		topPopSpan.appendChild(valueRow);
 
-		var valueDescriptionRow = L.DomUtil.create('div', 'row');
-		var valueDescriptionSpan = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 popDescription');
+		// var valueDescriptionRow = L.DomUtil.create('div', 'row');
+		var valueDescriptionRow = document.createElement('div');
+		valueDescriptionRow.classList.add('row');
+		// var valueDescriptionSpan = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 popDescription');
+		var valueDescriptionSpan = document.createElement('div');
+		valueDescriptionSpan.classList.add('col-md-10');
+		valueDescriptionSpan.classList.add('col-md-offset-1');
+		valueDescriptionSpan.classList.add('popDescription');
 		valueDescriptionSpan.innerHTML = popUpDescriptions[item[2]][defaultSecondaryUnit]['name'];
 		valueDescriptionRow.appendChild(valueDescriptionSpan);
 		topPopSpan.appendChild(valueDescriptionRow);
@@ -771,13 +815,22 @@ function getPopupHtml(feature) {
 }
 
 function onEachFeature(feature, layer) {
-	layer.bindPopup(getPopupHtml(feature), {offset: new L.Point(135, 150)});
+	// layer.bindPopup(getPopupHtml(feature), {offset: new L.Point(135, 150)});
 	layer.on({
-		click: highlightFeature,
+		// click: highlightFeature,
+		click: featureClicked,
 		mouseover: updateInfo,
 		mouseout: resetInfo
 		// click: zoomToFeature
 	});
+}
+
+function featureClicked(e) {
+	highlightFeature(e);
+	var stats = getPopupHtml(e.target.feature);
+	$('#zoneStats').empty();
+	$('#zoneStats').append(stats);
+	$('#zoneStats').show();
 }
 
 function killWaiting(layer) {
