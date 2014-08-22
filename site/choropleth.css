@@ -8,6 +8,10 @@
 	position: fixed;
 }
 
+#map-container {
+    margin-left: 420px !important;
+}
+
 #init-modal {
     margin-top: 20%;   
     overflow: hidden;

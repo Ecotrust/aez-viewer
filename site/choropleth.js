@@ -14,6 +14,7 @@ var first_load = true;
 var measureSelect=document.getElementById("measureSelect");
 var typeSelect = document.getElementById("typeSelect");
 var highlightedFeature = false;
+var defaultMapZoom = 6;
 
 var schemes = {
 	//Darkest to most pale
@@ -101,7 +102,7 @@ function readQueryString(queryStringResult) {
 	if (queryStringResult.hasOwnProperty('zoom')) {
 		initMapZoom = queryStringResult.zoom;
 	} else {
-		initMapZoom = 5;
+		initMapZoom = defaultMapZoom;
 	}
 
 	if (queryStringResult.hasOwnProperty('lat') && queryStringResult.hasOwnProperty('lng')) {
@@ -191,8 +192,8 @@ function buildMap(){
 		map.setView([initMapLat, initMapLng], initMapZoom);
 	} else {
 		map.fitBounds([
-			[50.574873, -126.994063],
-			[31.312113, -109.031419]
+			[48, -126],
+			[35, -95]
 		]);
 	}
 
