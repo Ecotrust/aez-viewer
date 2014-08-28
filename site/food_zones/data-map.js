@@ -786,6 +786,22 @@ function getLabel(property){
 	return label;
 }
 
+function showQuantity(meas) {
+	switch(meas){
+		case 'acres':
+			return false;
+			break;
+		case 'farms':
+			return false;
+			break;
+		case 'yield':
+			return true;
+			break;
+		default:
+			return false;
+	}
+}
+
 function getUnits(property) {
 	//Units are the same regardless of selection
 	return units;
@@ -805,13 +821,28 @@ var measures = {
 
 var popUpDescriptions = {
 	"acres": {
-		"name": "% area planted in "
+		'density': {
+			"name": "% area planted in this crop"
+		},
+		'count': {
+			"name": "Total acres"
+		}
 	},
 	"farms": {
-		"name": "Farms per acre that grow "
+		'density': {
+			"name": "Farms per acre that grow this crop"
+		},
+		'count': {
+			"name": "Total farms"
+		}
 	},
 	"yield": {
-		"name": "Total yield of "
+		'density': {
+			"name": "Yield per acre"
+		},
+		'count': {
+			"name": "Total yield"
+		}
 	}
 }
 
@@ -836,7 +867,7 @@ function getTypes(property){
 }
 
 var defaultPrimaryUnit = 'density';
-var defaultSecondaryUnit = 'density';
+var defaultSecondaryUnit = 'count';
 
 function encodeLayer(measure, type, code, unit) {
 	if (unit == 'density' || unit == 'dens') {
@@ -913,4 +944,13 @@ function getQuanity(measure, type, code) {
 		return dataMap[measure]['mapping']['type'][type]['options'][code]['qty'];
 	}
 	return '';
+}
+
+function getDisplayValue(properties, key) {
+	var key_parts = key.split('_');
+	if (key_parts[0] == 'acres' && key_parts[3] == 'dens') {	//We display "percentages", not density values for this.
+		return 100*properties[key];
+	}
+	return properties[key];
+
 }

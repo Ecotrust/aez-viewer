@@ -10,56 +10,90 @@
 	<link rel="stylesheet" href="../dist/select2/select2.css" />
 	<link rel="stylesheet" href="../dist/leaflet.css" />
 	<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css" />
-	<link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootswatch/3.1.1/spacelab/bootstrap.min.css" />
 	<link rel="stylesheet" href="./choropleth-local.css" />
 	<link rel="stylesheet" href="./choropleth.css" />
 
 	<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 	<script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script> 
 	<script type="text/javascript" src="../dist/select2/select2.min.js"></script>
+	<script type="text/javascript" src="../dist/humanize.min.js"></script>
+
 	<script type="text/javascript" src="./local-vars.js"></script>
 
 </head>
 <body>
-	<div id="filter-container" class="well">
+	<div class="modal" id="init-modal">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-body">
+	        <h1><img src="./img/ajax-loader.gif">&nbsp;&nbsp;&nbsp;Loading&hellip;</h1>
+	      </div>
+	    </div><!-- /.modal-content -->
+	  </div><!-- /.modal-dialog -->
+	</div><!-- /.modal -->
+
+	<script type="text/javascript" src="waiting_modal.js"></script>
+
+	<div id="left-panel" class="well">
 		<div class="row">
 			<div class="col-md-12">
-				<h2 id="title">Agricultural Zone Viewer</h2>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-md-12">
-				<p>Viewing the West's agriculture by zone.</p>
-			</div>
-		</div>
-		<div class="row">
-			<div class="col-md-12">
-				<div class="row">
-					<div class="col-md-2">
-						Measure:
+				<div id="filter-container">
+					<div class="row">
+						<div class="col-md-12">
+							<h2 id="title">Agricultural Zone Viewer</h2>
+						</div>
 					</div>
-					<div class="col-md-10">
-						<form id="measureSelect">
-						</form>
+					<div class="row">
+						<div class="col-md-12">
+							<div class="btn-group view-buttons">
+								<button type="button" class="btn btn-default active">By Crop</button>
+								<button type="button" class="btn btn-default" onclick="viewByZone(window.location.search)">By Zone</button>
+							</div>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<p>Viewing the West's agriculture by zone.</p>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-md-12">
+							<div class="row">
+								<div class="col-md-2">
+									Measure:
+								</div>
+								<div class="col-md-10">
+									<form id="measureSelect">
+									</form>
+								</div>
+							</div>
+							<form id="selectors">
+								<div class="row">
+									<div class="col-md-2">
+										Crop:
+									</div>
+									<div class="col-md-10">
+										<select id="typeSelect" onchange="selectCrop(this.value)">
+										</select>
+									</div>
+								</div>
+							</form>
+						</div>
 					</div>
 				</div>
-				<form id="selectors">
-					<div class="row">
-						<div class="col-md-2">
-							Crop:
-						</div>
-						<div class="col-md-10">
-							<select id="typeSelect" onchange="selectCrop(this.value)">
-							</select>
-						</div>
-					</div>
-				</form>
 			</div>
-		</div>
-	</div>
-	
+		</div> <!-- close filter control row -->
+		<div class="row">
+			<div class="col-md-12">
+				<div id="zoneStats">
 
-	<div id="map"></div>
+				</div>
+			</div>
+		</div><!-- close zone stats row -->
+	</div>
+	<div id="map-container">
+		<div id="map"></div>
+	</div>
 
 	<script src="../dist/leaflet.js"></script>
 	<script src="../dist/simple_statistics.js"></script>
@@ -68,23 +102,7 @@
 	<script type="text/javascript" src="./food_zones/data-map-gen.js"></script>
 	<script type="text/javascript" src="./food_zones/data-map.js"></script>
 	<script type="text/javascript" src="./choropleth.js"></script>
-	<script type="text/javascript">
-	    var MTUserId=rotisUser;
-	    var MTFontIds = new Array();
-
-	    MTFontIds.push("735476"); // Rotis® Serif W01 55 Roman 
-	    MTFontIds.push("735473"); // Rotis® Serif W01 56 Italic 
-	    MTFontIds.push("735470"); // Rotis® Serif W01 65 Bold 
-
-	    (function() {
-	        var mtTracking = document.createElement('script');
-	        mtTracking.type='text/javascript';
-	        mtTracking.async='true';
-	        mtTracking.src=('https:'==document.location.protocol?'https:':'http:')+'//fast.fonts.net/lt/trackingCode.js';
-
-	(document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(mtTracking);
-	    })();
-	</script>
+	<script type="text/javascript" src="./fonts.js"></script>
 
 </body>
 </html>

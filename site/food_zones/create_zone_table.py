@@ -13,8 +13,8 @@ out_table = 'food_zones'
 out_srid = 4326
 lookup_table = 'subzone_lookup'
 zone_id = 'ISOZONE'
-lookup_subzone_id = 'iso'
-lookup_zone_id = 'iso_maj3_27'
+lookup_subzone_id = 'subzone'
+lookup_zone_id = 'supersubzone'
 area_id = 'acres_fc_sum_f_area'
 pixels_id = 'acres_br_count'
 

@@ -8,6 +8,15 @@
 	position: fixed;
 }
 
+#map-container {
+    margin-left: 420px !important;
+}
+
+#init-modal {
+    margin-top: 20%;   
+    overflow: hidden;
+}
+
 #title {
     margin-top: 0;
 }
@@ -67,6 +76,10 @@ html {
     height: 100%;
 }
 
+.view-buttons {
+    margin-bottom: 10px;
+}
+
 .layer-buttons {
     z-index: 9999;
     margin-left: 50px;
@@ -86,11 +99,15 @@ html {
 }
 */
 
-#filter-container {
+#left-panel {
+    height: 100%;
+    width: 430px;
     position: absolute;
-    left: 10px;
-    top: 12px;
-    z-index: 999;
+    z-index: 995;
+}
+
+#filter-container {
+    z-index: 998;
 }
 
 .measureTable {
@@ -133,6 +150,12 @@ html {
     font-size: 20px;
     color: black;
     margin-top: 10px;
+}
+
+.popCropName {
+    font-style: italic;
+    font-size: 20px;
+    color: black;
 }
 
 .popAcres, .popDescription {

@@ -9,10 +9,10 @@ measures = ["Acres", "Farms", "Qnty"]
 crop_types = ["br", "fc", "fn", "fs", "oc", "vpm"]
 shapefile = "iso_02272014"
 db_file = "food_zones_all_test.sqlite"      #TODO - Remove "test"
-lookup_file = "Subzone_lookup.csv"
+lookup_file = "lookup_supersubzones.csv"
 lookup_table = 'subzone_lookup'
 lookup_dict = {}
-lookup_ignore_column = 1
+lookup_ignore_column = 0    #naming a column 'index' breaks this code
 table_name = "food_zones_all"
 zone_details = {}
 zone_header = 'ISOZONE'
@@ -60,7 +60,8 @@ with open('%s%s' % (dbf_location, lookup_file), 'rb') as csvfile:
     reader = csv.reader(csvfile, delimiter=',', quotechar='|')
     lookup_headers = reader.next()
     del lookup_headers[lookup_ignore_column]
-    cur.execute('CREATE TABLE %s (%s);' % (lookup_table, ', '.join(lookup_headers)))
+    query = 'CREATE TABLE %s (%s);' % (lookup_table, ', '.join(lookup_headers))
+    cur.execute(query)
     for row in reader:
         del row[lookup_ignore_column]
         cur.execute('INSERT INTO %s (%s) VALUES (%s)' % (lookup_table, ', '.join(lookup_headers), ', '.join(row)))
@@ -83,7 +84,6 @@ for zone_id in zone_details.keys():
     query = query [:-1] # remove final comma
     query += ' WHERE %s = %s;' % (zone_header, zone_id)
     cur.execute(query);
-    print '%s updated' % zone_id
 
 conn.commit()
 conn.close()

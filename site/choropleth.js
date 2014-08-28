@@ -14,6 +14,7 @@ var first_load = true;
 var measureSelect=document.getElementById("measureSelect");
 var typeSelect = document.getElementById("typeSelect");
 var highlightedFeature = false;
+var defaultMapZoom = 6;
 
 var schemes = {
 	//Darkest to most pale
@@ -84,7 +85,6 @@ var queryStringResult = queryObj();
 readQueryString(queryStringResult);
 setUpData();
 
-
 function queryObj() {
 	var result = {};
 	keyValuePairs = location.search.slice(1).split('&');
@@ -102,7 +102,7 @@ function readQueryString(queryStringResult) {
 	if (queryStringResult.hasOwnProperty('zoom')) {
 		initMapZoom = queryStringResult.zoom;
 	} else {
-		initMapZoom = 5;
+		initMapZoom = defaultMapZoom;
 	}
 
 	if (queryStringResult.hasOwnProperty('lat') && queryStringResult.hasOwnProperty('lng')) {
@@ -131,10 +131,21 @@ function setUpData() {
 	property = getProperty();
 
 	mapping = dataMap;
+	measure_keys = Object.keys(mapping);
+	mapped_measures = {};
+	for (var i = 0; i < measure_keys.length; i++) {
+		mapped_measures[measure_keys[i]] = false;
+	}
 
+	for (var i = 0; i < measure_keys.length; i++) {
+		getMeasureData(measure_keys[i]);
+	}
+}
+
+function getMeasureData(measure) {
 	$.ajax({
         type: 'GET',
-        url: getAjaxLocation(property.measure, property.type, property.code, property.unit, 'json'),
+        url: getAjaxLocation(measure, property.type, property.code, property.unit, 'json'),
         beforeSend: function(xhr){
 		    if (xhr.overrideMimeType) {
 		    	xhr.overrideMimeType("application/json");
@@ -145,13 +156,28 @@ function setUpData() {
         crossDomain: false,
         data: {},
         error: function(textStatus, errorThrown) {
-            alert("error");
+            setMeasureData(measure, null)
         },
         success: function(ret_data, textStatus, request) {
         	data_obj = JSON.parse(ret_data);
-			setData(data_obj);
+			setMeasureData(measure, data_obj);
         }
      });
+}
+
+function setMeasureData(measure, measure_data){
+	mapped_measures[measure] = measure_data;
+
+	var allMeasuresCollected = true;
+	for (var i = 0; i < measure_keys.length; i++) {
+		if (mapped_measures[measure_keys[i]] == false) {
+			allMeasuresCollected = false;
+		}
+	}
+	if (allMeasuresCollected) {
+		setData(mapped_measures);
+	}
+
 }
 
 function buildMap(){
@@ -166,8 +192,8 @@ function buildMap(){
 		map.setView([initMapLat, initMapLng], initMapZoom);
 	} else {
 		map.fitBounds([
-			[50.574873, -126.994063],
-			[31.312113, -109.031419]
+			[48, -126],
+			[35, -95]
 		]);
 	}
 
@@ -217,11 +243,14 @@ function setData(ret_obj){
 	data = featureData;
 	var attribute = '';
 	for (var i = 0; i < data.features.length; i++){
-		uid = data.features[i].properties[UID_key]
-		if (ret_obj.hasOwnProperty(uid.toString())){
-			for (var unit in ret_obj[uid.toString()]){
-				attribute = encodeLayer(property.measure, property.type, property.code, unit)
-				data.features[i].properties[attribute] = ret_obj[uid.toString()][unit];
+		uid = data.features[i].properties[UID_key];
+		for (var meas_index = 0; meas_index < Object.keys(ret_obj).length; meas_index++) {
+			meas = Object.keys(ret_obj)[meas_index];
+			if (ret_obj[meas] && ret_obj[meas].hasOwnProperty(uid.toString())){
+				for (var unit in ret_obj[meas][uid.toString()]){
+					attribute = encodeLayer(meas, property.type, property.code, unit);
+					data.features[i].properties[attribute] = ret_obj[meas][uid.toString()][unit];
+				}
 			}
 		}
 	}
@@ -628,42 +657,140 @@ function zoomToFeature(e) {
 }
 
 function getPopupHtml(feature) {
-	var popDiv = L.DomUtil.create('div', 'popup');
-	var topPop = L.DomUtil.create('div', 'row');
+	var popDiv = document.createElement("div");
+	var topPop = document.createElement("div");
+	topPop.classList.add("row");
 
 	// ---- Top of the popup
-	var topPopSpan = L.DomUtil.create('div', 'col-md-12');
+	var topPopSpan = document.createElement('div');
+	topPopSpan.classList.add('col-md-12');
 
-	var topZoneNameRow = L.DomUtil.create('div', 'row popZoneName');
-	var topZoneNameSpan = L.DomUtil.create('div', 'col-md-10 col-md-offset-1');
+	var topZoneNameRow = document.createElement('div');
+	topZoneNameRow.classList.add('row');
+	topZoneNameRow.classList.add('popZoneName');
+	var topZoneNameSpan = document.createElement('div');
+	topZoneNameSpan.classList.add('col-md-12');
 	topZoneNameSpan.innerHTML ='Zone #' + 
 		feature.properties[UID_key].toString();
 	topZoneNameRow.appendChild(topZoneNameSpan);
 	topPopSpan.appendChild(topZoneNameRow);
 
-	var topAcresRow = L.DomUtil.create('div', 'row');
-	var topAcresSpan = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 popAcres');
-	topAcresSpan.innerHTML = roundDigits(feature.properties['area_in_acres']).toString() + ' acres';
+	var topAcresRow = document.createElement('div');
+	topAcresRow.classList.add('row');
+	var topAcresSpan = document.createElement('div');
+	topAcresSpan.classList.add('col-md-12');
+	topAcresSpan.classList.add('popAcres');
+	topAcresSpan.innerHTML = Humanize.intComma(feature.properties['area_in_acres']) + ' acres';
 	topAcresRow.appendChild(topAcresSpan);
 	topPopSpan.appendChild(topAcresRow);
 
-	var topValueRow = L.DomUtil.create('div', 'row');
-	var topValueSpan = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 popValue');
-	if (feature.properties[getLayerCode(property)] == null) {
-		topValueSpan.innerHTML = roundDigits(0).toString();
+	var layer_code = getLayerCode(property);
+	var layer_code_val = getDisplayValue(feature.properties,layer_code);
+	var prop_name = mapping[property['measure']].mapping.type[property['type']].options[property['code']].name;
+
+	var topPropRow = document.createElement('div');
+	topPropRow.classList.add('row');
+	var topPropSpan = document.createElement('div');
+	topPropSpan.classList.add('col-md-12');
+	topPropSpan.classList.add('popCropName');
+	topPropSpan.innerHTML = prop_name;
+	topPropRow.appendChild(topPropSpan);
+	topPopSpan.appendChild(topPropRow);
+
+	// Requested topic density display
+	var topValueRow = document.createElement('div');
+	topValueRow.classList.add('row');
+	var topValueSpan = document.createElement('div');
+	topValueSpan.classList.add('col-md-10');
+	topValueSpan.classList.add('col-md-offset-1');
+	topValueSpan.classList.add('popValue');
+	if (showQuantity(property.measure)){
+		var quantity_text = " " + types[property['type']]['options'][property['code']]['qty'];
 	} else {
-		topValueSpan.innerHTML = roundDigits(feature.properties[getLayerCode(property)]).toString();
+		var quantity_text = "";
+	}
+	if (layer_code_val == null) {
+		topValueSpan.innerHTML = roundDigits(0).toString() + quantity_text;
+	} else {
+		if (layer_code_val == 0) {
+			topValueSpan.innerHTML = '0';
+		} else if (layer_code_val < 0.01) {
+			topValueSpan.innerHTML = "Less than 0.01";
+		} else {
+			topValueSpan.innerHTML = Humanize.formatNumber(layer_code_val,2) + quantity_text;
+		}
 	}
 	topValueRow.appendChild(topValueSpan);
 	topPopSpan.appendChild(topValueRow);
 
-	var topValueDescriptionRow = L.DomUtil.create('div', 'row');
-	var topValueDescriptionSpan = L.DomUtil.create('div', 'col-md-10 col-md-offset-1 popDescription');
-	var prop_name = mapping[property['measure']].mapping.type[property['type']].options[property['code']].name;
-	topValueDescriptionSpan.innerHTML = popUpDescriptions[property.measure]['name'] +
-		prop_name
+	var topValueDescriptionRow = document.createElement('div');
+	topValueDescriptionRow.classList.add('row');
+	var topValueDescriptionSpan = document.createElement('div');
+	topValueDescriptionSpan.classList.add('col-md-10');
+	topValueDescriptionSpan.classList.add('col-md-offset-1');
+	topValueDescriptionSpan.classList.add('popDescription');
+	topValueDescriptionSpan.innerHTML = popUpDescriptions[property.measure][defaultPrimaryUnit]['name'];
 	topValueDescriptionRow.appendChild(topValueDescriptionSpan);
 	topPopSpan.appendChild(topValueDescriptionRow);
+
+
+	//Additional default displays
+	var layer_code_parts = layer_code.split('_');
+	var type_code = layer_code_parts[1];
+	var crop_code = layer_code_parts[2];
+
+	pop_up_list = [['acres','z_ac','acres'],['farms','z_fm','farms'],['qnty','z_qt','yield']];
+
+	for (var item_id = 0; item_id < pop_up_list.length; item_id++) {
+		var item = pop_up_list[item_id];
+
+		var pu_code = [item[0], type_code, crop_code, item[1]].join('_');
+		var pu_code_val = getDisplayValue(feature.properties,pu_code);
+
+		if (showQuantity(item[2])){
+			var quantity_text = types[property['type']]['options'][property['code']]['qty'];
+		} else {
+			var quantity_text = "";
+		}
+
+		if (quantity_text == undefined) {
+			quantity_text = "No data available";
+		}
+
+		var valueRow = document.createElement('div');
+		valueRow.classList.add('row');
+		var valueSpan = document.createElement('div');
+		valueSpan.classList.add('col-md-10');
+		valueSpan.classList.add('col-md-offset-1');
+		valueSpan.classList.add('popValue');
+		if (pu_code_val == null) {
+			valueSpan.innerHTML = quantity_text;
+		} else {
+			if (pu_code_val == 0) {
+				valueSpan.innerHTML = '0';
+			} else if (pu_code_val < 0.001) {
+				valueSpan.innerHTML = pu_code_val.toExponential(3).toString() + " " + quantity_text;
+			} else {
+				if (pu_code_val < 1) {
+					valueSpan.innerHTML = pu_code_val.toFixed(2).toString() + " " + quantity_text;
+				} else {
+					valueSpan.innerHTML = Humanize.intComma(pu_code_val)
+				}
+			}
+		}
+		valueRow.appendChild(valueSpan);
+		topPopSpan.appendChild(valueRow);
+
+		var valueDescriptionRow = document.createElement('div');
+		valueDescriptionRow.classList.add('row');
+		var valueDescriptionSpan = document.createElement('div');
+		valueDescriptionSpan.classList.add('col-md-10');
+		valueDescriptionSpan.classList.add('col-md-offset-1');
+		valueDescriptionSpan.classList.add('popDescription');
+		valueDescriptionSpan.innerHTML = popUpDescriptions[item[2]][defaultSecondaryUnit]['name'];
+		valueDescriptionRow.appendChild(valueDescriptionSpan);
+		topPopSpan.appendChild(valueDescriptionRow);
+	}
 
 	topPop.appendChild(topPopSpan);
 	popDiv.appendChild(topPop);
@@ -672,13 +799,23 @@ function getPopupHtml(feature) {
 }
 
 function onEachFeature(feature, layer) {
-	layer.bindPopup(getPopupHtml(feature), {offset: new L.Point(135, 150)});
 	layer.on({
-		click: highlightFeature,
+		click: featureClicked,
 		mouseover: updateInfo,
 		mouseout: resetInfo
-		// click: zoomToFeature
 	});
+}
+
+function featureClicked(e) {
+	highlightFeature(e);
+	var stats = getPopupHtml(e.target.feature);
+	$('#zoneStats').empty();
+	$('#zoneStats').append(stats);
+	$('#zoneStats').show();
+}
+
+function killWaiting(layer) {
+	initModal.modal('hide');
 }
 
 function loadGeoJson() {
@@ -686,6 +823,7 @@ function loadGeoJson() {
 		style: style,
 		onEachFeature: onEachFeature
 	}).addTo(map);
+	killWaiting(geojson.getLayers());
 }
 
 //TODO: Get link to Ag census for attribution
@@ -714,10 +852,12 @@ function setLegend() {
 		}
 
 	if (property) {
+		var current_measures = getMeasures(property);
+		var label = current_measures[property.measure]['name'];
 		if (property.label) {
 			labels.push('<b>' + property.label + '</b>');
 		} else {
-			labels.push('<b>' + capFirstLetter(property.measure) + '</b>');
+			labels.push('<b>' + capFirstLetter(label) + '</b>');
 		}
 	}
 	labels.push('<br />');
@@ -725,16 +865,23 @@ function setLegend() {
 	labels.push('	<div class="col-md-12" id="legendTable">');
 	labels.push('		<table><tr>');
 
+	var layer_code = getLayerCode(property);
 	for (var i = 0; i < grades.length; i++) {
+		var from_obj = {};
+		var to_obj = {};
+		from_obj[layer_code] = grades[i];
+		to_obj[layer_code] = grades[i+1];
+		from_label = Humanize.formatNumber(getDisplayValue(from_obj, layer_code),2);
 		from = grades[i];
-		to = grades[i + 1];
+		to_label = Humanize.formatNumber(getDisplayValue(to_obj, layer_code),2);
+		to = grades[i+1];
 
 		labels.push('<td style="background:' + 
 			getColor(from, color_scheme, categories, reverse_scheme) + 
 			'" data-toggle="tooltip" data-placement="top" title="' + 
-			( i==0 ? '<' + to : 
-				( i == grades.length-1 ? '>' + from : 
-					from + ' - ' + to 
+			( i==0 ? '<' + to_label : 
+				( i == grades.length-1 ? '>' + from_label : 
+					from_label + ' - ' + to_label 
 				)
 			) + '">&nbsp;</td> '
 		);
@@ -761,5 +908,31 @@ function setLegend() {
 function loadData() {
 	queryStringResult = queryObj();
 	readQueryString(queryStringResult)
+
 	setUpData();
+}
+
+function viewByZone(querystring) {
+	var zoom = map.getZoom();
+    var center = map.getCenter();
+
+    qlist = querystring.slice(1).split('&');
+    var updated_querystring = "?";
+    for (var i = 0; i < qlist.length; i++) {
+        switch(qlist[i].split('=')[0]) {
+            case 'zoom':
+                updated_querystring += (updated_querystring.length == 1?'':'&') + 'zoom=' + zoom;
+                break;
+            case 'lat':
+                updated_querystring += (updated_querystring.length == 1?'':'&') + 'lat=' + center.lat;
+                break;
+            case 'lng':
+                updated_querystring += (updated_querystring.length == 1?'':'&') + 'lng=' + center.lng;
+                break;
+            default:
+                updated_querystring += (updated_querystring.length == 1?'':'&') + qlist[i];
+        }
+    }
+
+	window.location.assign('./explore_by_zone.html' + updated_querystring);
 }
