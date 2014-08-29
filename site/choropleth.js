@@ -671,18 +671,9 @@ function getPopupHtml(feature) {
 	var topZoneNameSpan = document.createElement('div');
 	topZoneNameSpan.classList.add('col-md-12');
 	topZoneNameSpan.innerHTML ='Zone #' + 
-		feature.properties[UID_key].toString();
+		feature.properties[UID_key].toString();		//TODO: Replace with "Region Name"
 	topZoneNameRow.appendChild(topZoneNameSpan);
 	topPopSpan.appendChild(topZoneNameRow);
-
-	var topAcresRow = document.createElement('div');
-	topAcresRow.classList.add('row');
-	var topAcresSpan = document.createElement('div');
-	topAcresSpan.classList.add('col-md-12');
-	topAcresSpan.classList.add('popAcres');
-	topAcresSpan.innerHTML = Humanize.intComma(feature.properties['area_in_acres']) + ' acres';
-	topAcresRow.appendChild(topAcresSpan);
-	topPopSpan.appendChild(topAcresRow);
 
 	var layer_code = getLayerCode(property);
 	var layer_code_val = getDisplayValue(feature.properties,layer_code);
@@ -696,6 +687,15 @@ function getPopupHtml(feature) {
 	topPropSpan.innerHTML = prop_name;
 	topPropRow.appendChild(topPropSpan);
 	topPopSpan.appendChild(topPropRow);
+
+	var topAcresRow = document.createElement('div');
+	topAcresRow.classList.add('row');
+	var topAcresSpan = document.createElement('div');
+	topAcresSpan.classList.add('col-md-12');
+	topAcresSpan.classList.add('popAcres');
+	topAcresSpan.innerHTML = Humanize.intComma(feature.properties['area_in_acres']) + ' acres';
+	topAcresRow.appendChild(topAcresSpan);
+	topPopSpan.appendChild(topAcresRow);
 
 	// Requested topic density display
 	var topValueRow = document.createElement('div');
