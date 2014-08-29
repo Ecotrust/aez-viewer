@@ -36,31 +36,31 @@
 
     <script type="text/javascript" src="waiting_modal.js"></script>
 
-    <div id="filter-container" class="well">
-        <h2 id="title">Agricultural Zone Viewer</h2>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="btn-group view-buttons">
-                    <button type="button" class="btn btn-default" onclick="viewByCrop(window.location.search)">By Crop</button>
-                    <button type="button" class="btn btn-default active">By Zone</button>
+    <div id="left-container">
+        <ul class="nav nav-tabs" role="tablist">
+          <li onclick="viewByCrop(window.location.search)"><a>Explore By Crop</a></li>
+          <li class="active"><a>Explore By Zone</a></li>
+        </ul>
+        <div id="left-panel" class="well">
+            <div id="filter-container">
+                <h2 id="title">Agricultural Zone Viewer</h2>
+                <div>
+                    <p> Select or Deselect zones with mouse click 
+                        <br>
+                        <em>or</em>
+                        select a pre-defined region </p>
+                    <ul>
+                        <li> <a href="#" onclick="selectRegion(3)">North</a> </li>
+                        <li> <a href="#" onclick="selectRegion(2)">Central</a> </li>
+                        <li> <a href="#" onclick="selectRegion(1)">South</a> </li>
+                    </ul>
+                    <hr>
+                    <ul>
+                        <li> <a href="#" onclick="clearSelection()">Clear Selection</a> </li>
+                    </ul>
+
                 </div>
             </div>
-        </div>
-        <div>
-            <p> Select or Deselect zones with mouse click 
-                <br>
-                <em>or</em>
-                select a pre-defined region </p>
-            <ul>
-                <li> <a href="#" onclick="selectRegion(3)">North</a> </li>
-                <li> <a href="#" onclick="selectRegion(2)">Central</a> </li>
-                <li> <a href="#" onclick="selectRegion(1)">South</a> </li>
-            </ul>
-            <hr>
-            <ul>
-                <li> <a href="#" onclick="clearSelection()">Clear Selection</a> </li>
-            </ul>
-
         </div>
     </div>
     <div id="map" class="bigmap"></div>

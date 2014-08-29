@@ -34,55 +34,53 @@
 
 	<script type="text/javascript" src="waiting_modal.js"></script>
 
-	<div id="left-panel" class="well">
-		<div class="row">
-			<div class="col-md-12">
-				<div id="filter-container">
-					<div class="row">
-						<div class="col-md-12">
-							<h2 id="title">Agricultural Zone Viewer</h2>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-12">
-							<div class="btn-group view-buttons">
-								<button type="button" class="btn btn-default active">By Crop</button>
-								<button type="button" class="btn btn-default" onclick="viewByZone(window.location.search)">By Zone</button>
+	<div id="left-container">
+		<ul class="nav nav-tabs" role="tablist">
+		  <li class="active"><a>Explore By Crop</a></li>
+		  <li onclick="viewByZone(window.location.search)"><a>Explore By Zone</a></li>
+		</ul>
+		<div id="left-panel" class="well">
+			<div class="row">
+				<div class="col-md-12">
+					<div id="filter-container">
+						<div class="row">
+							<div class="col-md-12">
+								<h2 id="title">Agricultural Zone Viewer</h2>
 							</div>
 						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-12">
-							<p>Viewing the West's agriculture by zone.</p>
-						</div>
-					</div>
-					<div class="row">
-						<div class="col-md-12">
-							<div class="row">
-								<div class="col-md-2">
-									Measure:
-								</div>
-								<div class="col-md-10">
-									<form id="measureSelect">
-									</form>
-								</div>
+						<div class="row">
+							<div class="col-md-12">
+								<p>Viewing the West's agriculture by zone.</p>
 							</div>
-							<form id="selectors">
+						</div>
+						<div class="row">
+							<div class="col-md-12">
 								<div class="row">
 									<div class="col-md-2">
-										Crop:
+										Measure:
 									</div>
 									<div class="col-md-10">
-										<select id="typeSelect" onchange="selectCrop(this.value)">
-										</select>
+										<form id="measureSelect">
+										</form>
 									</div>
 								</div>
-							</form>
+								<form id="selectors">
+									<div class="row">
+										<div class="col-md-2">
+											Crop:
+										</div>
+										<div class="col-md-10">
+											<select id="typeSelect" onchange="selectCrop(this.value)">
+											</select>
+										</div>
+									</div>
+								</form>
+							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-		</div> <!-- close filter control row -->
+			</div> <!-- close filter control row -->
+		</div> <!-- close left-panel -->
 		<div class="row">
 			<div class="col-md-12">
 				<div id="zoneStats">

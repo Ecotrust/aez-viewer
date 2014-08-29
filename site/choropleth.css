@@ -9,7 +9,7 @@
 }
 
 #map-container {
-    margin-left: 420px !important;
+    margin-left: 430px !important;
 }
 
 #init-modal {
@@ -93,17 +93,21 @@ html {
     cursor: pointer;
 }
 
-/*
-#selectors select {
-    margin-top: 10px;
-}
-*/
-
-#left-panel {
+#left-container {
     height: 100%;
     width: 430px;
     position: absolute;
     z-index: 995;
+}
+
+#left-panel {
+    height: 100%;
+    width: 100%;
+}
+
+.nav-tabs {
+    width: 90% !important;
+    margin-bottom: -1px !important;
 }
 
 #filter-container {

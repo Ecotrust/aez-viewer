@@ -71,16 +71,32 @@ div.olControlZoom a, div.olControlTextButtonPanel .olButton {
     margin-top: 0;
 }
 #filter-container {
-    width:430px;
-    padding: 19px;
-    position: absolute;
-    left: 10px;
-    top: 12px;
     z-index: 999;
 }
 
 .view-buttons {
     margin-bottom: 10px;
+}
+
+#left-container {
+    height: 100%;
+    width: 430px;
+    position: absolute;
+    z-index: 995;
+}
+
+#left-panel {
+    height: 100%;
+    width: 100%;
+}
+
+.nav-tabs {
+    width: 90% !important;
+    margin-bottom: -1px !important;
+}
+
+#map {
+    margin-left: 430px !important;
 }
 
 body {
