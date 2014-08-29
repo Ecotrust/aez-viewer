@@ -15,6 +15,7 @@ var measureSelect=document.getElementById("measureSelect");
 var typeSelect = document.getElementById("typeSelect");
 var highlightedFeature = false;
 var defaultMapZoom = 6;
+var selectedFeature = null;
 
 var schemes = {
 	//Darkest to most pale
@@ -108,6 +109,10 @@ function readQueryString(queryStringResult) {
 	if (queryStringResult.hasOwnProperty('lat') && queryStringResult.hasOwnProperty('lng')) {
 		initMapLat = queryStringResult.lat;
 		initMapLng = queryStringResult.lng;
+	}
+
+	if (queryStringResult.hasOwnProperty('feature')) {
+		initFeature = queryStringResult.feature;
 	}
 }
 
@@ -330,6 +335,16 @@ function selectReverse(value){
 	queryString = "?reverse=" + value;
 	for (key in queryStringResult) {
 		if (key != 'reverse'){
+			queryString = queryString + "&" + key + "=" + queryStringResult[key];
+		}
+	}
+	reload(queryString);
+}
+
+function selectFeature(value){
+	queryString = "?feature=" + value;
+	for (key in queryStringResult) {
+		if (key != 'feature'){
 			queryString = queryString + "&" + key + "=" + queryStringResult[key];
 		}
 	}
@@ -617,12 +632,10 @@ function style(feature) {
 	};
 }
 
-function highlightFeature(e) {
+function highlightFeature(layer) {
 	if (highlightedFeature) {
 		resetHighlight();
 	}
-
-	var layer = e.target;
 
 	layer.setStyle({
 		weight: 3,
@@ -630,7 +643,7 @@ function highlightFeature(e) {
 		dashArray: ''
 	});
 
-	if (!L.Browser.ie && !L.Browser.opera) {
+	if (!L.Browser.ie && !L.Browser.opera && layer._map) {
 		layer.bringToFront();
 	}
 
@@ -804,11 +817,22 @@ function onEachFeature(feature, layer) {
 		mouseover: updateInfo,
 		mouseout: resetInfo
 	});
+
+	if (feature.properties.zone_id == queryStringResult.feature) {
+		selectedFeature = layer;
+		var stats = getPopupHtml(layer.feature);
+		updateStats(stats);
+	}
 }
 
 function featureClicked(e) {
-	highlightFeature(e);
+	highlightFeature(e.target);
 	var stats = getPopupHtml(e.target.feature);
+	updateStats(stats);
+	selectFeature(e.target.feature.properties.zone_id);
+}
+
+function updateStats(stats) {
 	$('#zoneStats').empty();
 	$('#zoneStats').append(stats);
 	$('#zoneStats').show();
@@ -823,6 +847,7 @@ function loadGeoJson() {
 		style: style,
 		onEachFeature: onEachFeature
 	}).addTo(map);
+	highlightFeature(selectedFeature);
 	killWaiting(geojson.getLayers());
 }
 
