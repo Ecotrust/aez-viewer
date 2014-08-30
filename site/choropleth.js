@@ -279,7 +279,7 @@ function finishLoad(){
 	setLegend();
 }
 
-function reload(queryString){
+function updateHref(queryString, reload){
 	var zoom = map.getZoom();
 	var center = map.getCenter();
 
@@ -287,7 +287,9 @@ function reload(queryString){
 		"&lat=" + center.lat + "&lng=" + center.lng;
 
 	window.history.pushState("", "", queryString);
-	loadData();
+	if (reload) {
+		loadData();
+	}
 }
 
 function selectMeasure(value){
@@ -302,7 +304,7 @@ function selectMeasure(value){
 			queryString = queryString + "&" + key + "=" + queryStringResult[key];
 		}
 	}
-	reload(queryString);
+	updateHref(queryString, true);
 }
 
 function selectCrop(value){
@@ -318,7 +320,7 @@ function selectCrop(value){
 			queryString = queryString + "&" + key + "=" + queryStringResult[key];
 		}
 	}
-	reload(queryString);
+	updateHref(queryString, true);
 }
 
 function selectScheme(value){
@@ -328,7 +330,7 @@ function selectScheme(value){
 			queryString = queryString + "&" + key + "=" + queryStringResult[key];
 		}
 	}
-	reload(queryString);
+	updateHref(queryString, true);
 }
 
 function selectReverse(value){
@@ -338,7 +340,7 @@ function selectReverse(value){
 			queryString = queryString + "&" + key + "=" + queryStringResult[key];
 		}
 	}
-	reload(queryString);
+	updateHref(queryString, true);
 }
 
 function selectFeature(value){
@@ -348,7 +350,7 @@ function selectFeature(value){
 			queryString = queryString + "&" + key + "=" + queryStringResult[key];
 		}
 	}
-	reload(queryString);
+	updateHref(location.origin + location.pathname + queryString, false);
 }
 
 function getLayerCode(prop_obj){
@@ -847,7 +849,9 @@ function loadGeoJson() {
 		style: style,
 		onEachFeature: onEachFeature
 	}).addTo(map);
-	highlightFeature(selectedFeature);
+	if (selectedFeature != null) {
+		highlightFeature(selectedFeature);
+	}
 	killWaiting(geojson.getLayers());
 }
 
