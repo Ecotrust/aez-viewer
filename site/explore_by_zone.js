@@ -7,6 +7,7 @@ var nSelected = 0;
 var acresSelected = 0;
 var suspendRedraw = false;
 var color = d3.scale.category10();
+var queryStringObject = {};
 
 var vectors;
 var treeData, treeDataTemplate, treemap, node;
@@ -106,6 +107,8 @@ var featureSelected = function(feature) {
     if (!suspendRedraw) {
         redrawTreemap(selectedValue);
     }
+    var featureId = feature.feature.attributes.id;
+    updateZones(featureId, "add");
 }
 
 var featureUnselected = function(feature) {
@@ -114,18 +117,17 @@ var featureUnselected = function(feature) {
     if (!suspendRedraw) {
         redrawTreemap(selectedValue);
     }
+    var featureId = feature.feature.attributes.id;
+    updateZones(featureId, "remove");
 }
 
 function queryObj() {
-    var result = {};
     keyValuePairs = location.search.slice(1).split('&');
 
     keyValuePairs.forEach(function(keyValuePair) {
         keyValuePair = keyValuePair.split('=');
-        result[keyValuePair[0]] = keyValuePair[1] || '';
+        queryStringObject[keyValuePair[0]] = keyValuePair[1] || '';
     });
-
-    return result;
 }
 
 function readQueryString(queryStringResult) {
@@ -140,11 +142,13 @@ function readQueryString(queryStringResult) {
         initMapLat = queryStringResult.lat;
         initMapLng = queryStringResult.lng;
     }
+
 }
 
 function init(){
     
-    readQueryString(queryObj());
+    queryObj();
+    readQueryString(queryStringObject);
 
     map = new OpenLayers.Map('map');
 
@@ -184,6 +188,9 @@ function init(){
         "loadend": function(e) {
             initTreemap();
             $('#init-modal').modal('hide');
+
+            selectInitialZones();
+            
         }
     });
 
@@ -215,7 +222,19 @@ function init(){
         ).transform("EPSG:4326", "EPSG:900913"), 
         (typeof initMapZoom === 'undefined'?5:initMapZoom)
     );
-    selectControl.activate();     
+    selectControl.activate();  
+
+}
+
+function selectInitialZones() {
+
+    if (queryStringObject.hasOwnProperty('zones')) {
+        var selected_zones = queryStringObject.zones.split(",");
+        for (var i = 0; i <= selected_zones.length; i++) {
+            var feature = vectors.getFeaturesByAttribute("id",selected_zones[i])[0]; //returns list, but get by id should only return 1 result
+            selectControl.select(feature);
+        }
+    }
 }
 
 function resetTreemap() {
@@ -389,4 +408,42 @@ function viewByCrop(querystring) {
     }
 
     window.location.assign('explore_by_crop.html' + updated_querystring);
+}
+
+function updateZones(zoneId, action){
+    var keys = Object.keys(queryStringObject);
+    if (queryStringObject.hasOwnProperty('zones')) {
+        var zoneList = queryStringObject.zones.split(',');
+    } else {
+        var zoneList = [];
+    }
+    var zoneIdIndex = zoneList.indexOf(zoneId);
+    if (action == "remove") {
+        if (zoneIdIndex != -1) {
+            zoneList.splice(zoneIdIndex,1);
+        }
+    } else {
+        if (zoneIdIndex == -1) {
+            zoneList.push(zoneId);
+        }
+    }
+
+    queryStringObject.zones = zoneList.toString();
+
+    updateHref(false);
+}
+
+function updateHref(reload){
+    var keys = Object.keys(queryStringObject);
+    var queryString = "?";
+
+    for (var i = 0; i < keys.length; i ++) {
+        var key = keys[i]
+        queryString = queryString + "&" + key + "=" + queryStringObject[key].toString();
+    }
+
+    window.history.pushState("", "", queryString);
+    if (reload) {
+        window.location.reload();
+    }
 }
