@@ -8,11 +8,12 @@ dbf_location = "./input/"
 measures = ["Acres", "Farms", "Qnty"]
 crop_types = ["br", "fc", "fn", "fs", "oc", "vpm"]
 shapefile = "iso_02272014"
-db_file = "food_zones_all_test.sqlite"      #TODO - Remove "test"
+db_file = "food_zones_all.sqlite"
 lookup_file = "region_subzone_crosswalk.csv"
 lookup_table = 'subzone_lookup'
 lookup_dict = {}
 lookup_ignore_column = False    #naming a column 'index' breaks this code
+lookup_zone_column = 'region'
 table_name = "food_zones_all"
 zone_details = {}
 zone_header = 'ISOZONE'
@@ -61,22 +62,24 @@ print 'Write lookup table'
 with open('%s%s' % (dbf_location, lookup_file), 'rb') as csvfile:
     reader = csv.reader(csvfile, delimiter=',', quotechar='|')
     lookup_headers = reader.next()
+    zoneIdColumnIndex = lookup_headers.index(lookup_zone_column)
     if lookup_ignore_column:
         del lookup_headers[lookup_ignore_column]
     query = 'CREATE TABLE %s (%s);' % (lookup_table, ', '.join(lookup_headers))
     cur.execute(query)
     for row in reader:
-        if lookup_ignore_column:
-            del row[lookup_ignore_column]
-        for (counter, val) in enumerate(row):
-            if val == '':
-                row[counter] = 'NULL'
-            try:
-                float(val)
-            except ValueError:
-                row[counter] = "\'%s\'" % val
-        query = 'INSERT INTO %s (%s) VALUES (%s)' % (lookup_table, ', '.join(lookup_headers), ', '.join(row))
-        cur.execute(query)
+        if row[zoneIdColumnIndex] != '':
+            if lookup_ignore_column:
+                del row[lookup_ignore_column]
+            for (counter, val) in enumerate(row):
+                if val == '':
+                    row[counter] = 'NULL'
+                try:
+                    float(val)
+                except ValueError:
+                    row[counter] = "\'%s\'" % val
+            query = 'INSERT INTO %s (%s) VALUES (%s)' % (lookup_table, ', '.join(lookup_headers), ', '.join(row))
+            cur.execute(query)
     conn.commit()
 
 print 'Adding columns to master table'
