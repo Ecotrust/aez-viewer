@@ -135,7 +135,7 @@ function readQueryString(queryStringResult) {
     if (queryStringResult.hasOwnProperty('zoom')) {
         initMapZoom = queryStringResult.zoom;
     } else {
-        initMapZoom = 5;
+        initMapZoom = 6;
     }
 
     if (queryStringResult.hasOwnProperty('lat') && queryStringResult.hasOwnProperty('lng')) {
@@ -215,13 +215,28 @@ function init(){
     selectControl.handlers.feature.stopDown = false;
 
     map.addControl(selectControl);
-    map.setCenter(
-        new OpenLayers.LonLat(
-            (typeof initMapLng === 'undefined'?-120:initMapLng), 
-            (typeof initMapLat === 'undefined'?42:initMapLat)
-        ).transform("EPSG:4326", "EPSG:900913"), 
-        (typeof initMapZoom === 'undefined'?5:initMapZoom)
-    );
+
+    if (typeof initMapLng != 'undefined' && typeof initMapLat != 'undefined'){
+
+        map.setCenter(
+            new OpenLayers.LonLat(
+                initMapLng, 
+                initMapLat
+            ).transform("EPSG:4326", "EPSG:900913"), 
+            (typeof initMapZoom === 'undefined'?6:initMapZoom)
+        );
+    } else {
+        map.zoomToExtent(
+            new OpenLayers.Bounds(
+                -124,
+                35,
+                -105,
+                47.5
+            ).transform("EPSG:4326", "EPSG:900913")
+        );
+    }
+
+
     selectControl.activate();  
 
 }

@@ -197,8 +197,8 @@ function buildMap(){
 		map.setView([initMapLat, initMapLng], initMapZoom);
 	} else {
 		map.fitBounds([
-			[48, -126],
-			[35, -95]
+			[47.5, -124],
+			[35, -105]
 		]);
 	}
 
