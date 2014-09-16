@@ -432,6 +432,11 @@ var files = {
             "oc_oc06",
             "oc_oc07",
             "oc_oc08",
+            "mt_cattle",
+            "mt_chicken",
+            "mt_goats",
+            "mt_hogs",
+            "mt_sheep",
         ]
     },
 }

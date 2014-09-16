@@ -7,7 +7,7 @@ measurements = ['acres', 'farms', 'qnty']
 # parsed_code_end_index = 2       ## code = type + '_' + typecode
 uid_prop = 'zone_id'
 
-json_data = open('food_zones.geojson')
+json_data = open('food_counties.geojson')
 data = json.load(json_data)
 
 for measure in measurements:
