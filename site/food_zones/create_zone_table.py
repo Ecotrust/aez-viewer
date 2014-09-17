@@ -115,7 +115,7 @@ for measure in measures:
                 dens_column = "Sum(master.%s)/Sum(master.%s) AS %s%s%s_dens" % (raw_header, area_id, measure['prefix'], label, id)
             else:
                 raw_column = "master.%s AS %s" % (raw_header, raw_header)
-                dens_column = "master.%s/master.%s AS %s%s%s_dens" % (raw_header, area_id, measure['prefix'], label, id)
+                dens_column = "(master.%s*1.0)/(master.%s*1.0) AS %s%s%s_dens" % (raw_header, area_id, measure['prefix'], label, id)
 
             query += ", \n\
     %s, \n\

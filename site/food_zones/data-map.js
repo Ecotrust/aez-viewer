@@ -727,6 +727,32 @@ var types = {
 				"name": "Watermelons"
 			}
 		}
+	},
+	"mt": {
+		"name": "Livestock",
+		"option_attributes": ["name", "qty"],
+		"options": {
+			"cattle": {
+				"name": "Cattle",
+				"qty": "Head"
+			},
+			"chicken": {
+				"name": "Chicken",
+				"qty": "Head"
+			},
+			"goats": {
+				"name": "Goats",
+				"qty": "Head"
+			},
+			"hogs": {
+				"name": "Hogs",
+				"qty": "Head"
+			},
+			"sheep": {
+				"name": "Sheep",
+				"qty": "Head"
+			}
+		}
 	}
 };
 
@@ -822,7 +848,7 @@ var measures = {
 var popUpDescriptions = {
 	"acres": {
 		'density': {
-			"name": "% area planted in this crop"
+			"name": "% area producing this"
 		},
 		'count': {
 			"name": "Total acres"
@@ -830,7 +856,7 @@ var popUpDescriptions = {
 	},
 	"farms": {
 		'density': {
-			"name": "Farms per acre that grow this crop"
+			"name": "Farms per acre that produce this"
 		},
 		'count': {
 			"name": "Total farms"
