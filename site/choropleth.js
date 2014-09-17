@@ -650,7 +650,7 @@ function facilitiesStyle(feature) {
 		}
 	}
 	return {
-		radius: 4,
+		radius: 6,
 		fillColor: facilityColor,
 		color: '#000',
 		weight: 1,
@@ -673,6 +673,9 @@ function highlightFeature(layer) {
 
 	if (!L.Browser.ie && !L.Browser.opera && layer._map) {
 		layer.bringToFront();
+		if (typeof facilities != 'undefined') {
+			facilities.bringToFront();
+		}
 	}
 
 	highlightedFeature = layer;
@@ -908,6 +911,7 @@ function loadGeoJson() {
 		},
 		onEachFeature: onEachFacilityFeature
 	}).addTo(map);
+
 	killWaiting(geojson.getLayers());
 }
 
@@ -921,14 +925,14 @@ function setZoomControl() {
 
 function setLegend() {
 
-	for(var i=0; $('.legend').length > 0; i++) {
-		$('.legend')[0].remove();
+	for(var i=0; $('.chorolegend').length > 0; i++) {
+		$('.chorolegend')[0].remove();
 	}
 
 	var row = L.DomUtil.create('div', 'row');
 	var span = L.DomUtil.create('div', 'col-md-12');
 
-	var div = L.DomUtil.create('div', 'legend'),
+	var div = L.DomUtil.create('div', 'chorolegend'),
 		grades = [],
 		labels = [],
 		from, to;
@@ -988,6 +992,18 @@ function setLegend() {
 	span.appendChild(div);
 	row.appendChild(span)
 	$('#filter-container').append(row);
+	var row2 = L.DomUtil.create('div', 'row');
+	var span2 = L.DomUtil.create('div', 'col-md-12');
+	var div2 = L.DomUtil.create('div', 'info legend pointlegend');
+    div2.innerHTML = '<h4>Facilities</h4>\
+    <i style="background: #FFFF00; border: solid 1px">&nbsp;&nbsp;&nbsp;&nbsp;</i> Crops Only<br />\
+    <i style="background: #0000FF; border: solid 1px">&nbsp;&nbsp;&nbsp;&nbsp;</i> Livestock Only<br />\
+	<i style="background: #00FF00; border: solid 1px">&nbsp;&nbsp;&nbsp;&nbsp;</i> Both<br />\
+	<i style="background: #FFFFFF; border: solid 1px">&nbsp;&nbsp;&nbsp;&nbsp;</i> Neither<br />';
+	span2.appendChild(div2);
+	row2.appendChild(span2);
+	$('#filter-container').append(row2);
+
 }
 
 function loadData() {
