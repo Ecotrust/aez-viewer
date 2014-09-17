@@ -731,52 +731,6 @@ function getPopupHtml(feature) {
 	topPropRow.appendChild(topPropSpan);
 	topPopSpan.appendChild(topPropRow);
 
-	// var topAcresRow = document.createElement('div');
-	// topAcresRow.classList.add('row');
-	// var topAcresSpan = document.createElement('div');
-	// topAcresSpan.classList.add('col-md-12');
-	// topAcresSpan.classList.add('popAcres');
-	// topAcresSpan.innerHTML = Humanize.intComma(feature.properties['area_in_acres']) + ' acres';
-	// topAcresRow.appendChild(topAcresSpan);
-	// topPopSpan.appendChild(topAcresRow);
-
-	// Requested topic density display
-	// var topValueRow = document.createElement('div');
-	// topValueRow.classList.add('row');
-	// var topValueSpan = document.createElement('div');
-	// topValueSpan.classList.add('col-md-10');
-	// topValueSpan.classList.add('col-md-offset-1');
-	// topValueSpan.classList.add('popValue');
-	// if (showQuantity(property.measure)){
-	// 	var quantity_text = " " + types[property['type']]['options'][property['code']]['qty'];
-	// } else {
-	// 	var quantity_text = "";
-	// }
-	// if (layer_code_val == null) {
-	// 	topValueSpan.innerHTML = roundDigits(0).toString() + quantity_text;
-	// } else {
-	// 	if (layer_code_val == 0) {
-	// 		topValueSpan.innerHTML = '0';
-	// 	} else if (layer_code_val < 0.01) {
-	// 		topValueSpan.innerHTML = "Less than 0.01";
-	// 	} else {
-	// 		topValueSpan.innerHTML = Humanize.formatNumber(layer_code_val,2) + quantity_text;
-	// 	}
-	// }
-	// topValueRow.appendChild(topValueSpan);
-	// topPopSpan.appendChild(topValueRow);
-
-	// var topValueDescriptionRow = document.createElement('div');
-	// topValueDescriptionRow.classList.add('row');
-	// var topValueDescriptionSpan = document.createElement('div');
-	// topValueDescriptionSpan.classList.add('col-md-10');
-	// topValueDescriptionSpan.classList.add('col-md-offset-1');
-	// topValueDescriptionSpan.classList.add('popDescription');
-	// topValueDescriptionSpan.innerHTML = popUpDescriptions[property.measure][defaultPrimaryUnit]['name'];
-	// topValueDescriptionRow.appendChild(topValueDescriptionSpan);
-	// topPopSpan.appendChild(topValueDescriptionRow);
-
-
 	//Additional default displays
 	var layer_code_parts = layer_code.split('_');
 	var type_code = layer_code_parts[1];

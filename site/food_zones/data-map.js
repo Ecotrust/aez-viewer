@@ -986,9 +986,9 @@ function parseLayer(layername) {
 }
 
 function getDefaultLayer() {
-	var measure = "acres";
-	var type = "fc";
-	var code = "fc01";
+	var measure = "yield";
+	var type = "mt";
+	var code = "chicken";
 	var unit = defaultPrimaryUnit;
 
 	return {"measure": measure, "type": type, "code": code, "unit": unit};
