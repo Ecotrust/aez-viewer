@@ -925,14 +925,14 @@ function setZoomControl() {
 
 function setLegend() {
 
-	for(var i=0; $('.chorolegend').length > 0; i++) {
-		$('.chorolegend')[0].remove();
+	for(var i=0; $('.legend').length > 0; i++) {
+		$('.legend')[0].remove();
 	}
 
 	var row = L.DomUtil.create('div', 'row');
 	var span = L.DomUtil.create('div', 'col-md-12');
 
-	var div = L.DomUtil.create('div', 'chorolegend'),
+	var div = L.DomUtil.create('div', 'legend chorolegend'),
 		grades = [],
 		labels = [],
 		from, to;
