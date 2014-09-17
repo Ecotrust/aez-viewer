@@ -714,8 +714,7 @@ function getPopupHtml(feature) {
 	topZoneNameRow.classList.add('popZoneName');
 	var topZoneNameSpan = document.createElement('div');
 	topZoneNameSpan.classList.add('col-md-12');
-	topZoneNameSpan.innerHTML ='Zone #' + 
-		feature.properties[UID_key].toString();		//TODO: Replace with "Region Name"
+	topZoneNameSpan.innerHTML =feature.properties[UID_key].toString() + ' County';		//TODO: Replace with "Region Name"
 	topZoneNameRow.appendChild(topZoneNameSpan);
 	topPopSpan.appendChild(topZoneNameRow);
 
@@ -732,50 +731,50 @@ function getPopupHtml(feature) {
 	topPropRow.appendChild(topPropSpan);
 	topPopSpan.appendChild(topPropRow);
 
-	var topAcresRow = document.createElement('div');
-	topAcresRow.classList.add('row');
-	var topAcresSpan = document.createElement('div');
-	topAcresSpan.classList.add('col-md-12');
-	topAcresSpan.classList.add('popAcres');
-	topAcresSpan.innerHTML = Humanize.intComma(feature.properties['area_in_acres']) + ' acres';
-	topAcresRow.appendChild(topAcresSpan);
-	topPopSpan.appendChild(topAcresRow);
+	// var topAcresRow = document.createElement('div');
+	// topAcresRow.classList.add('row');
+	// var topAcresSpan = document.createElement('div');
+	// topAcresSpan.classList.add('col-md-12');
+	// topAcresSpan.classList.add('popAcres');
+	// topAcresSpan.innerHTML = Humanize.intComma(feature.properties['area_in_acres']) + ' acres';
+	// topAcresRow.appendChild(topAcresSpan);
+	// topPopSpan.appendChild(topAcresRow);
 
 	// Requested topic density display
-	var topValueRow = document.createElement('div');
-	topValueRow.classList.add('row');
-	var topValueSpan = document.createElement('div');
-	topValueSpan.classList.add('col-md-10');
-	topValueSpan.classList.add('col-md-offset-1');
-	topValueSpan.classList.add('popValue');
-	if (showQuantity(property.measure)){
-		var quantity_text = " " + types[property['type']]['options'][property['code']]['qty'];
-	} else {
-		var quantity_text = "";
-	}
-	if (layer_code_val == null) {
-		topValueSpan.innerHTML = roundDigits(0).toString() + quantity_text;
-	} else {
-		if (layer_code_val == 0) {
-			topValueSpan.innerHTML = '0';
-		} else if (layer_code_val < 0.01) {
-			topValueSpan.innerHTML = "Less than 0.01";
-		} else {
-			topValueSpan.innerHTML = Humanize.formatNumber(layer_code_val,2) + quantity_text;
-		}
-	}
-	topValueRow.appendChild(topValueSpan);
-	topPopSpan.appendChild(topValueRow);
+	// var topValueRow = document.createElement('div');
+	// topValueRow.classList.add('row');
+	// var topValueSpan = document.createElement('div');
+	// topValueSpan.classList.add('col-md-10');
+	// topValueSpan.classList.add('col-md-offset-1');
+	// topValueSpan.classList.add('popValue');
+	// if (showQuantity(property.measure)){
+	// 	var quantity_text = " " + types[property['type']]['options'][property['code']]['qty'];
+	// } else {
+	// 	var quantity_text = "";
+	// }
+	// if (layer_code_val == null) {
+	// 	topValueSpan.innerHTML = roundDigits(0).toString() + quantity_text;
+	// } else {
+	// 	if (layer_code_val == 0) {
+	// 		topValueSpan.innerHTML = '0';
+	// 	} else if (layer_code_val < 0.01) {
+	// 		topValueSpan.innerHTML = "Less than 0.01";
+	// 	} else {
+	// 		topValueSpan.innerHTML = Humanize.formatNumber(layer_code_val,2) + quantity_text;
+	// 	}
+	// }
+	// topValueRow.appendChild(topValueSpan);
+	// topPopSpan.appendChild(topValueRow);
 
-	var topValueDescriptionRow = document.createElement('div');
-	topValueDescriptionRow.classList.add('row');
-	var topValueDescriptionSpan = document.createElement('div');
-	topValueDescriptionSpan.classList.add('col-md-10');
-	topValueDescriptionSpan.classList.add('col-md-offset-1');
-	topValueDescriptionSpan.classList.add('popDescription');
-	topValueDescriptionSpan.innerHTML = popUpDescriptions[property.measure][defaultPrimaryUnit]['name'];
-	topValueDescriptionRow.appendChild(topValueDescriptionSpan);
-	topPopSpan.appendChild(topValueDescriptionRow);
+	// var topValueDescriptionRow = document.createElement('div');
+	// topValueDescriptionRow.classList.add('row');
+	// var topValueDescriptionSpan = document.createElement('div');
+	// topValueDescriptionSpan.classList.add('col-md-10');
+	// topValueDescriptionSpan.classList.add('col-md-offset-1');
+	// topValueDescriptionSpan.classList.add('popDescription');
+	// topValueDescriptionSpan.innerHTML = popUpDescriptions[property.measure][defaultPrimaryUnit]['name'];
+	// topValueDescriptionRow.appendChild(topValueDescriptionSpan);
+	// topPopSpan.appendChild(topValueDescriptionRow);
 
 
 	//Additional default displays
@@ -783,13 +782,25 @@ function getPopupHtml(feature) {
 	var type_code = layer_code_parts[1];
 	var crop_code = layer_code_parts[2];
 
-	pop_up_list = [['acres','z_ac','acres'],['farms','z_fm','farms'],['qnty','z_qt','yield']];
+	if (type_code != 'mt') {
+		pop_up_list = [['acres','z_ac','acres'],['farms','z_fm','farms'],['qnty','z_qt','yield']];
+	} else {
+		pop_up_list = [['acres','','acres'],['farms','','farms'],['qnty','','yield']];
+	}
 
 	for (var item_id = 0; item_id < pop_up_list.length; item_id++) {
 		var item = pop_up_list[item_id];
 
-		var pu_code = [item[0], type_code, crop_code, item[1]].join('_');
+		var pu_code_list = [item[0], type_code, crop_code, item[1]];
+		while (pu_code_list.indexOf('') != -1){
+			pu_code_list.pop(pu_code_list.indexOf(''));
+		}
+		var pu_code = pu_code_list.join('_');
+
 		var pu_code_val = getDisplayValue(feature.properties,pu_code);
+		if (pu_code_val == -999) {
+			pu_code_val = null;
+		}
 
 		if (showQuantity(item[2])){
 			var quantity_text = types[property['type']]['options'][property['code']]['qty'];
@@ -821,6 +832,9 @@ function getPopupHtml(feature) {
 					valueSpan.innerHTML = Humanize.intComma(pu_code_val)
 				}
 			}
+			if (pop_up_list[item_id][0] == "qnty") {
+				valueSpan.innerHTML += ' ' + quantity_text;
+			}
 		}
 		valueRow.appendChild(valueSpan);
 		topPopSpan.appendChild(valueRow);
@@ -831,7 +845,7 @@ function getPopupHtml(feature) {
 		valueDescriptionSpan.classList.add('col-md-10');
 		valueDescriptionSpan.classList.add('col-md-offset-1');
 		valueDescriptionSpan.classList.add('popDescription');
-		valueDescriptionSpan.innerHTML = popUpDescriptions[item[2]][defaultSecondaryUnit]['name'];
+		valueDescriptionSpan.innerHTML = popUpDescriptions[item[2]][defaultPrimaryUnit]['name'];
 		valueDescriptionRow.appendChild(valueDescriptionSpan);
 		topPopSpan.appendChild(valueDescriptionRow);
 	}

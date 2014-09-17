@@ -363,6 +363,11 @@ var files = {
             "vpm_vp54",
             "vpm_vp55",
             "vpm_vp56",
+            "mt_cattle",
+            "mt_chicken",
+            "mt_goats",
+            "mt_hogs",
+            "mt_sheep",
         ]
     },
     "yield": {

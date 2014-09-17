@@ -109,14 +109,17 @@ cur = conn.cursor()
 
 # ------------------------------------
 
-# print 'Adding columns to master table'
-# query = 'ALTER TABLE %s ADD COLUMN' % table_name
-# for header in headers:
-#     if header.split()[1] != 'C':
-#         label = header.split()[0]
-#         col_type = data_type_map[header.split()[1]]
-#         col_query = "%s %s %s;" % (query, label.lower(), col_type)
-#         cur.execute(col_query.lower())
+print 'Adding columns to master table'
+query = 'ALTER TABLE %s ADD COLUMN' % table_name
+for header in headers:
+    if header.split()[1] != 'C':
+        label = header.split()[0]
+        col_type = data_type_map[header.split()[1]]
+        col_query = "%s %s %s;" % (query, label.lower(), col_type)
+        try:
+            cur.execute(col_query.lower())
+        except:
+            pass
 
 print 'Updating master table'
 probs = True

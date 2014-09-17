@@ -30,7 +30,7 @@ measures = [
         "name": 'farms',
         "prefix": 'farms_',
         "postfix": '',
-        "types": ['br','fc','fn','fs','oc','vpm']
+        "types": ['br','fc','fn','fs','oc','vpm','mt']
     },
     {
         "name": 'yield',

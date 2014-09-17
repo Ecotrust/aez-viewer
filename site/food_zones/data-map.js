@@ -787,6 +787,11 @@ var units = {
 		"name":"Density",
 		"value":"density",
 		"label":"Per Acre"
+	},
+	"count": {
+		"name": "Count",
+		"value": "count",
+		"label": "units"
 	}
 };
 
@@ -802,6 +807,22 @@ function getLabel(property){
 				break;
 			case 'yield':
 				label = 'Yield';
+				break;
+			default:
+				if (property.unit) {
+					label = property.unit.label;
+				}
+		}
+	} else {
+		switch(property.measure){
+			case 'acres':
+				label = 'Acres';
+				break;
+			case 'farms':
+				label = 'Farms';
+				break;
+			case 'yield':
+				label = 'Production';
 				break;
 			default:
 				if (property.unit) {
@@ -835,39 +856,39 @@ function getUnits(property) {
 
 var measures = {
 	"acres": {
-		"name": "% of Area"
+		"name": "Acres"
 	},
 	"farms": {
-		"name": "Farms Per Acre"
+		"name": "Farms"
 	},
 	"yield": {
-		"name": "Yield Per Acre"
+		"name": "Production"
 	}
 }
 
 var popUpDescriptions = {
 	"acres": {
 		'density': {
-			"name": "% area producing this"
+			"name": "% ag land reprented by this product"
 		},
 		'count': {
-			"name": "Total acres"
+			"name": "Total acres of this product"
 		}
 	},
 	"farms": {
 		'density': {
-			"name": "Farms per acre that produce this"
+			"name": "Farms that produce this product"
 		},
 		'count': {
-			"name": "Total farms"
+			"name": "Total farms representing this product"
 		}
 	},
 	"yield": {
 		'density': {
-			"name": "Yield per acre"
+			"name": "Production"
 		},
 		'count': {
-			"name": "Total yield"
+			"name": "Production"
 		}
 	}
 }
@@ -892,8 +913,8 @@ function getTypes(property){
 	return available_types;
 }
 
-var defaultPrimaryUnit = 'density';
-var defaultSecondaryUnit = 'count';
+var defaultPrimaryUnit = 'count';
+var defaultSecondaryUnit = 'density';
 
 function encodeLayer(measure, type, code, unit) {
 	if (unit == 'density' || unit == 'dens') {
@@ -912,10 +933,18 @@ function encodeLayer(measure, type, code, unit) {
 			return "acres_" + type + "_" + code + "_z_ac";
 		}
 		if (measure == 'farms') {
-			return "farms_" + type + "_" + code + "_z_fm";
+			if (type != 'mt') {
+				return "farms_" + type + "_" + code + "_z_fm";
+			} else {
+				return "farms_" + type + "_" + code;
+			}
 		}
 		if (measure = 'yield') {
-			return "qnty_" + type + "_" + code + "_z_qt";
+			if (type != 'mt') {
+				return "qnty_" + type + "_" + code + "_z_qt";
+			} else {
+				return "qnty_" + type + "_" + code;
+			}
 		}
 		return 0;
 	}
