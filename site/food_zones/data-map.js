@@ -737,7 +737,7 @@ var types = {
 				"qty": "Head"
 			},
 			"chicken": {
-				"name": "Chicken",
+				"name": "Chicken (Broilers)",
 				"qty": "Head"
 			},
 			"goats": {
