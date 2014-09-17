@@ -229,9 +229,9 @@ function init(){
         map.zoomToExtent(
             new OpenLayers.Bounds(
                 -124,
-                35,
-                -105,
-                47.5
+                42.5,
+                -113,
+                45.5
             ).transform("EPSG:4326", "EPSG:900913")
         );
     }
