@@ -630,8 +630,34 @@ function style(feature) {
 		color: 'white',
 		dashArray: '',
 		fillColor: getColor(value, color_scheme, categories, reverse_scheme),
-		fillOpacity: getOpacity(value)
+		fillOpacity: getOpacity(value),
+		zindex: 1998
 	};
+}
+
+function facilitiesStyle(feature) {
+	if (feature.properties.Crops == 'Yes'){
+		if (feature.properties.Livestock == 'Yes') {
+			var facilityColor = '#00FF00';
+		} else {
+			var facilityColor = '#FFFF00';
+		}
+	} else {
+		if (feature.properties.Livestock == 'Yes'){
+			var facilityColor = '#0000FF';
+		} else {
+			var facilityColor = '#FFFFFF';
+		}
+	}
+	return {
+		radius: 4,
+		fillColor: facilityColor,
+		color: '#000',
+		weight: 1,
+		opacity: 1,
+		fillOpacity: 1,
+		zindex: 1999
+	}
 }
 
 function highlightFeature(layer) {
@@ -827,11 +853,34 @@ function onEachFeature(feature, layer) {
 	}
 }
 
+function onEachFacilityFeature(feature, layer) {
+	layer.on({
+		click: facilityClicked
+	});
+}
+
 function featureClicked(e) {
 	highlightFeature(e.target);
 	var stats = getPopupHtml(e.target.feature);
 	updateStats(stats);
 	selectFeature(e.target.feature.properties.zone_id);
+}
+
+function facilityClicked(e) {
+	var props = e.target.feature.properties;
+	var name = props.NameOp;
+	var crops = props.Crops;
+	var livestock = props.Livestock;
+	var handling = props.Handling;
+	var wildCrps = props.WildCrps;
+	var products = props.Products;
+	var facilityPopupHtml = '<h3>' + name + '</h3>\
+	Crops: ' + crops + '<br/>\
+	Livestock: ' + livestock + '<br />\
+	Handling: ' + handling + '<br />\
+	Wild Crops: ' + wildCrps + '<br />\
+	Products: ' + products;
+	e.target.bindPopup(facilityPopupHtml).openPopup();
 }
 
 function updateStats(stats) {
@@ -852,6 +901,13 @@ function loadGeoJson() {
 	if (selectedFeature != null) {
 		highlightFeature(selectedFeature);
 	}
+	facilities = L.geoJson(facilities_layer, {
+		style: facilitiesStyle,
+		pointToLayer: function (feature, latlng) {
+			return L.circleMarker(latlng, facilitiesStyle);
+		},
+		onEachFeature: onEachFacilityFeature
+	}).addTo(map);
 	killWaiting(geojson.getLayers());
 }
 

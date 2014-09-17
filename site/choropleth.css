@@ -209,6 +209,7 @@ html {
     z-index: 2000;
 }
 
+/*
 .leaflet-popup {
     left: 8px !important;
 }
@@ -227,6 +228,7 @@ html {
     margin-left: 7px;
     /*margin-bottom: 85px;*/
 }
+*/
 
 /* --- END POPUP STYLES ---*/
 
