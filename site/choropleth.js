@@ -685,8 +685,7 @@ function getPopupHtml(feature) {
 	topZoneNameRow.classList.add('popZoneName');
 	var topZoneNameSpan = document.createElement('div');
 	topZoneNameSpan.classList.add('col-md-12');
-	topZoneNameSpan.innerHTML ='Zone #' + 
-		feature.properties[UID_key].toString();		//TODO: Replace with "Region Name"
+	topZoneNameSpan.innerHTML = feature.properties[UID_key].toString();
 	topZoneNameRow.appendChild(topZoneNameSpan);
 	topPopSpan.appendChild(topZoneNameRow);
 
