@@ -50,12 +50,6 @@ var types = {
 			"br08": {
 				"name": "Raspberries, All"
 			},
-			"br09": {
-				"name": "Raspberries, Black"
-			},
-			"br10": {
-				"name": "Raspberries, Red"
-			},
 			"br11": {
 				"name": "Strawberries"
 			}
@@ -85,10 +79,6 @@ var types = {
 				"name": "Corn for Grain",
 				"qty": "Bushels"
 			},
-			"fc06": {
-				"name": "Cotton, All",
-				"qty": "Bales"
-			},
 			"fc07": {
 				"name": "Dry Edible Beans, Excluding Limas",
 				"qty": "CWT"
@@ -117,10 +107,6 @@ var types = {
 				"name": "Lentils",
 				"qty": "CWT"
 			},
-			"fc14": {
-				"name": "Mustard Seed",
-				"qty": "Pounds"
-			},
 			"fc15": {
 				"name": "Oats for Grain",
 				"qty": "Bushels"
@@ -132,18 +118,6 @@ var types = {
 			"fc17": {
 				"name": "Peanuts for Nuts",
 				"qty": "Pounds"
-			},
-			"fc18": {
-				"name": "Pima Cotton",
-				"qty": "Bales"
-			},
-			"fc19": {
-				"name": "Popcorn",
-				"qty": "Pounds, shelled"
-			},
-			"fc20": {
-				"name": "Proso Millet",
-				"qty": "Bushels"
 			},
 			"fc21": {
 				"name": "Rapeseed",
@@ -181,24 +155,8 @@ var types = {
 				"name": "Sunflower Seed, All",
 				"qty": "Pounds"
 			},
-			"fc30": {
-				"name": "Sunflower Seed, Nonoil Varieties",
-				"qty": "Pounds"
-			},
-			"fc31": {
-				"name": "Sunflower Seed, Oil Varieties",
-				"qty": "Pounds"
-			},
 			"fc32": {
 				"name": "Triticale",
-				"qty": "Bushels"
-			},
-			"fc33": {
-				"name": "Upland Cotton",
-				"qty": "Bales"
-			},
-			"fc34": {
-				"name": "Wheat for Grain, All",
 				"qty": "Bushels"
 			},
 			"fc35": {
@@ -223,113 +181,21 @@ var types = {
 				"name": "Alfalfa Seed",
 				"qty": "Pounds"
 			},
-			"fs03": {
-				"name": "All Haylage/Silage/Greenchop",
-				"qty": "Tons, Green"
-			},
-			"fs04": {
-				"name": "Bentgrass Seed",
-				"qty": "Pounds"
-			},
-			"fs05": {
-				"name": "Bermuda Grass Seed",
-				"qty": "Pounds"
-			},
-			"fs06": {
-				"name": "Birdsfoot Trefoil Seed",
-				"qty": "Pounds"
-			},
-			"fs07": {
-				"name": "Bromegrass Seed",
-				"qty": "Pounds"
-			},
 			"fs08": {
 				"name": "Corn for Silage/Greenchop",
 				"qty": "Tons"
-			},
-			"fs09": {
-				"name": "Crimson Clover Seed",
-				"qty": "Pounds"
-			},
-			"fs10": {
-				"name": "Fescue Seed",
-				"qty": "Pounds"
 			},
 			"fs11": {
 				"name": "Field and Grass Seed Crops, All",
 				"qty": null
 			},
-			"fs12": {
-				"name": "Forage Land for All Hay/Haylage/Silage/Greenchop",
-				"qty": "Tons, Dry Equivalent"
-			},
-			"fs13": {
-				"name": "Hay: All Hay including Alfalfa/Tame/Small Grain/Wild",
-				"qty": "Tons, Dry Equivalent"
-			},
 			"fs14": {
 				"name": "Haylage/Greenchop from Alfalfa/Mixtures",
 				"qty": "Tons, Green"
 			},
-			"fs15": {
-				"name": "Kentucky Bluegrass Seed",
-				"qty": "Pounds"
-			},
-			"fs16": {
-				"name": "Orchardgrass Seed",
-				"qty": "Pounds"
-			},
-			"fs17": {
-				"name": "Ladino Clover Seed",
-				"qty": "Pounds"
-			},
-			"fs18": {
-				"name": "Other Field and Grass Seed Crops",
-				"qty": "Pounds"
-			},
-			"fs19": {
-				"name": "Other Haylage, Grass Silage, and Greenchop",
-				"qty": "Tons, Green"
-			},
-			"fs20": {
-				"name": "Other Tame Hay",
-				"qty": "Tons, Dry"
-			},
-			"fs21": {
-				"name": "Red Clover Seed",
-				"qty": "Pounds"
-			},
-			"fs22": {
-				"name": "Ryegrass Seed",
-				"qty": "Pounds"
-			},
-			"fs23": {
-				"name": "Small Grain Hay",
-				"qty": "Tons, Dry"
-			},
 			"fs24": {
 				"name": "Sorghum for Silage or Greenchop",
 				"qty": "Tons"
-			},
-			"fs25": {
-				"name": "Sudangrass Seed",
-				"qty": "Pounds"
-			},
-			"fs26": {
-				"name": "Timothy Seed",
-				"qty": "Pounds"
-			},
-			"fs27": {
-				"name": "Vetch Seed",
-				"qty": "Pounds"
-			},
-			"fs28": {
-				"name": "Wheatgrass Seed",
-				"qty": "Pounds"
-			},
-			"fs29": {
-				"name": "White Clover Seed",
-				"qty": "Pounds"
 			},
 			"fs30": {
 				"name": "Wild Hay",
@@ -364,9 +230,6 @@ var types = {
 			},
 			"fn08": {
 				"name": "Chestnuts"
-			},
-			"fn09": {
-				"name": "Citrus Fruit, All"
 			},
 			"fn10": {
 				"name": "Dates"
@@ -407,32 +270,11 @@ var types = {
 			"fn22": {
 				"name": "Nectarines"
 			},
-			"fn23": {
-				"name": "Noncitrus, All"
-			},
-			"fn24": {
-				"name": "Nuts, All"
-			},
 			"fn25": {
 				"name": "Olives"
 			},
 			"fn26": {
 				"name": "Oranges, All"
-			},
-			"fn27": {
-				"name": "Other Citrus Fruit"
-			},
-			"fn28": {
-				"name": "Other Noncitrus Fruit"
-			},
-			"fn29": {
-				"name": "Other Nuts"
-			},
-			"fn30": {
-				"name": "Other Oranges"
-			},
-			"fn31": {
-				"name": "Papayas"
 			},
 			"fn32": {
 				"name": "Passion Fruit"
@@ -440,29 +282,11 @@ var types = {
 			"fn33": {
 				"name": "Peaches, All"
 			},
-			"fn34": {
-				"name": "Peaches, Clingstone"
-			},
-			"fn35": {
-				"name": "Peaches, Freestone"
-			},
 			"fn36": {
 				"name": "Pears, All"
 			},
-			"fn37": {
-				"name": "Pears, Bartlett"
-			},
-			"fn38": {
-				"name": "Pears, Other"
-			},
 			"fn39": {
 				"name": "Pecans, All"
-			},
-			"fn40": {
-				"name": "Pecans, Improved"
-			},
-			"fn41": {
-				"name": "Pecans, Native and Seedling"
 			},
 			"fn42": {
 				"name": "Persimmons"
@@ -472,9 +296,6 @@ var types = {
 			},
 			"fn44": {
 				"name": "Plums"
-			},
-			"fn45": {
-				"name": "Plums and Prunes"
 			},
 			"fn46": {
 				"name": "Pluots"
@@ -491,9 +312,6 @@ var types = {
 			"fn50": {
 				"name": "Tangerines"
 			},
-			"fn51": {
-				"name": "Valencia Oranges"
-			},
 			"fn52": {
 				"name": "Walnuts, English",
 				"qty": ""
@@ -504,10 +322,6 @@ var types = {
 		"name": "Other Crops",
 		"option_attributes": ["name", "qty"],
 		"options": {
-			"oc01": {
-				"name": "Crambe",
-				"qty": "Pounds"
-			},
 			"oc02": {
 				"name": "Dill for Oil",
 				"qty": "Pounds"
@@ -527,30 +341,6 @@ var types = {
 			"oc06": {
 				"name": "Mint for Oil, All",
 				"qty": "Pounds of Oil"
-			},
-			"oc07": {
-				"name": "Mint for Oil, Peppermint",
-				"qty": "Pounds of Oil"
-			},
-			"oc08": {
-				"name": "Mint for Oil, Spearmint",
-				"qty": "Pounds of Oil"
-			},
-			"oc09": {
-				"name": "Other Crops",
-				"qty": null
-			},
-			"oc10": {
-				"name": "Sesame",
-				"qty": "Pounds"
-			},
-			"oc11": {
-				"name": "Sweet Corn for Seed",
-				"qty": "Pounds"
-			},
-			"oc12": {
-				"name": "Taro",
-				"qty": "Pounds"
 			}
 		}
 	},
@@ -579,14 +369,8 @@ var types = {
 			"vp07": {
 				"name": "Brussels Sprouts"
 			},
-			"vp08": {
-				"name": "Cabbage, Chinese"
-			},
 			"vp09": {
 				"name": "Cabbage, Head"
-			},
-			"vp10": {
-				"name": "Cabbage, Mustard"
 			},
 			"vp11": {
 				"name": "Cantaloupes"
@@ -639,15 +423,6 @@ var types = {
 			"vp27": {
 				"name": "Lettuce, All"
 			},
-			"vp28": {
-				"name": "Lettuce, Head"
-			},
-			"vp29": {
-				"name": "Lettuce, Leaf"
-			},
-			"vp30": {
-				"name": "Lettuce, Romaine"
-			},
 			"vp31": {
 				"name": "Mustard Greens"
 			},
@@ -695,12 +470,6 @@ var types = {
 			},
 			"vp46": {
 				"name": "Squash, All"
-			},
-			"vp47": {
-				"name": "Squash, Summer"
-			},
-			"vp48": {
-				"name": "Squash, Winter"
 			},
 			"vp49": {
 				"name": "Sweet Corn"
