@@ -367,8 +367,12 @@ function getRange(data,property,method) {
 		var range = []
 		for(var i=0; i<data.features.length; i++){
 			var value=data.features[i].properties[property];
-			if (value != 0){
+			if (value > 0){
 				range.push(value);
+				console.log(value);
+			}
+			if (value < 0) {
+				data.features[i].properties[property] = null;
 			}
 		}
 		return range;
@@ -773,7 +777,7 @@ function getPopupHtml(feature) {
 		valueSpan.classList.add('col-md-offset-1');
 		valueSpan.classList.add('popValue');
 		if (pu_code_val == null) {
-			valueSpan.innerHTML = quantity_text;
+			valueSpan.innerHTML = 'N/A';
 		} else {
 			if (pu_code_val == 0) {
 				valueSpan.innerHTML = '0';
