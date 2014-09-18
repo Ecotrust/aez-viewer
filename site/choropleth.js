@@ -369,7 +369,6 @@ function getRange(data,property,method) {
 			var value=data.features[i].properties[property];
 			if (value > 0){
 				range.push(value);
-				console.log(value);
 			}
 			if (value < 0) {
 				data.features[i].properties[property] = null;
