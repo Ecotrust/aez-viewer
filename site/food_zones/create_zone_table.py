@@ -16,6 +16,8 @@ zone_id = 'ISOZONE'
 lookup_subzone_id = 'GRIDCODE'
 lookup_zone_id = 'region'
 area_id = 'acres_fc_sum_f_area'
+ag_area_id = 'acres_fc_Ag_acre'
+in_irrig_id = 'acres_fc_Irrig_acre'
 pixels_id = 'acres_br_count'
 
 measures = [
@@ -89,8 +91,10 @@ SELECT \n\
     lookup.%s AS zone_id, \n\
     CastToMultiPolygon(Collect(TRANSFORM(master.GEOMETRY, %s))) AS GEOMETRY, \n\
     Sum(master.%s) AS area_in_acres, \n\
+    Sum(master.%s) AS ag_acres, \n\
     Sum(master.%s) AS pixels, \n\
-    Count(master.id) AS poly_count" % (out_table, lookup_zone_id, out_srid, area_id, pixels_id)
+    Sum(master.%s) AS irrig_acre, \n\
+    Count(master.id) AS poly_count" % (out_table, lookup_zone_id, out_srid, area_id, ag_area_id, pixels_id, in_irrig_id)
 
 for measure in measures:
     for type in measure['types']:
@@ -98,7 +102,7 @@ for measure in measures:
         for id in types[type]['ids']:
             raw_header = "%s%s%s%s" % (measure['prefix'], label, id, measure['postfix'])
             raw_column = "Sum(master.%s) AS %s" % (raw_header, raw_header)
-            dens_column = "Sum(master.%s)/Sum(master.%s) AS %s%s%s_dens" % (raw_header, area_id, measure['prefix'], label, id)
+            dens_column = "Sum(master.%s*1.0)/Sum(master.%s*1.0) AS %s%s%s_dens" % (raw_header, ag_area_id, measure['prefix'], label, id)
             query += ", \n\
     %s, \n\
     %s" % (raw_column, dens_column)
