@@ -98,12 +98,16 @@ html {
     width: 430px;
     position: absolute;
     z-index: 995;
+    padding-bottom: 41px;
+}
+
+.well {
+    margin-bottom: 0px !important;
 }
 
 #left-panel {
-    height: 93%;
+    height: 100%;
     width: 100%;
-    margin-bottom: 0 !important;
 }
 
 .nav-tabs {
