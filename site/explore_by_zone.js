@@ -1,6 +1,6 @@
 var map, selectControl;
 var width = 370;
-var height = $('#left-panel').height() - ($('#title').height() + $('#zone-select').height() + 60);
+var height = $('#left-panel').height() - ($('#title').height() + $('#zone-select').height() + 45);
 var margin = {top: 0, right: 0, bottom: 0, left: 0};
 var selectedValue = 'acres';
 var nSelected = 0;
@@ -107,7 +107,7 @@ var featureSelected = function(feature) {
     if (!suspendRedraw) {
         redrawTreemap(selectedValue);
     }
-    var featureId = feature.feature.attributes.id;
+    var featureId = feature.feature.attributes.zone_id;
     updateZones(featureId, "add");
 }
 
@@ -117,7 +117,7 @@ var featureUnselected = function(feature) {
     if (!suspendRedraw) {
         redrawTreemap(selectedValue);
     }
-    var featureId = feature.feature.attributes.id;
+    var featureId = feature.feature.attributes.zone_id;
     updateZones(featureId, "remove");
 }
 
@@ -247,7 +247,7 @@ function selectInitialZones() {
         var selected_zones = queryStringObject.zones.split(",");
         for (var i = 0; i <= selected_zones.length; i++) {
             if (selected_zones[i] != "") {
-                var feature = vectors.getFeaturesByAttribute("id",selected_zones[i])[0]; //returns list, but get by id should only return 1 result
+                var feature = vectors.getFeaturesByAttribute("zone_id",decodeURIComponent(selected_zones[i]))[0]; //returns list, but get by id should only return 1 result
                 selectControl.select(feature);
             }
         }
