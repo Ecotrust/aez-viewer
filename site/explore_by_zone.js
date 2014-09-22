@@ -246,7 +246,7 @@ function selectInitialZones() {
     if (queryStringObject.hasOwnProperty('zones')) {
         var selected_zones = queryStringObject.zones.split(",");
         for (var i = 0; i <= selected_zones.length; i++) {
-            if (selected_zones[i] != "") {
+            if (typeof(selected_zones[i]) != "undefined" && selected_zones[i] != "") {
                 var feature = vectors.getFeaturesByAttribute("zone_id",decodeURIComponent(selected_zones[i]))[0]; //returns list, but get by id should only return 1 result
                 selectControl.select(feature);
             }
