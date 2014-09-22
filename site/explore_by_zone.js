@@ -1,6 +1,6 @@
 var map, selectControl;
-var width = 250;
-var height = 550;
+var width = 370;
+var height = $('#left-panel').height() - ($('#title').height() + $('#zone-select').height() + 60);
 var margin = {top: 0, right: 0, bottom: 0, left: 0};
 var selectedValue = 'acres';
 var nSelected = 0;
