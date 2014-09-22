@@ -177,7 +177,7 @@ function init(){
         projection: "EPSG:4326",
         strategies: [new OpenLayers.Strategy.Fixed()],
         protocol: new OpenLayers.Protocol.HTTP({
-            url: "food_zones/food_zones_all.geojson",
+            url: "food_zones/food_zones.geojson",
             format: new OpenLayers.Format.GeoJSON()
         })
     });
