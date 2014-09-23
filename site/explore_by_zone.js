@@ -126,7 +126,7 @@ function queryObj() {
 
     keyValuePairs.forEach(function(keyValuePair) {
         keyValuePair = keyValuePair.split('=');
-        queryStringObject[keyValuePair[0]] = keyValuePair[1] || '';
+        queryStringObject[keyValuePair[0]] = decodeURIComponent(keyValuePair[1]) || '';
     });
 }
 
