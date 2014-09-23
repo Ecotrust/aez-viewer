@@ -1,6 +1,6 @@
 var map, selectControl;
 var width = 370;
-var height = $('#left-panel').height() - ($('#title').height() + $('#zone-select').height() + 45);
+var height = $('#left-panel').height() - ($('#title').height() + $('#zone-select').height() + 195);
 var margin = {top: 0, right: 0, bottom: 0, left: 0};
 var selectedValue = 'acres';
 var nSelected = 0;
@@ -306,6 +306,11 @@ function getFullName(cat, crop) {
     return name;
 }
 
+function getCategoryName(cat) {
+    var name = types[cat.toLowerCase()].name;
+    return name;
+}
+
 function initTreemap() {
     // Create the following data structure based on the crop available 
     // treeDataTemplate = {
@@ -335,9 +340,10 @@ function initTreemap() {
             var newk = k.replace(start,"").replace(end,"");
             var parts = newk.split("_");
             var catname = parts[0];
-            // Ignore fs
-            if (catname == "fs") { continue; }
-            
+
+            // TODO: Ignore fs?
+            // if (catname == "fs") { continue; }
+
             var cropname = parts[1];
             var fullname = getFullName(catname, cropname);
             // Ignore crops ending with ", All" 
@@ -348,7 +354,7 @@ function initTreemap() {
 
             var catidx = false;
             for (a in treeDataTemplate.children) {
-                if (treeDataTemplate.children[a].name == 'catname') {
+                if (treeDataTemplate.children[a].name == catname) {
                     catidx = a;
                 } 
             }
@@ -363,6 +369,28 @@ function initTreemap() {
                   yield: 0}
             );
         }
+    }
+
+    // Legend
+    for (a in treeDataTemplate.children) {
+        var catcode = treeDataTemplate.children[a].name;
+        var catname = getCategoryName(catcode);
+        var catcolor = color(catcode);
+        var p = d3.select("#legend").append('p').style("margin", "0");
+        p.append('span')
+            .style("background", catcolor)
+            .style("display", "inline-block")
+            .style("border", "solid grey 1px")
+            .style("width", "12px")
+            .style("height", "12px")
+            .style("background", catcolor)
+            .style("border", "solid grey 1px")
+            .style("width", "12px")
+            .style("height", "12px")
+
+        p.append('span')
+            .style("margin-left", "10px")
+            .html(catname);
     }
 
     treeData = JSON.parse( JSON.stringify( treeDataTemplate ) );  // copy
