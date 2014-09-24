@@ -112,7 +112,7 @@ function counter(selectedFeatures) {
     for (var i = selectedFeatures.length - 1; i >= 0; i--) {
         totalAcres += selectedFeatures[i].attributes.area_in_acres;
     };
-    document.getElementById('acres').innerHTML = Math.round(totalAcres);
+    document.getElementById('acres').innerHTML = Humanize.intComma(Math.round(totalAcres));
 
     if (nSelected > 0) {
         var selected_html = "<p>";
