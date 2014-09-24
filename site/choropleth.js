@@ -235,10 +235,13 @@ function buildMap(){
 }
 
 function roundDigits(number){
+	if (typeof(number) == undefined || number == null) {
+		number = 0;
+	}
 	if ($.inArray('.',number.toString()) != -1 && number != 0){
 		var dig_str = number.toString().split('.')[1];
 		if (dig_str.length > max_digits) {
-			return number.toFixed(max_digits);
+			return parseFloat(number).toFixed(max_digits);
 		}
 	}
 	return number;
@@ -469,28 +472,23 @@ function getJenksCategories(range, count){
 	new_range = new_range.sort().filter(function(item) {
 		return item != null && item != undefined;
 	});
-	if (new_range.indexOf('0') == -1){
-		new_range.push('0');
-	}
 	new_range.sort(function(a,b) { return a - b;}).filter(function(item, pos) {
         return !pos || item != new_range[pos - 1];
     });
-	if (new_range.length <= count) {
+	if (new_range.length < count) {
 		if (new_range.length <= 1) {
 			return [0,0,0,0,0];
 		}
 		slice_count = 0;
-		categories = ss.jenksnew_range;
-	} else {
-		categories = ss.jenks(new_range, count);
-		if (categories.indexOf(undefined) != -1 || categories.indexOf(null) != -1) {
-			console.log(new_range);
-			count = new_range < count ? new_range.length : count;
-			categories = ss.jenks(new_range, count);
-			console.log(categories);
-		}
+	// 	categories = ss.jenks(new_range, count);
 	}
-	// categories = roundCategories(categories);
+	// } else {
+	count = new_range.length < count ? new_range.length : count;
+	categories = ss.jenks(new_range, count);
+	while (categories.indexOf(undefined) != -1 || categories.indexOf(null) != -1) {
+		count = count -1;
+		categories = ss.jenks(new_range, count);
+	}
 
 	return categories.reverse().slice(slice_count, categories.length);
 }

@@ -721,7 +721,6 @@ function getDisplayValue(properties, key) {
 		return 100*properties[key];
 	}
 	if (key_parts[0] == 'farms' && key_parts[3] == 'dens') {		//We display "farms per sq. mile" not acre.
-		console.log(key + ': converting acres to sq mi');
 		return 640*properties[key];
 	}
 	return properties[key];
