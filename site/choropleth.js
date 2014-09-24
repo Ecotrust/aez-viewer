@@ -480,9 +480,7 @@ function getJenksCategories(range, count){
 			return [0,0,0,0,0];
 		}
 		slice_count = 0;
-	// 	categories = ss.jenks(new_range, count);
 	}
-	// } else {
 	count = new_range.length < count ? new_range.length : count;
 	categories = ss.jenks(new_range, count);
 	while (categories.indexOf(undefined) != -1 || categories.indexOf(null) != -1) {
@@ -490,7 +488,18 @@ function getJenksCategories(range, count){
 		categories = ss.jenks(new_range, count);
 	}
 
-	return categories.reverse().slice(slice_count, categories.length);
+	categories.reverse().slice(slice_count, categories.length);
+	categories = categories.filter(function(item, position){return(item != categories[position-1])});
+	if (categories.length < num_categories && categories.indexOf("0") == -1){
+		if (categories.length > 1) {
+			var cur_min = parseFloat(categories[categories.length-1]);
+			var cur_min_diff = parseFloat(categories[categories.length-2]) - cur_min;
+			cur_min = cur_min + cur_min_diff*0.1;
+			categories[categories.length-1] = cur_min.toString();
+		}
+		categories.push("0");
+	}
+	return categories;
 }
 
 function capFirstLetter(string){
@@ -610,16 +619,16 @@ function getColor(value, scheme, categories, reverse) {
 		value = 0;
 	}
 	if (reverse==true){
-		return 	value >= categories[0] ? scheme.list[4] :
-				value >= categories[1] ? scheme.list[3] :
-				value >= categories[2] ? scheme.list[2] :
-				value >= categories[3] ? scheme.list[1] :
+		return 	parseFloat(value) >= parseFloat(categories[0]) ? scheme.list[4] :
+				categories.length > 1 && parseFloat(value) >= parseFloat(categories[1]) ? scheme.list[3] :
+				categories.length > 2 && parseFloat(value) >= parseFloat(categories[2]) ? scheme.list[2] :
+				categories.length > 3 && parseFloat(value) >= parseFloat(categories[3]) ? scheme.list[1] :
 									 	scheme.list[0];
 	} else {
-		return 	value >= categories[0] ? scheme.list[0] :
-				value >= categories[1] ? scheme.list[1] :
-				value >= categories[2] ? scheme.list[2] :
-				value >= categories[3] ? scheme.list[3] :
+		return 	parseFloat(value) >= parseFloat(categories[0]) ? scheme.list[0] :
+				categories.length > 1 && parseFloat(value) >= parseFloat(categories[1]) ? scheme.list[1] :
+				categories.length > 2 && parseFloat(value) >= parseFloat(categories[2]) ? scheme.list[2] :
+				categories.length > 3 && parseFloat(value) >= parseFloat(categories[3]) ? scheme.list[3] :
 									 	scheme.list[4];
 	}
 }
