@@ -93,6 +93,7 @@ div.olControlZoom a, div.olControlTextButtonPanel .olButton {
 #left-panel {
     height: 100%;
     width: 100%;
+    overflow-y: auto;
 }
 
 .nav-tabs {

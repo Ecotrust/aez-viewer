@@ -1,6 +1,6 @@
 var map, selectControl;
-var width = 370;
-var height = $('#left-panel').height() - ($('#title').height() + $('#zone-select').height() + 195);
+var width = 360;
+var height = $('#left-panel').height() - ($('#title').height() + $('#zone-select').height() + 220);
 var margin = {top: 0, right: 0, bottom: 0, left: 0};
 var selectedValue = 'acres';
 var nSelected = 0;
@@ -22,6 +22,7 @@ function position() {
 
 function calcCharts(feature, type) {
     attrs = feature.feature.attributes;
+    var vals = [];  //used for QA/QC testung
 
     // Loop through crops in treeData and
     // add or subtract based on the selected/unselected features attrs
@@ -30,20 +31,29 @@ function calcCharts(feature, type) {
         for (j in cat.children) {
             var crop = cat.children[j];
             featAcres = attrs["acres_" + cat.name + "_" + crop.name + "_z_ac"];
-            featYield = attrs["acres_" + cat.name + "_" + crop.name + "_z_ac"];
 
             var newacres, newyield;
             if (type === "select") {
                 newacres = crop.acres + featAcres; 
-                newyield = crop.yield + featYield;
+               vals.push({'cat': cat.name, 'crop': crop.fullname + ' - ' + crop.name, 'acres': newacres});
             } else if (type === "unselect") {
                 newacres = crop.acres - featAcres;
-                newyield = crop.yield - featYield;
             }
+
             treeData.children[i].children[j].acres = newacres;
-            treeData.children[i].children[j].yield = newyield;
         }
     }
+    /*
+    // Add this section to see values for top 5 crops by acre of each region in the console
+    if (type === "select") {
+        vals.sort(function(a,b){return b.acres - a.acres;});
+        var top5 = vals.slice(0,5);
+        console.log(feature.feature.attributes.zone_id);
+        for (var i = 0; i < top5.length; i++) {
+            console.log(top5[i].acres + ' ' + top5[i].cat + ' ' + top5[i].crop);
+        }
+    }
+    */
 }
 
 function clearSelection() {
@@ -88,17 +98,33 @@ function counter(selectedFeatures) {
 
     if (nSelected == 0) {
         document.getElementById('treemap').style.display = 'none';
+        document.getElementById('regions').style.display = 'none';
+        document.getElementById('counter').style.display = 'block';
     } else {
         document.getElementById('treemap').style.display = 'block';
+        document.getElementById('regions').style.display = 'block';
+        document.getElementById('counter').style.display = 'none';
     }
 
-    document.getElementById('counter').innerHTML = nSelected;
+    document.getElementById('counter').innerHTML = nSelected.toString() + ' regions selected, ';
 
     var totalAcres = 0;
     for (var i = selectedFeatures.length - 1; i >= 0; i--) {
         totalAcres += selectedFeatures[i].attributes.area_in_acres;
     };
     document.getElementById('acres').innerHTML = Math.round(totalAcres);
+
+    if (nSelected > 0) {
+        var selected_html = "<p>";
+        for (var i = 0; i < nSelected; i++) {
+            if (i > 0) {
+                selected_html += "<br/>";
+            }
+            selected_html += selectedFeatures[i].attributes.zone_id;
+        }
+        selected_html += "</p>";
+    }
+    document.getElementById('regions').innerHTML = selected_html;
 }
 
 var featureSelected = function(feature) {
@@ -259,7 +285,6 @@ function resetTreemap() {
         var cat = treeData.children[i];
         for (var j in cat.children) {
             treeData.children[i].children[j].acres = 0;
-            treeData.children[i].children[j].yield = 0;
         }
     }
 }
@@ -269,9 +294,7 @@ function randomizeTreemap() {
         var cat = treeData.children[i];
         for (var j in cat.children) {
             var newacres = Math.floor(Math.random() * 2) + 5;
-            var newyield = Math.floor(Math.random() * 2) + 5;
             treeData.children[i].children[j].acres = newacres;
-            treeData.children[i].children[j].yield = newyield;
         }
     }
 }
@@ -295,7 +318,7 @@ function redrawTreemap(v) {
         .call(position)
         .text(function(d) { 
             if (d.dy < 12) { return null; }
-            return d.children ? null : d.fullname; 
+            return d.children ? null : d.fullname + ': ' + Humanize.intComma(d.acres) + ' acres'; 
       });
 
     return true;
@@ -365,25 +388,27 @@ function initTreemap() {
             treeDataTemplate.children[catidx].children.push(
                 { name: cropname, 
                   fullname: fullname,
-                  acres: 0,
-                  yield: 0}
+                  acres: 0}
             );
         }
     }
 
     // Legend
-    for (a in treeDataTemplate.children) {
+    for (var a = 0; a < treeDataTemplate.children.length; a++){
+        // a = treeDataTemplate.children[i];
         var catcode = treeDataTemplate.children[a].name;
         var catname = getCategoryName(catcode);
         var catcolor = color(catcode);
-        var p = d3.select("#legend").append('p').style("margin", "0");
+        if (a%2 == 0){
+            var row = d3.select("#legend").append('div').attr("class","row");
+            var col = row.append('div').attr("class",'col-md-4');
+        } else {
+            var col = row.append('div').attr("class",'col-md-8');
+        }
+        var p = col.append('p').style("margin", "0");
         p.append('span')
             .style("background", catcolor)
             .style("display", "inline-block")
-            .style("border", "solid grey 1px")
-            .style("width", "12px")
-            .style("height", "12px")
-            .style("background", catcolor)
             .style("border", "solid grey 1px")
             .style("width", "12px")
             .style("height", "12px")
