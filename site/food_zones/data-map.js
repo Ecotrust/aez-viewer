@@ -541,7 +541,7 @@ function getLabel(property){
 				label = '% Area';
 				break;
 			case 'farms':
-				label = 'Farms Per Acre';
+				label = 'Farms Per Acre (?)';
 				break;
 			case 'yield':
 				label = 'Yield';
@@ -584,7 +584,7 @@ var measures = {
 		"name": "Farms Per Acre"
 	},
 	"yield": {
-		"name": "Yield Per Acre"
+		"name": "Yield"
 	}
 }
 
@@ -594,12 +594,12 @@ var popUpDescriptions = {
 			"name": "% area planted in this crop"
 		},
 		'count': {
-			"name": "Total acres"
+			"name": "Total acres of this crop"
 		}
 	},
 	"farms": {
 		'density': {
-			"name": "Farms per acre that grow this crop"
+			"name": "Farms per Mi<sup>2</sup> that grow this crop"
 		},
 		'count': {
 			"name": "Total farms"
@@ -607,10 +607,10 @@ var popUpDescriptions = {
 	},
 	"yield": {
 		'density': {
-			"name": "Yield per acre"
+			"name": "Units per acre"
 		},
 		'count': {
-			"name": "Total yield"
+			"name": "Total production"
 		}
 	}
 }
@@ -720,6 +720,29 @@ function getDisplayValue(properties, key) {
 	if (key_parts[0] == 'acres' && key_parts[3] == 'dens') {	//We display "percentages", not density values for this.
 		return 100*properties[key];
 	}
+	if (key_parts[0] == 'farms' && key_parts[3] == 'dens') {		//We display "farms per sq. mile" not acre.
+		console.log(key + ': converting acres to sq mi');
+		return 640*properties[key];
+	}
 	return properties[key];
+}
 
+function legendTooltipUnits(measure, type, code){
+	unit = '';
+	switch(measure) {
+		case 'acres':
+			unit = '%';
+			break;
+		case 'farms':
+			unit = ' farms/sq.mi';
+			break;
+		case 'yield':
+			unit = ' ' + types[type]['options'][code]['qty'];
+			break;
+		default:
+			unit='';
+			alert('Unknown unit.');
+			debugger;
+	}
+	return unit;
 }

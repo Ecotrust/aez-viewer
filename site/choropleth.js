@@ -466,14 +466,29 @@ function getJenksCategories(range, count){
 			new_range.push(range[i]);
 		}
 	}
-	if (new_range.length < count) {
+	new_range = new_range.sort().filter(function(item) {
+		return item != null && item != undefined;
+	});
+	if (new_range.indexOf('0') == -1){
+		new_range.push('0');
+	}
+	new_range.sort(function(a,b) { return a - b;}).filter(function(item, pos) {
+        return !pos || item != new_range[pos - 1];
+    });
+	if (new_range.length <= count) {
 		if (new_range.length <= 1) {
 			return [0,0,0,0,0];
 		}
 		slice_count = 0;
-		categories = new_range.sort(function(a,b) { return a - b;});
+		categories = ss.jenksnew_range;
 	} else {
 		categories = ss.jenks(new_range, count);
+		if (categories.indexOf(undefined) != -1 || categories.indexOf(null) != -1) {
+			console.log(new_range);
+			count = new_range < count ? new_range.length : count;
+			categories = ss.jenks(new_range, count);
+			console.log(categories);
+		}
 	}
 	// categories = roundCategories(categories);
 
@@ -690,7 +705,7 @@ function getPopupHtml(feature) {
 	topPopSpan.appendChild(topZoneNameRow);
 
 	var layer_code = getLayerCode(property);
-	var layer_code_val = getDisplayValue(feature.properties,layer_code);
+	var layer_code_val = getDisplayValue(feature.properties, layer_code);
 	var prop_name = mapping[property['measure']].mapping.type[property['type']].options[property['code']].name;
 
 	var topPropRow = document.createElement('div');
@@ -707,7 +722,7 @@ function getPopupHtml(feature) {
 	var topAcresSpan = document.createElement('div');
 	topAcresSpan.classList.add('col-md-12');
 	topAcresSpan.classList.add('popAcres');
-	topAcresSpan.innerHTML = Humanize.intComma(feature.properties['area_in_acres']) + ' acres';
+	topAcresSpan.innerHTML = Humanize.intComma(feature.properties['area_in_acres']) + ' acres -- ' + Humanize.intComma(feature.properties['ag_acres']) + ' in agriculture (' + Humanize.intComma((feature.properties['ag_acres']*1.0)/(feature.properties['area_in_acres']*1.0)*100) + '%)';
 	topAcresRow.appendChild(topAcresSpan);
 	topPopSpan.appendChild(topAcresRow);
 
@@ -911,7 +926,7 @@ function setLegend() {
 				( i == grades.length-1 ? '>' + from_label : 
 					from_label + ' - ' + to_label 
 				)
-			) + '">&nbsp;</td> '
+			) + legendTooltipUnits(property.measure, property.type, property.code) + '">&nbsp;</td> '
 		);
 	}
 
