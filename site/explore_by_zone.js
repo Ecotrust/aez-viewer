@@ -217,7 +217,7 @@ function init(){
             strokeColor: 'gray',
             strokeOpacity: 1,
             strokeWidth: 0.1,
-            dashArray: 1
+            strokeDashStyle: 'dash'
         })
     });
 
