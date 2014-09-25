@@ -210,6 +210,14 @@ function buildMap(){
 		continuousWorld: false
 	}).addTo(map);
 
+	bioregion = L.geoJson(br_data, {
+		style: br_style
+	}).addTo(map);
+
+	regions = L.geoJson(region_data, {
+		style: region_style
+	}).addTo(map);
+
 
 	info = L.control();
 
@@ -656,6 +664,28 @@ function style(feature) {
 	};
 }
 
+function br_style(feature) {
+	return {
+		weight: 1,
+		opacity: 1,
+		fillOpacity: 0,
+		color: 'black',
+		fillColor: 'white',
+		dashArray: ''
+	}
+}
+
+function region_style(feature) {
+	return {
+		weight: 1,
+		opacity: 1,
+		fillOpacity: 0.1,
+		color: 'gray',
+		fillColor: 'brown',
+		dashArray: '1'
+	}
+}
+
 function highlightFeature(layer) {
 	if (highlightedFeature) {
 		resetHighlight();
@@ -873,6 +903,7 @@ function loadGeoJson() {
 	if (selectedFeature != null) {
 		highlightFeature(selectedFeature);
 	}
+
 	killWaiting(geojson.getLayers());
 }
 
