@@ -89,7 +89,7 @@ print 'Creating new table...'
 query = "CREATE TABLE '%s' AS \n\
 SELECT \n\
     lookup.%s AS zone_id, \n\
-    CastToMultiPolygon(Collect(TRANSFORM(master.GEOMETRY, %s))) AS GEOMETRY, \n\
+    CastToMultiPolygon(St_Union(TRANSFORM(master.GEOMETRY, %s))) AS GEOMETRY, \n\
     Sum(master.%s) AS area_in_acres, \n\
     Sum(master.%s) AS ag_acres, \n\
     Sum(master.%s) AS pixels, \n\
