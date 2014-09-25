@@ -176,7 +176,9 @@ function init(){
     queryObj();
     readQueryString(queryStringObject);
 
-    map = new OpenLayers.Map('map');
+    map = new OpenLayers.Map('map', {
+        projection: "EPSG:900913"
+    });
 
     var baseLayer = new OpenLayers.Layer.XYZ( "ESRI",
         "http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/${z}/${y}/${x}",
@@ -198,12 +200,32 @@ function init(){
             strokeOpacity: 0.2})
     });
 
+    var brStyleMap = new OpenLayers.StyleMap({
+        'default': new OpenLayers.Style({
+            fillOpacity: 0,
+            fillColor: 'white',
+            strokeColor: '#000000',
+            strokeOpacity: 1,
+            strokeWidth: 0.3
+        })
+    });
+
     vectors = new OpenLayers.Layer.Vector("GeoJSON", {
         styleMap: styleMap,
         projection: "EPSG:4326",
         strategies: [new OpenLayers.Strategy.Fixed()],
         protocol: new OpenLayers.Protocol.HTTP({
             url: "food_zones/food_zones.geojson",
+            format: new OpenLayers.Format.GeoJSON()
+        })
+    });
+
+    bioregion = new OpenLayers.Layer.Vector("GeoJSON", {
+        styleMap: brStyleMap,
+        projection: "EPSG:4326",
+        strategies: [new OpenLayers.Strategy.Fixed()],
+        protocol: new OpenLayers.Protocol.HTTP({
+            url: "food_zones/bioregion.geojson",
             format: new OpenLayers.Format.GeoJSON()
         })
     });
@@ -220,7 +242,7 @@ function init(){
         }
     });
 
-    map.addLayers([baseLayer, vectors]);
+    map.addLayers([baseLayer, bioregion, vectors]);
     
     selectControl = new OpenLayers.Control.SelectFeature(
         vectors,
@@ -353,7 +375,7 @@ function initTreemap() {
     treeDataTemplate = {children: []};
 
     
-    var attrs = map.layers[1].features[0].attributes;
+    var attrs = vectors.features[0].attributes;
     var start = "acres_";
     var end = "_z_ac";
     for(var k in attrs) {
