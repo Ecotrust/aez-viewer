@@ -99,20 +99,19 @@ function counter(selectedFeatures) {
     if (nSelected == 0) {
         document.getElementById('treemap').style.display = 'none';
         document.getElementById('regions').style.display = 'none';
-        document.getElementById('counter').style.display = 'block';
     } else {
         document.getElementById('treemap').style.display = 'block';
         document.getElementById('regions').style.display = 'block';
-        document.getElementById('counter').style.display = 'none';
     }
 
-    document.getElementById('counter').innerHTML = nSelected.toString() + ' regions selected, ';
-
     var totalAcres = 0;
+    var totalAgAcres = 0;
     for (var i = selectedFeatures.length - 1; i >= 0; i--) {
         totalAcres += selectedFeatures[i].attributes.area_in_acres;
+        totalAgAcres += selectedFeatures[i].attributes.ag_acres;
     };
     document.getElementById('acres').innerHTML = Humanize.intComma(Math.round(totalAcres));
+    document.getElementById('ag_acres').innerHTML = Humanize.intComma(Math.round(totalAgAcres)) + ' (' + Humanize.intComma(Math.round((totalAgAcres/totalAcres)*100)) + '%) ag acres';
 
     if (nSelected > 0) {
         var selected_html = "<p>";
