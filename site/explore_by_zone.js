@@ -187,7 +187,7 @@ function init(){
 
     var styleMap = new OpenLayers.StyleMap({
         'default': new OpenLayers.Style({
-            fillOpacity: 0.5,
+            fillOpacity: 0,
             fillColor: 'white',
             strokeColor: '#555555',
             strokeWidth: 0.2,
@@ -195,9 +195,9 @@ function init(){
         'select': new OpenLayers.Style({
             fillOpacity: 0.8,
             fillColor: '#ffff00',
-            strokeColor: '#555555',
-            strokeWidth: 0.5,
-            strokeOpacity: 0.2})
+            strokeColor: '#444',
+            strokeWidth: 3,
+            strokeOpacity: 0.7})
     });
 
     var brStyleMap = new OpenLayers.StyleMap({
@@ -207,6 +207,17 @@ function init(){
             strokeColor: '#000000',
             strokeOpacity: 1,
             strokeWidth: 0.3
+        })
+    });
+
+    var regionStyleMap = new OpenLayers.StyleMap({
+        'default': new OpenLayers.Style({
+            fillOpacity: 0.1,
+            fillColor: 'brown',
+            strokeColor: 'gray',
+            strokeOpacity: 1,
+            strokeWidth: 0.1,
+            dashArray: 1
         })
     });
 
@@ -230,6 +241,16 @@ function init(){
         })
     });
 
+    regions = new OpenLayers.Layer.Vector("GeoJSON", {
+        styleMap: regionStyleMap,
+        projection: "EPSG:4326",
+        strategies: [new OpenLayers.Strategy.Fixed()],
+        protocol: new OpenLayers.Protocol.HTTP({
+            url: "food_zones/regions.geojson",
+            format: new OpenLayers.Format.GeoJSON()
+        })
+    });
+
     vectors.events.on({
         'featureselected': featureSelected,
         'featureunselected': featureUnselected,
@@ -242,7 +263,7 @@ function init(){
         }
     });
 
-    map.addLayers([baseLayer, bioregion, vectors]);
+    map.addLayers([baseLayer, bioregion, regions, vectors]);
     
     selectControl = new OpenLayers.Control.SelectFeature(
         vectors,
