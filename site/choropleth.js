@@ -871,7 +871,7 @@ function onEachFeature(feature, layer) {
 		mouseout: resetInfo
 	});
 
-	if (feature.properties.zone_id == queryStringResult.feature) {
+	if (feature.properties.zone_id == decodeURIComponent(queryStringResult.feature)) {
 		selectedFeature = layer;
 		var stats = getPopupHtml(layer.feature);
 		updateStats(stats);
