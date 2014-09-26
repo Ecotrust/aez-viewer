@@ -541,7 +541,7 @@ function getLabel(property){
 				label = '% Area';
 				break;
 			case 'farms':
-				label = 'Farms Per Acre (?)';
+				label = 'Farms Per Square Mile';
 				break;
 			case 'yield':
 				label = 'Yield';
@@ -581,7 +581,7 @@ var measures = {
 		"name": "% of Area"
 	},
 	"farms": {
-		"name": "Farms Per Acre"
+		"name": "Farms Per Square Mile"
 	},
 	"yield": {
 		"name": "Yield"

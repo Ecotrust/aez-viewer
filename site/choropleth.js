@@ -840,7 +840,7 @@ function getPopupHtml(feature) {
 				if (pu_code_val < 1) {
 					valueSpan.innerHTML = pu_code_val.toFixed(2).toString() + " " + quantity_text;
 				} else {
-					valueSpan.innerHTML = Humanize.intComma(pu_code_val)
+					valueSpan.innerHTML = Humanize.intComma(pu_code_val) + " " + quantity_text;
 				}
 			}
 		}
