@@ -507,6 +507,9 @@ function getJenksCategories(range, count){
 		}
 		categories.push("0");
 	}
+	while (categories.length > num_categories) {
+		categories = categories.slice(0,categories.length-1);
+	}
 	return categories;
 }
 
