@@ -837,14 +837,8 @@ function getPopupHtml(feature) {
 		} else {
 			if (pu_code_val == 0) {
 				valueSpan.innerHTML = '0';
-			} else if (pu_code_val < 0.001) {
-				valueSpan.innerHTML = pu_code_val.toExponential(3).toString() + " " + quantity_text;
 			} else {
-				if (pu_code_val < 1) {
-					valueSpan.innerHTML = pu_code_val.toFixed(2).toString() + " " + quantity_text;
-				} else {
-					valueSpan.innerHTML = Humanize.intComma(pu_code_val) + " " + quantity_text;
-				}
+				valueSpan.innerHTML = Humanize.intComma(pu_code_val) + " " + quantity_text;
 			}
 		}
 		valueRow.appendChild(valueSpan);
