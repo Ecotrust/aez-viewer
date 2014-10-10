@@ -855,12 +855,11 @@ function setZoomControl() {
 }
 
 function setLegend() {
-
-	for(var i=0; $('.legend').length > 0; i++) {
-		$('.legend')[0].remove();
+	for(var i=0; $('.legend-row').length > 0; i++) {
+		$('.legend-row')[0].remove();
 	}
 
-	var row = L.DomUtil.create('div', 'row');
+	var row = L.DomUtil.create('div', 'row legend-row');
 	var span = L.DomUtil.create('div', 'col-md-12');
 
 	var div = L.DomUtil.create('div', 'legend'),
