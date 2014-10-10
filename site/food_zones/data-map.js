@@ -1,5 +1,12 @@
 var data_dir = './food_zones/Data';
 var UID_key = 'zone_id';
+var total_key = 'total';
+var required_total_keys = [
+	'area_in_acres',
+	'ag_acres',
+	'irrig_acre'
+];
+var perspective_text = ' in the bioregion';
 
 function getAjaxLocation(measure, type, code, unit, format){
 	var measure_dir;
@@ -15,7 +22,9 @@ function getAjaxLocation(measure, type, code, unit, format){
 			break;
 		default:
 			measure_dir = measure;
-			alert(measure);
+	}
+	if (measure_dir == 'total') {
+		return data_dir + '/totals.json';
 	}
 	return data_dir + '/' + measure_dir + '/' + type + '_' + code + '.' + format;
 }
@@ -671,7 +680,7 @@ function encodeLayer(measure, type, code, unit) {
 		if (measure == 'farms') {
 			return "farms_" + type + "_" + code + "_z_fm";
 		}
-		if (measure = 'yield') {
+		if (measure == 'yield') {
 			return "qnty_" + type + "_" + code + "_z_qt";
 		}
 		return 0;
