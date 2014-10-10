@@ -290,13 +290,27 @@ function finishLoad(){
 	setLegend();
 }
 
-function updateHref(queryString, reload){
-	var zoom = map.getZoom();
+function updateStatus(key, value, reload){
 	var center = map.getCenter();
+	queryString = "?";
+	if (key) {
+		queryStringResult[key] = value;
+	}
+	queryStringResult.zoom = map.getZoom();
+	queryStringResult.lat = center.lat;
+	queryStringResult.lng = center.lng;
+	for (key in queryStringResult) {
+		if (key && key.length > 0) {
+			queryString = queryString + (queryString.length > 1 ?"&":"") + key + "=" + queryStringResult[key];
+		}
+	}
 
-	queryString = queryString + "&zoom=" + zoom +
-		"&lat=" + center.lat + "&lng=" + center.lng;
+	updateHref(queryString, reload);
 
+	return queryString;
+}
+
+function updateHref(queryString, reload){
 	window.history.pushState("", "", queryString);
 	if (reload) {
 		loadData();
@@ -309,13 +323,7 @@ function selectMeasure(value){
 	} 
 	var layer_string = encodeLayer(value, property.type, property.code, property.unit);
 	
-	queryString = "?property=" + layer_string;
-	for (key in queryStringResult) {
-		if (key != 'property'){
-			queryString = queryString + "&" + key + "=" + queryStringResult[key];
-		}
-	}
-	updateHref(queryString, true);
+	updateStatus('property',layer_string, true);
 }
 
 function selectCrop(value){
@@ -325,43 +333,11 @@ function selectCrop(value){
 	var val_parts = value.split("_");
 	var layer_string = encodeLayer(property.measure, val_parts[0], val_parts[1], property.unit);
 	
-	queryString = "?property=" + layer_string;
-	for (key in queryStringResult) {
-		if (key != 'property'){
-			queryString = queryString + "&" + key + "=" + queryStringResult[key];
-		}
-	}
-	updateHref(queryString, true);
-}
-
-function selectScheme(value){
-	queryString = "?scheme=" + value;
-	for (key in queryStringResult) {
-		if (key != 'scheme'){
-			queryString = queryString + "&" + key + "=" + queryStringResult[key];
-		}
-	}
-	updateHref(queryString, true);
-}
-
-function selectReverse(value){
-	queryString = "?reverse=" + value;
-	for (key in queryStringResult) {
-		if (key != 'reverse'){
-			queryString = queryString + "&" + key + "=" + queryStringResult[key];
-		}
-	}
-	updateHref(queryString, true);
+	updateStatus('property',layer_string, true)
 }
 
 function selectFeature(value){
-	queryString = "?feature=" + value;
-	for (key in queryStringResult) {
-		if (key != 'feature'){
-			queryString = queryString + "&" + key + "=" + queryStringResult[key];
-		}
-	}
-	updateHref(location.origin + location.pathname + queryString, false);
+	updateStatus('feature',value, false);
 }
 
 function getLayerCode(prop_obj){
@@ -802,11 +778,7 @@ function getPopupHtml(feature) {
 			if (pu_code_val < 0.001) {
 				valueSpan.innerHTML = '0';
 			} else {
-				if (pu_code_val < 1) {
-					valueSpan.innerHTML = pu_code_val.toFixed(2).toString() + " " + quantity_text;
-				} else {
-					valueSpan.innerHTML = Humanize.intComma(pu_code_val) + " " + quantity_text;
-				}
+				valueSpan.innerHTML = Humanize.intComma(pu_code_val) + " " + quantity_text;
 			}
 		}
 		valueRow.appendChild(valueSpan);
@@ -961,26 +933,7 @@ function loadData() {
 }
 
 function viewByZone(querystring) {
-	var zoom = map.getZoom();
-    var center = map.getCenter();
-
-    qlist = querystring.slice(1).split('&');
-    var updated_querystring = "?";
-    for (var i = 0; i < qlist.length; i++) {
-        switch(qlist[i].split('=')[0]) {
-            case 'zoom':
-                updated_querystring += (updated_querystring.length == 1?'':'&') + 'zoom=' + zoom;
-                break;
-            case 'lat':
-                updated_querystring += (updated_querystring.length == 1?'':'&') + 'lat=' + center.lat;
-                break;
-            case 'lng':
-                updated_querystring += (updated_querystring.length == 1?'':'&') + 'lng=' + center.lng;
-                break;
-            default:
-                updated_querystring += (updated_querystring.length == 1?'':'&') + qlist[i];
-        }
-    }
+ 	updated_querystring = updateStatus(false,null,false);
 
 	window.location.assign('./explore_by_zone.html' + updated_querystring);
 }
