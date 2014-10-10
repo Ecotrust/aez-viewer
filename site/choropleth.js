@@ -766,55 +766,19 @@ function getPopupHtml(feature) {
 	topAcresRow.appendChild(topAcresSpan);
 	topPopSpan.appendChild(topAcresRow);
 
-	// Requested topic density display
-	var topValueRow = document.createElement('div');
-	topValueRow.classList.add('row');
-	var topValueSpan = document.createElement('div');
-	topValueSpan.classList.add('col-md-10');
-	topValueSpan.classList.add('col-md-offset-1');
-	topValueSpan.classList.add('popValue');
-	if (showQuantity(property.measure)){
-		var quantity_text = " " + types[property['type']]['options'][property['code']]['qty'];
-	} else {
-		var quantity_text = "";
-	}
-	if (layer_code_val == null) {
-		topValueSpan.innerHTML = roundDigits(0).toString() + quantity_text;
-	} else {
-		if (layer_code_val == 0) {
-			topValueSpan.innerHTML = '0';
-		} else if (layer_code_val < 0.01) {
-			topValueSpan.innerHTML = "Less than 0.01";
-		} else {
-			topValueSpan.innerHTML = Humanize.formatNumber(layer_code_val,2) + quantity_text;
-		}
-	}
-	topValueRow.appendChild(topValueSpan);
-	topPopSpan.appendChild(topValueRow);
-
-	var topValueDescriptionRow = document.createElement('div');
-	topValueDescriptionRow.classList.add('row');
-	var topValueDescriptionSpan = document.createElement('div');
-	topValueDescriptionSpan.classList.add('col-md-10');
-	topValueDescriptionSpan.classList.add('col-md-offset-1');
-	topValueDescriptionSpan.classList.add('popDescription');
-	topValueDescriptionSpan.innerHTML = popUpDescriptions[property.measure][defaultPrimaryUnit]['name'];
-	topValueDescriptionRow.appendChild(topValueDescriptionSpan);
-	topPopSpan.appendChild(topValueDescriptionRow);
-
-
-	//Additional default displays
+	//Popup display
 	var layer_code_parts = layer_code.split('_');
 	var type_code = layer_code_parts[1];
 	var crop_code = layer_code_parts[2];
 
-	pop_up_list = [['acres','z_ac','acres'],['farms','z_fm','farms'],['qnty','z_qt','yield']];
+	pop_up_list = [['acres','z_ac','acres','count'],['farms','z_fm','farms','count'],['qnty','z_qt','yield','count'],['acres','dens','acres', 'density'],['farms','dens','farms','density'],['qnty','dens','yield','density']];
 
 	for (var item_id = 0; item_id < pop_up_list.length; item_id++) {
 		var item = pop_up_list[item_id];
 
 		var pu_code = [item[0], type_code, crop_code, item[1]].join('_');
 		var pu_code_val = getDisplayValue(feature.properties,pu_code);
+		console.log('code: ' + pu_code + ', val: ' + pu_code_val);
 
 		if (showQuantity(item[2])){
 			var quantity_text = types[property['type']]['options'][property['code']]['qty'];
@@ -835,10 +799,8 @@ function getPopupHtml(feature) {
 		if (pu_code_val == null) {
 			valueSpan.innerHTML = quantity_text;
 		} else {
-			if (pu_code_val == 0) {
+			if (pu_code_val < 0.001) {
 				valueSpan.innerHTML = '0';
-			} else if (pu_code_val < 0.001) {
-				valueSpan.innerHTML = pu_code_val.toExponential(3).toString() + " " + quantity_text;
 			} else {
 				if (pu_code_val < 1) {
 					valueSpan.innerHTML = pu_code_val.toFixed(2).toString() + " " + quantity_text;
@@ -856,7 +818,9 @@ function getPopupHtml(feature) {
 		valueDescriptionSpan.classList.add('col-md-10');
 		valueDescriptionSpan.classList.add('col-md-offset-1');
 		valueDescriptionSpan.classList.add('popDescription');
-		valueDescriptionSpan.innerHTML = popUpDescriptions[item[2]][defaultSecondaryUnit]['name'];
+		valueDescriptionSpan.innerHTML = popUpDescriptions[item[2]][item[3]]['name'];
+		// valueDescriptionSpan.innerHTML = popUpDescriptions[item[2]][defaultSecondaryUnit]['name'];
+		console.log(valueDescriptionSpan.innerHTML);
 		valueDescriptionRow.appendChild(valueDescriptionSpan);
 		topPopSpan.appendChild(valueDescriptionRow);
 	}

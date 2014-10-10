@@ -16,7 +16,6 @@ function getAjaxLocation(measure, type, code, unit, format){
 		default:
 			measure_dir = measure;
 			alert(measure);
-			debugger;
 	}
 	return data_dir + '/' + measure_dir + '/' + type + '_' + code + '.' + format;
 }
@@ -559,13 +558,10 @@ function showQuantity(meas) {
 	switch(meas){
 		case 'acres':
 			return false;
-			break;
 		case 'farms':
 			return false;
-			break;
 		case 'yield':
 			return true;
-			break;
 		default:
 			return false;
 	}
@@ -578,15 +574,15 @@ function getUnits(property) {
 
 var measures = {
 	"acres": {
-		"name": "% of Area"
+		"name": "Acres"
 	},
 	"farms": {
-		"name": "Farms Per Mile<sup>2</sup>"
+		"name": "Farms"
 	},
 	"yield": {
-		"name": "Yield"
+		"name": "Production"
 	}
-}
+};
 
 var popUpDescriptions = {
 	"acres": {
@@ -613,11 +609,12 @@ var popUpDescriptions = {
 			"name": "Total production"
 		}
 	}
-}
+};
 
 function getMeasures(property) {
 	var available_measures = measures;
-	for (m_key in measures){
+	var m_key;
+	for (m_key in measures) {
 		available_measures[m_key]['available'] = ($.inArray(property.type + '_' + property.code, files[m_key].options) != -1);
 	}
 	return available_measures;
@@ -625,6 +622,7 @@ function getMeasures(property) {
 
 function getTypes(property){
 	var available_types = {};
+	var type_key, opt_key;
 	for (type_key in types){
 		var type = types[type_key];
 		available_types[type_key] = types[type_key];
@@ -635,8 +633,8 @@ function getTypes(property){
 	return available_types;
 }
 
-var defaultPrimaryUnit = 'density';
-var defaultSecondaryUnit = 'count';
+var defaultPrimaryUnit = 'count';
+var defaultSecondaryUnit = 'density';
 
 function encodeLayer(measure, type, code, unit) {
 	if (unit == 'density' || unit == 'dens') {
@@ -728,20 +726,36 @@ function getDisplayValue(properties, key) {
 
 function legendTooltipUnits(measure, type, code){
 	unit = '';
-	switch(measure) {
-		case 'acres':
-			unit = '%';
-			break;
-		case 'farms':
-			unit = ' farms/sq.mi';
-			break;
-		case 'yield':
-			unit = ' ' + types[type]['options'][code]['qty'];
-			break;
-		default:
-			unit='';
-			alert('Unknown unit.');
-			debugger;
+	if (defaultPrimaryUnit == 'density') {
+		switch(measure) {
+			case 'acres':
+				unit = '%';
+				break;
+			case 'farms':
+				unit = ' farms/sq.mi';
+				break;
+			case 'yield':
+				unit = ' ' + types[type]['options'][code]['qty'];
+				break;
+			default:
+				unit='';
+				alert('Unknown unit.');
+		}
+	} else if (defaultPrimaryUnit == 'count') {
+		switch(measure) {
+			case 'acres':
+				unit = ' acres';
+				break;
+			case 'farms':
+				unit = ' farms';
+				break;
+			case 'yield':
+				unit = ' ' + types[type]['options'][code]['qty'];
+				break;
+			default:
+				unit='';
+				alert('Unknown unit.');
+		}
 	}
 	return unit;
 }
