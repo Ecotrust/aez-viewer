@@ -550,6 +550,22 @@ function getLabel(property){
 					label = property.unit.label;
 				}
 		}
+	} else if (property.unit == 'count') {
+		switch(property.measure){
+			case 'acres':
+				label = 'Acres';
+				break;
+			case 'farms':
+				label = 'Farms';
+				break;
+			case 'yield':
+				label = 'Production';
+				break;
+			default:
+				if (property.unit) {
+					label = property.unit.label;
+				}
+		}
 	}
 	return label;
 }
@@ -686,11 +702,11 @@ function parseLayer(layername) {
 			"code": parts[2]
 		};
 	}
-	if (ret_val != 0) {
+	if (ret_val !== 0) {
 		if (parts.length < 5) {
-			ret_val['unit'] = defaultPrimaryUnit;
+			ret_val['unit'] = 'density';
 		} else {
-			ret_val['unit'] = defaultSecondaryUnit;
+			ret_val['unit'] = 'count';
 		}
 		ret_val['label'] = false;
 	}

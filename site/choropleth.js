@@ -890,9 +890,11 @@ function setLegend() {
 		var to_obj = {};
 		from_obj[layer_code] = grades[i];
 		to_obj[layer_code] = grades[i+1];
-		from_label = Humanize.formatNumber(getDisplayValue(from_obj, layer_code),2);
+		from_label_raw = getDisplayValue(from_obj, layer_code);
+		from_label = significantDigitDecider(from_label_raw);
 		from = grades[i];
-		to_label = Humanize.formatNumber(getDisplayValue(to_obj, layer_code),2);
+		to_label_raw = getDisplayValue(to_obj, layer_code);
+		to_label = significantDigitDecider(to_label_raw);
 		to = grades[i+1];
 
 		labels.push('<td style="background:' + 
@@ -922,6 +924,21 @@ function setLegend() {
 	span.appendChild(div);
 	row.appendChild(span)
 	$('#filter-container').append(row);
+}
+
+function significantDigitDecider(num) {
+	var ret_val = 0;
+	switch (num){
+		case (num < 0.01):
+			ret_val = 0;
+			break;
+		case (num < 1):
+			ret_val = Humanize.formatNumber(num,2);
+			break;
+		default:
+			ret_val = Humanize.intComma(num);
+	};
+	return ret_val;
 }
 
 function loadData() {
