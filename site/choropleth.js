@@ -800,7 +800,14 @@ function getPopupHtml(feature) {
             perspectiveSpan.classList.add('col-md-offset-1');
             perspectiveSpan.classList.add('popDescription');
 
-            perspectiveSpan.innerHTML = 'Of ' + Humanize.intComma(perspective_val) + perspective_text;
+            var perspective_prefix;
+            if (pu_code_val !== 0 && perspective_val !== 0) {
+                var perpective_pctg = (pu_code_val.toPrecision(20)/perspective_val.toPrecision(20))*100;
+                perspective_prefix = Humanize.intComma(perpective_pctg) + '% of ';
+            } else {
+                perspective_prefix = 'Of ';
+            }
+            perspectiveSpan.innerHTML = perspective_prefix + Humanize.intComma(perspective_val) + perspective_text;
 
             perspectiveRow.appendChild(perspectiveSpan);
             topPopSpan.appendChild(perspectiveRow);
