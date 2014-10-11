@@ -715,15 +715,6 @@ function getPopupHtml(feature) {
     var layer_code_val = getDisplayValue(feature.properties, layer_code);
     var prop_name = mapping[property['measure']].mapping.type[property['type']].options[property['code']].name;
 
-    var topPropRow = document.createElement('div');
-    topPropRow.classList.add('row');
-    var topPropSpan = document.createElement('div');
-    topPropSpan.classList.add('col-md-12');
-    topPropSpan.classList.add('popCropName');
-    topPropSpan.innerHTML = prop_name;
-    topPropRow.appendChild(topPropSpan);
-    topPopSpan.appendChild(topPropRow);
-
     var topAcresRow = document.createElement('div');
     topAcresRow.classList.add('row');
     var topAcresSpan = document.createElement('div');
@@ -733,12 +724,21 @@ function getPopupHtml(feature) {
     topAcresRow.appendChild(topAcresSpan);
     topPopSpan.appendChild(topAcresRow);
 
+    var topPropRow = document.createElement('div');
+    topPropRow.classList.add('row');
+    var topPropSpan = document.createElement('div');
+    topPropSpan.classList.add('col-md-12');
+    topPropSpan.classList.add('popCropName');
+    topPropSpan.innerHTML = prop_name;
+    topPropRow.appendChild(topPropSpan);
+    topPopSpan.appendChild(topPropRow);
+
     //Popup display
     var layer_code_parts = layer_code.split('_');
     var type_code = layer_code_parts[1];
     var crop_code = layer_code_parts[2];
 
-    pop_up_list = [['acres','z_ac','acres','count'],['farms','z_fm','farms','count'],['qnty','z_qt','yield','count'],['acres','dens','acres', 'density'],['farms','dens','farms','density'],['qnty','dens','yield','density']];
+    pop_up_list = [['acres','z_ac','acres','count'],['farms','z_fm','farms','count'],['qnty','z_qt','yield','count']];
 
     var perspective_val;
     for (var item_id = 0; item_id < pop_up_list.length; item_id++) {
@@ -807,7 +807,7 @@ function getPopupHtml(feature) {
             } else {
                 perspective_prefix = 'Of ';
             }
-            perspectiveSpan.innerHTML = perspective_prefix + Humanize.intComma(perspective_val) + perspective_text;
+            perspectiveSpan.innerHTML = perspective_prefix + prop_name + ' ' + getLabel({'unit': item[3], 'measure': item[2]}).toLowerCase() + perspective_text;
 
             perspectiveRow.appendChild(perspectiveSpan);
             topPopSpan.appendChild(perspectiveRow);
