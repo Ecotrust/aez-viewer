@@ -98,12 +98,17 @@ html {
     width: 430px;
     position: absolute;
     z-index: 995;
+    padding-bottom: 25px;
+}
+
+.well {
+    margin-bottom: 0px !important;
 }
 
 #left-panel {
-    height: 93%;
+    height: 100%;
     width: 100%;
-    margin-bottom: 0 !important;
+    overflow-y: auto;
 }
 
 .nav-tabs {
@@ -235,6 +240,7 @@ html {
 
 body {
     font-family:"Rotis Serif", Georgia, sans-serif !important;
+    overflow: hidden;
 }
 
 h1, h2, h3, h4 {

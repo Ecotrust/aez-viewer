@@ -14,6 +14,7 @@
     <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <script src="../dist/OpenLayers.js"></script>
     <script src="../dist/d3.v3.min.js"></script>
+    <script type="text/javascript" src="../dist/humanize.min.js"></script>
     <script>
         var zoneData = null;  // Makes data-map.js happy
     </script>
@@ -42,35 +43,42 @@
           <li class="active"><a>Explore By Zone</a></li>
         </ul>
         <div id="left-panel" class="well">
-            <div id="filter-container">
-                <h2 id="title">Oregon Infrastructure Project</h2>
-                <div>
-                    <p> Select or Deselect zones with mouse click 
-                        <br>
-                        <em>or</em>
-                        select a pre-defined region </p>
-                    <ul>
-                        <li> <a href="#" onclick="selectRegion(3)">North</a> </li>
-                        <li> <a href="#" onclick="selectRegion(2)">Central</a> </li>
-                        <li> <a href="#" onclick="selectRegion(1)">South</a> </li>
-                    </ul>
-                    <hr>
-                    <ul>
-                        <li> <a href="#" onclick="clearSelection()">Clear Selection</a> </li>
-                    </ul>
-
+            <h2 id="title">Oregon Infrastructure Project</h2>
+            <div class="row" id="zone-select">
+                <div class="col-md-12">
+                    <div id="filter-container">
+                        <p> Select or Deselect zones with mouse click.
+                            <br>
+                            Hold 'Ctrl' while clicking to select multiple regions.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div id="legend"> </div>
+                    <br>
+                    <div id="info">
+                        <div>
+                            <span id="regions">0 regions selected</span>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5">
+                                <span id="acres">0</span> acres,
+                            </div>
+                            <!--
+                            <div class="col-md-7">
+                                <span id="ag_acres">0 ag acres</span>
+                            </div>
+                            -->
+                        </div>
+                        <div id="treemap"></div> 
+                    </div>
                 </div>
             </div>
         </div>
     </div>
     <div id="map" class="bigmap"></div>
-    <div id="info">
-        <div>
-            <span id="counter">0</span> zones selected,
-            <span id="acres">0</span> acres
-        </div>
-        <div id="treemap"></div> 
-    </div>
 
     <script type="text/javascript" src="./fonts.js"></script>
 

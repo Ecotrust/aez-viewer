@@ -11,7 +11,6 @@ li {
     overflow: hidden;
 }
 #info {
-    position: absolute;
     right: 8px;
     top: 8px;
     left: auto;
@@ -23,13 +22,15 @@ li {
     background: rgba(255,255,255,0.8);
     box-shadow: 0 0 15px rgba(0,0,0,0.2);
     border-radius: 5px;
-    width: 270px;
+}
+#treemap {
+    width: 100% !important;
 }
 .node {
     border: solid 1px #ccc;
     white-space: nowrap;
-    /*font: 10px sans-serif;*/
-    font-size:80%;
+    font: 10px sans-serif;
+    font-size:100%;
     /*padding-top: 8px;*/
     color: black;
     line-height: 12px;
@@ -83,11 +84,16 @@ div.olControlZoom a, div.olControlTextButtonPanel .olButton {
     width: 430px;
     position: absolute;
     z-index: 995;
+    padding-bottom: 41px;
+}
+.well {
+    margin-bottom: 0 !important;
 }
 
 #left-panel {
     height: 100%;
     width: 100%;
+    overflow-y: auto;
 }
 
 .nav-tabs {
@@ -96,7 +102,7 @@ div.olControlZoom a, div.olControlTextButtonPanel .olButton {
 }
 
 #map {
-    margin-left: 430px !important;
+    padding-left: 430px !important;
 }
 
 body {

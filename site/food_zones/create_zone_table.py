@@ -14,9 +14,12 @@ out_table = 'food_zones'
 out_srid = 4326
 zone_id = 'name'
 perform_lookup = False
-# lookup_table = 'subzone_lookup'
-# lookup_subzone_id = 'GRIDCODE'
+lookup_table = 'subzone_lookup'
+lookup_subzone_id = 'GRIDCODE'
+lookup_zone_id = 'region'
 area_id = 'AG_ACRES'
+# ag_area_id = 'acres_fc_Ag_acre'
+# in_irrig_id = 'acres_fc_Irrig_acre'
 pixels_id = 'acres_br_count'
 
 measures = [
@@ -43,27 +46,27 @@ measures = [
 types = {
     'br': {
         'label': 'br_br',
-        'ids': ['01','02','03','04','05','06','07','08','09','10','11']
+        'ids': ['01','02','03','04','05','06','07','08','11']
     },
     'fc': {
         'label': 'fc_fc',
-        'ids': ['01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35','36']
+        'ids': ['01','02','03','04','05','07','08','09','10','11','12','13','15','16','17','21','22','23','24','25','26','27','28','29','32','35','36']
     },
     'fn': {
         'label': 'fn_fn',
-        'ids': ['01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','25','26','28','29','30','32','33','34','35','36','37','38','39','40','41','42','43','44','45','46','47','48','49','50','51','52']
+        'ids': ['01','02','03','04','05','06','07','08','10','11','12','13','14','15','16','17','18','19','20','21','22','25','26','32','33','36','39','42','43','44','46','47','48','49','50','52']
     },
     'fs': {
         'label': 'fs_fs',
-        'ids': ['01','02','03','04','05','07','08','09','10','11','14','15','16','20','21','22','23','24','25','27','29','30']
+        'ids': ['01','02','08','11','14','24','30']
     },
     'oc': {
         'label': 'oc_oc',
-        'ids': ['02','03','04','05','06','07','08']
+        'ids': ['02','03','04','05','06']
     },
     'vpm': {
         'label': 'vpm_vp',
-        'ids': ['01','02','03','04','05','06','07','08','09','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28','29','30','31','32','33','34','35','36','37','38','39','40','41','42','43','44','45','46','47','48','49','50','51','52','53','54','55','56']
+        'ids': ['01','02','03','04','05','06','07','09','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','31','32','33','34','35','36','37','38','39','40','41','42','43','44','45','46','49','50','51','52','53','54','55','56']
     },
     'mt':{
         'label': 'mt_',
@@ -93,9 +96,11 @@ if perform_lookup:
     query = "CREATE TABLE '%s' AS \n\
     SELECT \n\
         lookup.%s AS zone_id, \n\
-        CastToMultiPolygon(Collect(TRANSFORM(master.GEOMETRY, %s))) AS GEOMETRY, \n\
+        CastToMultiPolygon(St_Union(TRANSFORM(master.GEOMETRY, %s))) AS GEOMETRY, \n\
         Sum(master.%s) AS area_in_acres, \n\
+        # Sum(master.%s) AS ag_acres, \n\
         Sum(master.%s) AS pixels, \n\
+        # Sum(master.%s) AS irrig_acre, \n\
         Count(master.%s) AS poly_count" % (out_table, zone_id, out_srid, area_id, pixels_id, int_table_id)
 else:
     query = "CREATE TABLE '%s' AS \n\
@@ -104,7 +109,6 @@ else:
         TRANSFORM(master.GEOMETRY, %s) AS GEOMETRY, \n\
         master.%s AS area_in_acres, \n\
         1 AS poly_count" % (out_table, zone_id, out_srid, area_id)
-
 for measure in measures:
     for type in measure['types']:
         label = types[type]['label']
@@ -112,11 +116,14 @@ for measure in measures:
             raw_header = "%s%s%s%s" % (measure['prefix'], label, id, measure['postfix'])
             if perform_lookup:
                 raw_column = "Sum(master.%s) AS %s" % (raw_header, raw_header)
-                dens_column = "Sum(master.%s)/Sum(master.%s) AS %s%s%s_dens" % (raw_header, area_id, measure['prefix'], label, id)
+                if measure['name'] == 'yield':
+                    acres_col = "acres_%s%s_z_ac" % (label, id)
+                    dens_column = "Sum(master.%s*1.0)/Sum(master.%s*1.0) AS %s%s%s_dens" % (raw_header, acres_col, measure['prefix'], label, id)
+                else: 
+                    dens_column = "Sum(master.%s*1.0)/Sum(master.%s*1.0) AS %s%s%s_dens" % (raw_header, area_id, measure['prefix'], label, id)
             else:
                 raw_column = "master.%s AS %s" % (raw_header, raw_header)
                 dens_column = "(master.%s*1.0)/(master.%s*1.0) AS %s%s%s_dens" % (raw_header, area_id, measure['prefix'], label, id)
-
             query += ", \n\
     %s, \n\
     %s" % (raw_column, dens_column)
@@ -148,6 +155,7 @@ if perform_lookup:
         area_in_acres, \n\
         pixels, \n\
         poly_count \n\
+        # ag_acres \n\
     FROM %s;" % (feature_data_table, out_table)
 else:
     query = "CREATE TABLE '%s' AS \n\
@@ -156,6 +164,7 @@ else:
         GEOMETRY, \n\
         area_in_acres, \n\
         poly_count \n\
+        # ag_acres \n\
     FROM %s;" % (feature_data_table, out_table)
 
 cur.execute(query)
