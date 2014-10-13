@@ -988,7 +988,7 @@ function setLegend() {
     row.appendChild(span)
     $('#filter-container').append(row);
 
-    var row2 = L.DomUtil.create('div', 'row');
+    var row2 = L.DomUtil.create('div', 'row legend-row');
     var span2 = L.DomUtil.create('div', 'col-md-12');
     var div2 = L.DomUtil.create('div', 'info legend pointlegend');
     div2.innerHTML = '<h4>Facilities</h4>\
