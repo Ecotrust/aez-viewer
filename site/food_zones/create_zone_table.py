@@ -98,10 +98,10 @@ if perform_lookup:
         lookup.%s AS zone_id, \n\
         CastToMultiPolygon(St_Union(TRANSFORM(master.GEOMETRY, %s))) AS GEOMETRY, \n\
         Sum(master.%s) AS area_in_acres, \n\
-        # Sum(master.%s) AS ag_acres, \n\
         Sum(master.%s) AS pixels, \n\
-        # Sum(master.%s) AS irrig_acre, \n\
         Count(master.%s) AS poly_count" % (out_table, zone_id, out_srid, area_id, pixels_id, int_table_id)
+        # Sum(master.%s) AS ag_acres, \n\
+        # Sum(master.%s) AS irrig_acre, \n\
 else:
     query = "CREATE TABLE '%s' AS \n\
     SELECT \n\
@@ -139,6 +139,19 @@ else:
 
 cur.execute(query)
 
+#Fix values derived from -999 "nulls"
+for product in types['mt']['ids']:
+    for measure in measures:
+        try:
+            column = "%smt_%s_dens" % (measure['prefix'],product)
+            query = "UPDATE %s \n\
+            SET %s = -999 \n\
+            WHERE %s < 0" % (out_table, column, column)
+            print query
+            cur.execute(query)
+        except:
+            pass
+
 print 'Adding geometry column...'
 query = "SELECT RecoverGeometryColumn('%s', 'GEOMETRY', %s, 'MULTIPOLYGON');" % (out_table, out_srid)
 cur.execute(query)
@@ -155,8 +168,8 @@ if perform_lookup:
         area_in_acres, \n\
         pixels, \n\
         poly_count \n\
-        # ag_acres \n\
     FROM %s;" % (feature_data_table, out_table)
+    # ag_acres \n\
 else:
     query = "CREATE TABLE '%s' AS \n\
     SELECT \n\
@@ -164,8 +177,8 @@ else:
         GEOMETRY, \n\
         area_in_acres, \n\
         poly_count \n\
-        # ag_acres \n\
     FROM %s;" % (feature_data_table, out_table)
+    # ag_acres \n\
 
 cur.execute(query)
 
