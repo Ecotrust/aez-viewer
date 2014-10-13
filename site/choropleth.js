@@ -816,7 +816,7 @@ function getPopupHtml(feature) {
             perspectiveSpan.classList.add('popDescription');
 
             var perspective_prefix;
-            if (pu_code_val !== 0 && perspective_val !== 0) {
+            if (pu_code_val !== 0 && perspective_val !== 0 && pu_code_val !==null && perspective_val !== null) {
                 var perpective_pctg = (pu_code_val.toPrecision(20)/perspective_val.toPrecision(20))*100;
                 perspective_prefix = Humanize.intComma(perpective_pctg) + '% of ';
             } else {

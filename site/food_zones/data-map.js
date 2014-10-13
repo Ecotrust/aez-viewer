@@ -6,7 +6,7 @@ var required_total_keys = [
 	'ag_acres',
 	'irrig_acre'
 ];
-var perspective_text = ' in the bioregion';
+var perspective_text = ' in Oregon';
 
 function getAjaxLocation(measure, type, code, unit, format){
 	var measure_dir;
@@ -751,7 +751,7 @@ function parseLayer(layername) {
 		};
 	}
 	if (ret_val !== 0) {
-		if (parts.length < 5) {
+		if (parts.slice(-1)[0] == 'dens') {
 			ret_val['unit'] = 'density';
 		} else {
 			ret_val['unit'] = 'count';
