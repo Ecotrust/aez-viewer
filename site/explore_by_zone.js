@@ -8,6 +8,9 @@ var acresSelected = 0;
 var suspendRedraw = false;
 var color = d3.scale.category10();
 var queryStringObject = {};
+var geojson_location = "food_zones/food_counties.geojson";
+var geom_type = "Polygon";
+var attr_key_suffix = "";
 
 var vectors;
 var treeData, treeDataTemplate, treemap, node;
@@ -18,11 +21,12 @@ function position() {
       .style("top", function(d) { return d.y + "px"; })
       .style("width", function(d) { return Math.max(0, d.dx - 1) + "px"; })
       .style("height", function(d) { return Math.max(0, d.dy - 1) + "px"; });
-} 
+}
 
 function calcCharts(feature, type) {
     attrs = feature.feature.attributes;
     var vals = [];  //used for QA/QC testung
+    var i, j;
 
     // Loop through crops in treeData and
     // add or subtract based on the selected/unselected features attrs
@@ -30,11 +34,11 @@ function calcCharts(feature, type) {
         var cat = treeData.children[i];
         for (j in cat.children) {
             var crop = cat.children[j];
-            featAcres = attrs["acres_" + cat.name + "_" + crop.name + "_z_ac"];
+            featAcres = attrs["acres_" + cat.name + "_" + crop.name + attr_key_suffix];
 
             var newacres, newyield;
             if (type === "select") {
-                newacres = crop.acres + featAcres; 
+                newacres = crop.acres + featAcres;
                vals.push({'cat': cat.name, 'crop': crop.fullname + ' - ' + crop.name, 'acres': newacres});
             } else if (type === "unselect") {
                 newacres = crop.acres - featAcres;
@@ -78,7 +82,7 @@ function selectRegion(region) {
                 selectControl.select(feature);
             }
         } else if (region == 2) {
-            if (feature.attributes.id >= 50 && 
+            if (feature.attributes.id >= 50 &&
                 feature.attributes.id <= 100) {
                 selectControl.select(feature);
             }
@@ -94,9 +98,10 @@ function selectRegion(region) {
 }
 
 function counter(selectedFeatures) {
-    nSelected = selectedFeatures.length; 
+    var i;
+    nSelected = selectedFeatures.length;
 
-    if (nSelected == 0) {
+    if (nSelected === 0) {
         document.getElementById('treemap').style.display = 'none';
         document.getElementById('regions').style.display = 'none';
     } else {
@@ -105,17 +110,18 @@ function counter(selectedFeatures) {
     }
 
     var totalAcres = 0;
-    var totalAgAcres = 0;
-    for (var i = selectedFeatures.length - 1; i >= 0; i--) {
+    // var totalAgAcres = 0;
+    for (i = selectedFeatures.length - 1; i >= 0; i--) {
         totalAcres += selectedFeatures[i].attributes.area_in_acres;
-        totalAgAcres += selectedFeatures[i].attributes.ag_acres;
-    };
+        // totalAgAcres += selectedFeatures[i].attributes.ag_acres;
+    }
     document.getElementById('acres').innerHTML = Humanize.intComma(Math.round(totalAcres));
-    document.getElementById('ag_acres').innerHTML = Humanize.intComma(Math.round(totalAgAcres)) + ' (' + Humanize.intComma(Math.round((totalAgAcres/totalAcres)*100)) + '%) ag acres';
+    // document.getElementById('ag_acres').innerHTML = Humanize.intComma(Math.round(totalAgAcres)) + ' (' + Humanize.intComma(Math.round((totalAgAcres/totalAcres)*100)) + '%) ag acres';
 
+    var selected_html = "";
     if (nSelected > 0) {
-        var selected_html = "<p>";
-        for (var i = 0; i < nSelected; i++) {
+        selected_html = "<p>";
+        for (i = 0; i < nSelected; i++) {
             if (i > 0) {
                 selected_html += "<br/>";
             }
@@ -134,7 +140,7 @@ var featureSelected = function(feature) {
     }
     var featureId = feature.feature.attributes.zone_id;
     updateZones(featureId, "add");
-}
+};
 
 var featureUnselected = function(feature) {
     counter(this.selectedFeatures);
@@ -144,7 +150,7 @@ var featureUnselected = function(feature) {
     }
     var featureId = feature.feature.attributes.zone_id;
     updateZones(featureId, "remove");
-}
+};
 
 function queryObj() {
     keyValuePairs = location.search.slice(1).split('&');
@@ -182,7 +188,7 @@ function init(){
     var baseLayer = new OpenLayers.Layer.XYZ( "ESRI",
         "http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/${z}/${y}/${x}",
         {sphericalMercator: true}
-    ); 
+    );
 
     var styleMap = new OpenLayers.StyleMap({
         'default': new OpenLayers.Style({
@@ -199,53 +205,12 @@ function init(){
             strokeOpacity: 0.7})
     });
 
-    var brStyleMap = new OpenLayers.StyleMap({
-        'default': new OpenLayers.Style({
-            fillOpacity: 0,
-            fillColor: 'white',
-            strokeColor: '#000000',
-            strokeOpacity: 1,
-            strokeWidth: 0.3
-        })
-    });
-
-    var regionStyleMap = new OpenLayers.StyleMap({
-        'default': new OpenLayers.Style({
-            fillOpacity: 0.1,
-            fillColor: 'brown',
-            strokeColor: 'gray',
-            strokeOpacity: 1,
-            strokeWidth: 0.1,
-            strokeDashStyle: 'dash'
-        })
-    });
-
     vectors = new OpenLayers.Layer.Vector("GeoJSON", {
         styleMap: styleMap,
         projection: "EPSG:4326",
         strategies: [new OpenLayers.Strategy.Fixed()],
         protocol: new OpenLayers.Protocol.HTTP({
-            url: "food_zones/food_zones.geojson",
-            format: new OpenLayers.Format.GeoJSON()
-        })
-    });
-
-    bioregion = new OpenLayers.Layer.Vector("GeoJSON", {
-        styleMap: brStyleMap,
-        projection: "EPSG:4326",
-        strategies: [new OpenLayers.Strategy.Fixed()],
-        protocol: new OpenLayers.Protocol.HTTP({
-            url: "food_zones/bioregion.geojson",
-            format: new OpenLayers.Format.GeoJSON()
-        })
-    });
-
-    regions = new OpenLayers.Layer.Vector("GeoJSON", {
-        styleMap: regionStyleMap,
-        projection: "EPSG:4326",
-        strategies: [new OpenLayers.Strategy.Fixed()],
-        protocol: new OpenLayers.Protocol.HTTP({
-            url: "food_zones/regions.geojson",
+            url: geojson_location,
             format: new OpenLayers.Format.GeoJSON()
         })
     });
@@ -262,12 +227,12 @@ function init(){
         }
     });
 
-    map.addLayers([baseLayer, bioregion, regions, vectors]);
+    map.addLayers([baseLayer, vectors]);
     
     selectControl = new OpenLayers.Control.SelectFeature(
         vectors,
         {
-            clickout: true, 
+            clickout: true,
             toggle: true,
             multiple: false,
             hover: false,
@@ -275,7 +240,7 @@ function init(){
             multipleKey: "ctrlKey", // shift key adds to selection
             // box: true
         }
-    );            
+    );
     
     // click-drag to move map
     // Unfortunately this makes shift-select behave oddly (zooms after selection)
@@ -288,9 +253,9 @@ function init(){
 
         map.setCenter(
             new OpenLayers.LonLat(
-                initMapLng, 
+                initMapLng,
                 initMapLat
-            ).transform("EPSG:4326", "EPSG:900913"), 
+            ).transform("EPSG:4326", "EPSG:900913"),
             (typeof initMapZoom === 'undefined'?6:initMapZoom)
         );
     } else {
@@ -305,7 +270,7 @@ function init(){
     }
 
 
-    selectControl.activate();  
+    selectControl.activate();
 
 }
 
@@ -314,7 +279,7 @@ function selectInitialZones() {
     if (queryStringObject.hasOwnProperty('zones')) {
         var selected_zones = queryStringObject.zones.split(",");
         for (var i = 0; i <= selected_zones.length; i++) {
-            if (typeof(selected_zones[i]) != "undefined" && selected_zones[i] != "") {
+            if (typeof(selected_zones[i]) !== "undefined" && selected_zones[i] !== "") {
                 var feature = vectors.getFeaturesByAttribute("zone_id",decodeURIComponent(selected_zones[i]))[0]; //returns list, but get by id should only return 1 result
                 selectControl.select(feature);
             }
@@ -351,16 +316,18 @@ function toggleControl(element) {
 
 function redrawTreemap(v) {
     selectedValue = v;
-    var value = function(d) { return d[v]; };
+    var value = function(d) {
+        return d[v];
+    };
 
     node
         .data(treemap.value(value).nodes)
-      .transition()
+        .transition()
         .duration(1500)
         .call(position)
-        .text(function(d) { 
+        .text(function(d) {
             if (d.dy < 12) { return null; }
-            return d.children ? null : d.fullname + ': ' + Humanize.intComma(d.acres) + ' acres'; 
+            return d.children ? null : d.fullname + ': ' + Humanize.intComma(d.acres) + ' acres';
       });
 
     return true;
@@ -394,17 +361,18 @@ function initTreemap() {
     // };
     treeDataTemplate = {children: []};
 
-    
     var attrs = vectors.features[0].attributes;
     var start = "acres_";
-    var end = "_z_ac";
+    var end = attr_key_suffix;
+    var not_end = "_dens";
+    var a, catname;
     for(var k in attrs) {
         if (k.lastIndexOf(start, 0) === 0 &&  // startswith
-            k.indexOf(end, k.length - end.length) !== -1 // endswith
+            k.indexOf(not_end, k.length - not_end.length) == -1 // notendswith
             ) {
             var newk = k.replace(start,"").replace(end,"");
             var parts = newk.split("_");
-            var catname = parts[0];
+            catname = parts[0];
 
             // TODO: Ignore fs?
             // if (catname == "fs") { continue; }
@@ -412,7 +380,7 @@ function initTreemap() {
             var cropname = parts[1];
             var fullname = getFullName(catname, cropname);
             // Ignore crops ending with ", All" 
-            var bad = ", All"
+            var bad = ", All";
             if (fullname.indexOf(bad, fullname.length - bad.length) !== -1) {
                 continue;
             }
@@ -421,14 +389,14 @@ function initTreemap() {
             for (a in treeDataTemplate.children) {
                 if (treeDataTemplate.children[a].name == catname) {
                     catidx = a;
-                } 
+                }
             }
             if (catidx === false) {
                 treeDataTemplate.children.push({name: catname, children: []});
                 catidx = treeDataTemplate.children.length - 1;
             }
             treeDataTemplate.children[catidx].children.push(
-                { name: cropname, 
+                { name: cropname,
                   fullname: fullname,
                   acres: 0}
             );
@@ -436,16 +404,17 @@ function initTreemap() {
     }
 
     // Legend
-    for (var a = 0; a < treeDataTemplate.children.length; a++){
+    var row, col;
+    for (a = 0; a < treeDataTemplate.children.length; a++){
         // a = treeDataTemplate.children[i];
         var catcode = treeDataTemplate.children[a].name;
-        var catname = getCategoryName(catcode);
+        catname = getCategoryName(catcode);
         var catcolor = color(catcode);
-        if (a%2 == 0){
-            var row = d3.select("#legend").append('div').attr("class","row");
-            var col = row.append('div').attr("class",'col-md-4');
+        if (a%2 === 0){
+            row = d3.select("#legend").append('div').attr("class","row");
+            col = row.append('div').attr("class",'col-md-4');
         } else {
-            var col = row.append('div').attr("class",'col-md-8');
+            col = row.append('div').attr("class",'col-md-8');
         }
         var p = col.append('p').style("margin", "0");
         p.append('span')
@@ -453,7 +422,7 @@ function initTreemap() {
             .style("display", "inline-block")
             .style("border", "solid grey 1px")
             .style("width", "12px")
-            .style("height", "12px")
+            .style("height", "12px");
 
         p.append('span')
             .style("margin-left", "10px")
@@ -471,7 +440,10 @@ function initTreemap() {
         .mode('dice')
         .ratio(1.6)  // 1.618 == .5 * (1 + Math.sqrt(5))
         .sticky(true)
-        .value(function (d) { return d.acres; });
+        .value(function (d) {
+                return d.acres;
+            }
+        );
 
 
     // var div = d3.select("body").append("div")
@@ -487,11 +459,18 @@ function initTreemap() {
 
     node = div.datum(treeData).selectAll(".node")
       .data(treemap.nodes)
-    .enter().append("div")
+      .enter().append("div")
       .attr("class", "node")
       .call(position)
-      .style("background", 
-            function(d) {return d.children ? null : color(d.parent.name); })
+      .style("background",
+            function(d) {
+                if (d.hasOwnProperty('children')){
+                    return null;
+                } else {
+                    return d.parent ? color(d.parent.name) : null;
+                }
+            }
+        );
 
     resetTreemap();
 }
@@ -524,10 +503,11 @@ function viewByCrop(querystring) {
 
 function updateZones(zoneId, action){
     var keys = Object.keys(queryStringObject);
+    var zoneList;
     if (queryStringObject.hasOwnProperty('zones')) {
-        var zoneList = queryStringObject.zones.split(',');
+        zoneList = queryStringObject.zones.split(',');
     } else {
-        var zoneList = [];
+        zoneList = [];
     }
     var zoneIdIndex = zoneList.indexOf(zoneId);
     if (action == "remove") {
@@ -550,7 +530,7 @@ function updateHref(reload){
     var queryString = "?";
 
     for (var i = 0; i < keys.length; i ++) {
-        var key = keys[i]
+        var key = keys[i];
         queryString = queryString + "&" + key + "=" + queryStringObject[key].toString();
     }
 
