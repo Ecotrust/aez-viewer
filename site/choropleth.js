@@ -571,6 +571,7 @@ function getLegendInfo() {
     var i, layer_code;
     var desired_measure_available = true;
     var new_property = property;
+    var original_measure = property.measure;
     var measure_list = [property.measure].concat(Object.keys(measures));
     for (i = 0; i < measure_list.length; i++) {
         new_property.measure = measure_list[i];
@@ -582,8 +583,8 @@ function getLegendInfo() {
         }
     }
     if (!desired_measure_available) {
-        alert(property.measure + " data was not available for " + types[property.type]['options'][property.code]['name'] + ". " +
-            "You are now seeing " + measure_list[i] + " data instead.");
+        alert("'" + capFirstLetter(original_measure) + "' data was not available for " + types[property.type]['options'][property.code]['name'] + ". " +
+            "You are now seeing '" + measure_list[i] + "' data instead.");
         updateStatus('property', layer_code, true);
     }
 
