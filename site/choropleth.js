@@ -20,7 +20,7 @@ var selectedFeature = null;
 var schemes = {
     //Darkest to most pale
     "reds":{
-        "name":"Reds", 
+        "name":"Reds",
         "list":['#DE0A09', '#FA3A3E', '#F56B69', '#FAAFAC', '#FFD1CF' ]
     },
     "oranges":{

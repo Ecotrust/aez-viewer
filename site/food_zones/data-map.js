@@ -177,40 +177,6 @@ var types = {
 			}
 		}
 	},
-	"fs": {
-		"name": "Field Seeds",
-		"option_attributes": ["name", "qty"],
-		"options": {
-			"fs01": {
-				"name": "Alfalfa Hay",
-				"qty": "Tons, Dry"
-			},
-			"fs02": {
-				"name": "Alfalfa Seed",
-				"qty": "Pounds"
-			},
-			"fs08": {
-				"name": "Corn for Silage/Greenchop",
-				"qty": "Tons"
-			},
-			"fs11": {
-				"name": "Field and Grass Seed Crops, All",
-				"qty": null
-			},
-			"fs14": {
-				"name": "Haylage/Greenchop from Alfalfa/Mixtures",
-				"qty": "Tons, Green"
-			},
-			"fs24": {
-				"name": "Sorghum for Silage or Greenchop",
-				"qty": "Tons"
-			},
-			"fs30": {
-				"name": "Wild Hay",
-				"qty": "Tons, Dry"
-			}
-		}
-	},
 	"fn": {
 		"name": "Fruits & Nuts",
 		"option_attributes": ["name"],

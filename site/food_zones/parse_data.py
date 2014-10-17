@@ -50,9 +50,7 @@ for feature in data['features']:
         if prop_key not in skip_total_fields and skip_field_patterns(prop_key):
             if not totals.has_key(prop_key):
                 totals[prop_key] = 0;
-            totals[prop_key] = totals[prop_key] + feature['properties'][prop_key]
-
-
+            totals[prop_key] = totals[prop_key] + float(feature['properties'][prop_key])
 
 for measure in codes.keys():
     for code in codes[measure].keys():

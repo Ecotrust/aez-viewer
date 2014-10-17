@@ -18,7 +18,7 @@ lookup_table = 'subzone_lookup'
 lookup_subzone_id = 'GRIDCODE'
 lookup_zone_id = 'region'
 area_id = 'AG_ACRES'
-# ag_area_id = 'acres_fc_Ag_acre'
+ag_area_id = 'FarmAcres'
 # in_irrig_id = 'acres_fc_Irrig_acre'
 pixels_id = 'acres_br_count'
 
@@ -27,19 +27,19 @@ measures = [
         "name": 'acres',
         "prefix": 'acres_',
         "postfix": '',
-        "types": ['br','fc','fn','fs','oc','vpm']
+        "types": ['br','fc','fn','oc','vpm']
     },
     {
         "name": 'farms',
         "prefix": 'farms_',
         "postfix": '',
-        "types": ['br','fc','fn','fs','oc','vpm','mt']
+        "types": ['br','fc','fn','oc','vpm','mt']
     },
     {
         "name": 'yield',
         "prefix": 'qnty_',
         "postfix": '',
-        "types": ['fc','fs','oc','mt'] # fn and vpm only at work
+        "types": ['fc','oc','mt'] # fn and vpm only at work
     }
 ]
 
@@ -55,10 +55,6 @@ types = {
     'fn': {
         'label': 'fn_fn',
         'ids': ['01','02','03','04','05','06','07','08','10','11','12','13','14','15','16','17','18','19','20','21','22','25','26','32','33','36','39','42','43','44','46','47','48','49','50','52']
-    },
-    'fs': {
-        'label': 'fs_fs',
-        'ids': ['01','02','08','11','14','24','30']
     },
     'oc': {
         'label': 'oc_oc',
@@ -99,8 +95,8 @@ if perform_lookup:
         CastToMultiPolygon(St_Union(TRANSFORM(master.GEOMETRY, %s))) AS GEOMETRY, \n\
         Sum(master.%s) AS area_in_acres, \n\
         Sum(master.%s) AS pixels, \n\
-        Count(master.%s) AS poly_count" % (out_table, zone_id, out_srid, area_id, pixels_id, int_table_id)
-        # Sum(master.%s) AS ag_acres, \n\
+        Sum(master.%s) AS ag_acres, \n\
+        Count(master.%s) AS poly_count" % (out_table, zone_id, out_srid, area_id, pixels_id, ag_area_id, int_table_id)
         # Sum(master.%s) AS irrig_acre, \n\
 else:
     query = "CREATE TABLE '%s' AS \n\
@@ -108,7 +104,8 @@ else:
         %s AS zone_id, \n\
         TRANSFORM(master.GEOMETRY, %s) AS GEOMETRY, \n\
         master.%s AS area_in_acres, \n\
-        1 AS poly_count" % (out_table, zone_id, out_srid, area_id)
+        master.%s AS ag_acres, \n\
+        1 AS poly_count" % (out_table, zone_id, out_srid, area_id, area_id)
 for measure in measures:
     for type in measure['types']:
         label = types[type]['label']
@@ -120,7 +117,7 @@ for measure in measures:
                     acres_col = "acres_%s%s_z_ac" % (label, id)
                     dens_column = "Sum(master.%s*1.0)/Sum(master.%s*1.0) AS %s%s%s_dens" % (raw_header, acres_col, measure['prefix'], label, id)
                 else: 
-                    dens_column = "Sum(master.%s*1.0)/Sum(master.%s*1.0) AS %s%s%s_dens" % (raw_header, area_id, measure['prefix'], label, id)
+                    dens_column = "Sum(master.%s*1.0)/Sum(master.%s*1.0) AS %s%s%s_dens" % (raw_header, ag_area_id, measure['prefix'], label, id)
             else:
                 raw_column = "master.%s AS %s" % (raw_header, raw_header)
                 dens_column = "(master.%s*1.0)/(master.%s*1.0) AS %s%s%s_dens" % (raw_header, area_id, measure['prefix'], label, id)
@@ -167,18 +164,18 @@ if perform_lookup:
         GEOMETRY, \n\
         area_in_acres, \n\
         pixels, \n\
+        ag_acres, \n\
         poly_count \n\
     FROM %s;" % (feature_data_table, out_table)
-    # ag_acres \n\
 else:
     query = "CREATE TABLE '%s' AS \n\
     SELECT \n\
         zone_id, \n\
         GEOMETRY, \n\
         area_in_acres, \n\
+        ag_acres, \n\
         poly_count \n\
     FROM %s;" % (feature_data_table, out_table)
-    # ag_acres \n\
 
 cur.execute(query)
 

@@ -11,17 +11,19 @@ measure_name_dict = {
     "Farms": "_FA",
     "Qnty": "_QN"
 }
-crop_types = ["br", "fc", "fn", "fs", "oc", "vpm", "mt"]
+crop_types = ["br", "fc", "fn", "oc", "vpm", "mt"]
 crop_type_dict = {
     "br": "TBLBR",
     "fc": "TBLFC",
     "fn": "TBLFN",
-    "fs": "TBLFS",
     "oc": "TBLOC",
     "vpm": "TBLVPM",
     "mt": "TBLMT"
 }
+ignore_columns = ['objectid']
+master_fields = ['FIPS', 'COUNTY', 'YEAR']
 shapefile = "OR_Cnty_Join"
+other_dbfs = [{'name':"TBLFARMS.dbf", 'columns':["farmAcres","FarmNum","AvgFrmAcr"]}]
 db_file = "food_counties.sqlite"
 # lookup_file = "region_subzone_crosswalk.csv"
 # lookup_table = 'subzone_lookup'
@@ -34,25 +36,25 @@ area_header = 'SUM_F_AREA'
 pixels_header = 'COUNT'
 headers = []
 data_type_map = {
-    'C': 'VARCHAR',
-    'N': 'INTEGER',
-    'F': 'REAL'
+    'c': 'VARCHAR',
+    'n': 'INTEGER',
+    'f': 'REAL'
 }
 
-# print 'Drop existing db if exists'
-# if os.path.isfile(db_file):
-#     os.remove(db_file)
+print 'Drop existing db if exists'
+if os.path.isfile(db_file):
+    os.remove(db_file)
 
-# print 'Read shapefile into Spatialite table'
-# os.system(
-#     'ogr2ogr -f "SQLite" %s %s%s.shp -nln %s -gt 1024 -dsco SPATIALITE=YES' 
-#     % (
-#         db_file, 
-#         dbf_location, 
-#         shapefile, 
-#         table_name
-#     )
-# )   #Can this be done with pyspatialite?
+print 'Read shapefile into Spatialite table'
+os.system(
+    'ogr2ogr -f "SQLite" %s %s%s.shp -nln %s -gt 1024 -dsco SPATIALITE=YES' 
+    % (
+        db_file, 
+        dbf_location, 
+        shapefile, 
+        table_name
+    )
+)   #Can this be done with pyspatialite?
 
 # TODO: get area ag in place from TBLFARMS.DBF
 
@@ -66,18 +68,31 @@ for measure in measures:
         if os.path.isfile(dbf_file):
             print "    %s" % crop_type
             data = dbf(dbf_file)
-            headers +=  ["%s_%s_%s" % (measure, crop_type, str(x)) for x in data.fieldDefs]
+            new_headers = ["%s_%s_%s" % (measure, crop_type, str(x).lower()) if str(x).split()[0].upper() not in master_fields else str(x).lower() for x in data.fieldDefs if str(x).split()[0].lower() not in ignore_columns]
+            headers +=  new_headers
             for rec in data:
                 zone_id = str(rec[zone_header])
                 if not zone_details.has_key(zone_id):
                     zone_details[zone_id] = {}
                 for header in data.fieldNames:
-                    full_header = "%s_%s_%s" % (measure, crop_type, header)
+                    full_header = "%s_%s_%s" % (measure, crop_type, header.lower())
                     if zone_details[zone_id].has_key(full_header):
                         if not zone_details[zone_id][full_header] == rec[header]:
                             print 'ERROR: values do not match - %s: %s | %s' % (full_header, zone_details[zone_id][full_header], rec[header])
                             continue
                     zone_details[zone_id][full_header] = rec[header]
+
+for dbf_file in other_dbfs:
+    if os.path.isfile(dbf_file['name']):
+        print "%s" % dbf_file['name']
+        data = dbf(dbf_file['name'])
+        headers +=  ["%s" % str(x) for x in data.fieldDefs if x in dbf_file['columns']]
+        for rec in data:
+            zone_id = str(rec[zone_header])
+            if not zone_details.has_key(zone_id):
+                zone_details[zone_id] = {}
+            for header in data.fieldNames:
+                zone_details[zone_id][header] = rec[header]
 
 print 'Connecting to DB'
 conn = db.connect(db_file)
@@ -119,6 +134,7 @@ for header in headers:
         try:
             cur.execute(col_query.lower())
         except:
+            print 'FAILED TO ADD column %s %s' % (label.lower(), col_type)
             pass
 
 print 'Updating master table'
@@ -130,6 +146,8 @@ for zone_id in zone_details.keys():
         try:
             float(zone[header])
             query += " %s = %s," % (header.lower(), zone[header])
+        except KeyError:
+            pass
         except ValueError:
             query != " %s = \"%s\"," % (header.lower(), zone[header])
     query = query [:-1] # remove final comma
