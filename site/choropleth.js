@@ -782,13 +782,14 @@ function getPopupHtml(feature) {
             perspective_val = false;
         }
 
+        var quantity_text;
         if (showQuantity(item[2])){
-            var quantity_text = types[property['type']]['options'][property['code']]['qty'];
+            quantity_text = types[property['type']]['options'][property['code']]['qty'];
         } else {
-            var quantity_text = "";
+            quantity_text = "";
         }
 
-        if (quantity_text == undefined) {
+        if (quantity_text === undefined) {
             quantity_text = "No data available";
         }
 
@@ -798,14 +799,14 @@ function getPopupHtml(feature) {
         valueSpan.classList.add('col-md-10');
         valueSpan.classList.add('col-md-offset-1');
         valueSpan.classList.add('popValue');
-        if (pu_code_val == null) {
+        if (pu_code_val === null) {
             valueSpan.innerHTML = 'N/A';
             // valueSpan.innerHTML = quantity_text;
         } else {
             if (pu_code_val < 0.001) {
                 valueSpan.innerHTML = '0';
             } else {
-                valueSpan.innerHTML = Humanize.intComma(pu_code_val)
+                valueSpan.innerHTML = Humanize.intComma(pu_code_val);
             }
             if (pop_up_list[item_id][0] == "qnty") {
                 valueSpan.innerHTML += ' ' + quantity_text;
@@ -814,15 +815,18 @@ function getPopupHtml(feature) {
         valueRow.appendChild(valueSpan);
         topPopSpan.appendChild(valueRow);
 
-        var valueDescriptionRow = document.createElement('div');
-        valueDescriptionRow.classList.add('row');
-        var valueDescriptionSpan = document.createElement('div');
-        valueDescriptionSpan.classList.add('col-md-10');
-        valueDescriptionSpan.classList.add('col-md-offset-1');
-        valueDescriptionSpan.classList.add('popDescription');
-        valueDescriptionSpan.innerHTML = popUpDescriptions[item[2]][item[3]]['name'];
-        valueDescriptionRow.appendChild(valueDescriptionSpan);
-        topPopSpan.appendChild(valueDescriptionRow);
+        valDescription = popUpDescriptions[item[2]][item[3]]['name'];
+        if (valDescription.length > 0) {
+            var valueDescriptionRow = document.createElement('div');
+            valueDescriptionRow.classList.add('row');
+            var valueDescriptionSpan = document.createElement('div');
+            valueDescriptionSpan.classList.add('col-md-10');
+            valueDescriptionSpan.classList.add('col-md-offset-1');
+            valueDescriptionSpan.classList.add('popDescription');
+            valueDescriptionSpan.innerHTML = valDescription;
+            valueDescriptionRow.appendChild(valueDescriptionSpan);
+            topPopSpan.appendChild(valueDescriptionRow);
+        }
 
         if (perspective_val) {
             var perspectiveRow = document.createElement('div');

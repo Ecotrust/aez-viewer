@@ -477,23 +477,23 @@ var types = {
 		"options": {
 			"cattle": {
 				"name": "Cattle",
-				"qty": "Head"
+				"qty": "Animals"
 			},
 			"chicken": {
 				"name": "Chicken (Broilers)",
-				"qty": "Head"
+				"qty": "Animals"
 			},
 			"goats": {
 				"name": "Goats",
-				"qty": "Head"
+				"qty": "Animals"
 			},
 			"hogs": {
 				"name": "Hogs",
-				"qty": "Head"
+				"qty": "Animals"
 			},
 			"sheep": {
 				"name": "Sheep",
-				"qty": "Head"
+				"qty": "Animals"
 			}
 		}
 	}
@@ -620,7 +620,7 @@ var popUpDescriptions = {
 			"name": "Farms per Mi<sup>2</sup> that produce this product"
 		},
 		'count': {
-			"name": "Total farms representing this product"
+			"name": "Number of farms producing this product"
 		}
 	},
 	"yield": {
@@ -628,7 +628,7 @@ var popUpDescriptions = {
 			"name": "Yield"
 		},
 		'count': {
-			"name": "Total production"
+			"name": ""
 		}
 	}
 };
