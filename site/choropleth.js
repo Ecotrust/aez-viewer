@@ -206,11 +206,11 @@ function buildMap(){
 	}
 
 
-	esri = L.tileLayer('http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}', 
+	esri = L.tileLayer('http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
 	{
-	    maxZoom: 12,
-	    tileSize: 256,
-		continuousWorld: false
+        maxZoom: 12,
+        tileSize: 256,
+        continuousWorld: false
 	}).addTo(map);
 
 
@@ -223,16 +223,16 @@ function buildMap(){
 	};
 
 	info.update = function (props) {
-		var prop_name = (property ? 
+		var prop_name = (property ?
 			mapping[property['measure']].mapping.type[property['type']].options[property['code']].name + '<br />' +
 			(property ? getLabel(property) : '') : capFirstLetter(primaryUnit));
-		this._div.innerHTML = '<h4>Zone Info: ' + 
-			(props ? capFirstLetter(props[UID_key]) : '') + 
-			'</h4>' +  
-			(props ? 
-				'<b>' + capFirstLetter(prop_name) + '</b><br />' + 
+		this._div.innerHTML = '<h4>Zone Info: ' +
+			(props ? capFirstLetter(props[UID_key]) : '') +
+			'</h4>' +
+			(props ?
+				'<b>' + capFirstLetter(prop_name) + '</b><br />' +
 				roundDigits(props[getLayerCode(property)]) + ' ' + getQuanity(property['measure'], property['type'], property['code']) + '<br />'
-			: 
+			:
 				'<p>Hover over a zone</p>');
 	};
 }
@@ -843,7 +843,7 @@ function getPopupHtml(feature) {
             } else {
                 perspective_prefix = 'Of ';
             }
-            perspectiveSpan.innerHTML = perspective_prefix + prop_name + ' ' + getLabel({'unit': item[3], 'measure': item[2]}).toLowerCase() + perspective_text;
+            perspectiveSpan.innerHTML = getPerspective(perspective_prefix, prop_name, property.type, item[3], item[2], perspective_text);
 
             perspectiveRow.appendChild(perspectiveSpan);
             topPopSpan.appendChild(perspectiveRow);

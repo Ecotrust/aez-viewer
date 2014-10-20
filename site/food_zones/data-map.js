@@ -789,3 +789,15 @@ function legendTooltipUnits(measure, type, code){
 	}
 	return unit;
 }
+
+function getPerspective(prefix, prop_name, type, unit, measure, postfix) {
+	var ret_string = prefix + prop_name + ' ' + getLabel({'unit': unit, 'measure': measure}).toLowerCase() + postfix;
+	if (type == 'mt') {
+		if (measure == 'farms') {
+			ret_string = prefix + "farms raising this animal" + postfix;
+		} else if (measure == 'yield') {
+			ret_string = prefix + prop_name + postfix;
+		}
+	}
+	return ret_string;
+}
