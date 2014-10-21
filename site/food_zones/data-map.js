@@ -476,11 +476,11 @@ var types = {
 		"option_attributes": ["name", "qty"],
 		"options": {
 			"cattle": {
-				"name": "Cattle",
+				"name": "Cows, Beef",
 				"qty": "Animals"
 			},
 			"chicken": {
-				"name": "Chicken (Broilers)",
+				"name": "Chicken, Broilers",
 				"qty": "Animals"
 			},
 			"goats": {
@@ -488,7 +488,7 @@ var types = {
 				"qty": "Animals"
 			},
 			"hogs": {
-				"name": "Hogs",
+				"name": "Hogs and Pigs",
 				"qty": "Animals"
 			},
 			"sheep": {
