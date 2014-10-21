@@ -1008,17 +1008,7 @@ function setLegend() {
     row.appendChild(span);
     $('#filter-container').append(row);
 
-    var row2 = L.DomUtil.create('div', 'row legend-row');
-    var span2 = L.DomUtil.create('div', 'col-md-12');
-    var div2 = L.DomUtil.create('div', 'info legend pointlegend');
-    div2.innerHTML = '<h4>Facilities</h4>\
-    <i style="background: #FFFF00; border: solid 1px">&nbsp;&nbsp;&nbsp;&nbsp;</i> Crops Only<br />\
-    <i style="background: #0000FF; border: solid 1px">&nbsp;&nbsp;&nbsp;&nbsp;</i> Livestock Only<br />\
-    <i style="background: #00FF00; border: solid 1px">&nbsp;&nbsp;&nbsp;&nbsp;</i> Both<br />\
-    <i style="background: #FFFFFF; border: solid 1px">&nbsp;&nbsp;&nbsp;&nbsp;</i> Neither<br />';
-    span2.appendChild(div2);
-    row2.appendChild(span2);
-    $('#filter-container').append(row2);
+    addAdditionalLegends(property);
 }
 
 function significantDigitDecider(num) {
