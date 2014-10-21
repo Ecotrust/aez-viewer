@@ -1,3 +1,4 @@
+/*jshint multistr: true */
 var num_categories=5;       //TODO: Currently this all we support
 var method = "jenks";
 // var method = null;       //TODO: get to choose between these
@@ -117,16 +118,16 @@ function readQueryString(queryStringResult) {
 }
 
 function getProperty() {
-
+    var property;
     if (queryStringResult.hasOwnProperty('property')){
         var property_object = parseLayer(queryStringResult['property']);
-        if (property_object != 0){
-            var property = property_object;
+        if (property_object !== 0){
+            property = property_object;
         } else {
-            var property=getDefaultLayer();
+            property=getDefaultLayer();
         }
     } else {
-        var property=getDefaultLayer();
+        property=getDefaultLayer();
     }
     return property;
 }
@@ -355,10 +356,11 @@ function getLayerCode(prop_obj){
 }
 
 function getRange(data,property,method) {
-	if (method == "jenks"){
-		var range = []
-		for(var i=0; i<data.features.length; i++){
-			var value=data.features[i].properties[property];
+    var value, i;
+    if (method == "jenks"){
+        var range = [];
+		for(i=0; i<data.features.length; i++){
+			value=data.features[i].properties[property];
 			if (value > 0){
 				range.push(value);
 			}
@@ -372,9 +374,9 @@ function getRange(data,property,method) {
 		var low=data.features[0].properties[property];
 		var high=data.features[0].properties[property];
 
-		for(var i=0; i<data.features.length; i++){
-			var value=data.features[i].properties[property];
-			if (value < low || low == 0){
+		for(i=0; i<data.features.length; i++){
+			value=data.features[i].properties[property];
+			if (value < low || low === 0){
 				low = value;
 			} else if (value > high){
 				high = value;
@@ -386,7 +388,7 @@ function getRange(data,property,method) {
 
 function simplifyNumber(high, dev){
     //leave to 2 digits untouched, unless less than 100, then just top digit
-    var digits = parseInt(Math.log(dev)/Math.LN10);
+    var digits = parseInt(Math.log(dev)/Math.LN10,10);
     var exp = digits - 1;
     var mask;
     if (exp>0){
@@ -414,7 +416,7 @@ function getCategories(range, count){
     if (diff < 20){
         dev = parseFloat(diff/(count-1));
     } else {
-        dev = parseInt(diff/(count-1));
+        dev = parseInt(diff/(count-1),10);
     }
     var simplevals = simplifyNumber(range['high']-(dev/2), dev);
     var high_bar = simplevals['high'];
@@ -603,10 +605,10 @@ function getLegendInfo() {
 
 // get color depending on population density value
 function getColor(value, scheme, categories, reverse) {
-    if (value == null) {
+    if (value === null) {
         value = 0;
     }
-    if (reverse==true){
+    if (reverse===true){
         return  parseFloat(value) >= parseFloat(categories[0]) ? scheme.list[4] :
                 categories.length > 1 && parseFloat(value) >= parseFloat(categories[1]) ? scheme.list[3] :
                 categories.length > 2 && parseFloat(value) >= parseFloat(categories[2]) ? scheme.list[2] :
@@ -622,10 +624,10 @@ function getColor(value, scheme, categories, reverse) {
 }
 
 function getOpacity(value) {
-    if (value == null) {
+    if (value === null) {
         value = 0;
     }
-    if (value == 0){
+    if (value === 0){
         return 0;
     } else {
         return 0.7;
@@ -635,8 +637,8 @@ function getOpacity(value) {
 function style(feature) {
 	value = feature.properties[getLayerCode(property)];
 	return {
-		weight: 0,
-		opacity: 0.7,
+		weight: 1,
+		opacity: 1,
 		color: 'white',
 		dashArray: '',
 		fillColor: getColor(value, color_scheme, categories, reverse_scheme),
@@ -646,17 +648,18 @@ function style(feature) {
 }
 
 function facilitiesStyle(feature) {
+    var facilityColor;
 	if (feature.properties.Crops == 'Yes'){
 		if (feature.properties.Livestock == 'Yes') {
-			var facilityColor = '#00FF00';
+			facilityColor = '#00FF00';
 		} else {
-			var facilityColor = '#FFFF00';
+			facilityColor = '#FFFF00';
 		}
 	} else {
 		if (feature.properties.Livestock == 'Yes'){
-			var facilityColor = '#0000FF';
+			facilityColor = '#0000FF';
 		} else {
-			var facilityColor = '#FFFFFF';
+			facilityColor = '#FFFFFF';
 		}
 	}
 	return {
@@ -667,7 +670,7 @@ function facilitiesStyle(feature) {
 		opacity: 1,
 		fillOpacity: 1,
 		zindex: 1999
-	}
+	};
 }
 
 function highlightFeature(layer) {
@@ -915,7 +918,7 @@ function loadGeoJson() {
 		style: style,
 		onEachFeature: onEachFeature
 	}).addTo(map);
-	if (selectedFeature != null) {
+	if (selectedFeature !== null) {
 		highlightFeature(selectedFeature);
 	}
 	facilities = L.geoJson(facilities_layer, {
@@ -938,7 +941,8 @@ function setZoomControl() {
 }
 
 function setLegend() {
-    for(var i=0; $('.legend-row').length > 0; i++) {
+    var i;
+    for(i=0; $('.legend-row').length > 0; i++) {
         $('.legend-row')[0].remove();
     }
 
@@ -968,7 +972,7 @@ function setLegend() {
     labels.push('       <table><tr>');
 
     var layer_code = getLayerCode(property);
-    for (var i = 0; i < grades.length; i++) {
+    for (i = 0; i < grades.length; i++) {
         var from_obj = {};
         var to_obj = {};
         from_obj[layer_code] = grades[i];
@@ -980,12 +984,12 @@ function setLegend() {
         to_label = significantDigitDecider(to_label_raw);
         to = grades[i+1];
 
-        labels.push('<td style="background:' + 
-            getColor(from, color_scheme, categories, reverse_scheme) + 
-            '" data-toggle="tooltip" data-placement="top" title="' + 
-            ( i==0 ? '<' + to_label : 
-                ( i == grades.length-1 ? '>' + from_label : 
-                    from_label + ' - ' + to_label 
+        labels.push('<td style="background:' +
+            getColor(from, color_scheme, categories, reverse_scheme) +
+            '" data-toggle="tooltip" data-placement="top" title="' +
+            ( i===0 ? '<' + to_label :
+                ( i == grades.length-1 ? '>' + from_label :
+                    from_label + ' - ' + to_labe
                 )
             // ) + '">&nbsp;</td> '
             ) + legendTooltipUnits(property.measure, property.type, property.code) + '">&nbsp;</td> '
@@ -1006,7 +1010,7 @@ function setLegend() {
 
     div.innerHTML = labels.join('');
     span.appendChild(div);
-    row.appendChild(span)
+    row.appendChild(span);
     $('#filter-container').append(row);
 
     var row2 = L.DomUtil.create('div', 'row legend-row');
@@ -1033,13 +1037,13 @@ function significantDigitDecider(num) {
             break;
         default:
             ret_val = Humanize.intComma(num);
-    };
+    }
     return ret_val;
 }
 
 function loadData() {
     queryStringResult = queryObj();
-    readQueryString(queryStringResult)
+    readQueryString(queryStringResult);
 
     setUpData();
 }
