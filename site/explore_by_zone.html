@@ -14,6 +14,7 @@
     <script type="text/javascript" src="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <script src="../dist/OpenLayers.js"></script>
     <script src="../dist/d3.v3.min.js"></script>
+    <script type="text/javascript" src="../dist/humanize.min.js"></script>
     <script>
         var zoneData = null;  // Makes data-map.js happy
     </script>
@@ -49,7 +50,7 @@
                         <div>
                             <p> Select or Deselect zones with mouse click.
                                 <br>
-                                Hold 'Ctrl' while clicking to select multiple
+                                Hold 'Ctrl' while clicking to select multiple regions.
                             </p>
                         </div>
                     </div>
@@ -61,8 +62,15 @@
                     <br>
                     <div id="info">
                         <div>
-                            <span id="counter">0</span> region(s) selected,
-                            <span id="acres">0</span> acres
+                            <span id="regions">0 regions selected</span>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5">
+                                <span id="acres">0</span> acres,
+                            </div>
+                            <div class="col-md-7">
+                                <span id="ag_acres">0 ag acres</span>
+                            </div>
                         </div>
                         <div id="treemap"></div> 
                     </div>

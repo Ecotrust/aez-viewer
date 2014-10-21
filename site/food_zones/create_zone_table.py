@@ -89,7 +89,7 @@ print 'Creating new table...'
 query = "CREATE TABLE '%s' AS \n\
 SELECT \n\
     lookup.%s AS zone_id, \n\
-    CastToMultiPolygon(Collect(TRANSFORM(master.GEOMETRY, %s))) AS GEOMETRY, \n\
+    CastToMultiPolygon(St_Union(TRANSFORM(master.GEOMETRY, %s))) AS GEOMETRY, \n\
     Sum(master.%s) AS area_in_acres, \n\
     Sum(master.%s) AS ag_acres, \n\
     Sum(master.%s) AS pixels, \n\
@@ -102,7 +102,11 @@ for measure in measures:
         for id in types[type]['ids']:
             raw_header = "%s%s%s%s" % (measure['prefix'], label, id, measure['postfix'])
             raw_column = "Sum(master.%s) AS %s" % (raw_header, raw_header)
-            dens_column = "Sum(master.%s*1.0)/Sum(master.%s*1.0) AS %s%s%s_dens" % (raw_header, ag_area_id, measure['prefix'], label, id)
+            if measure['name'] == 'yield':
+                acres_col = "acres_%s%s_z_ac" % (label, id)
+                dens_column = "Sum(master.%s*1.0)/Sum(master.%s*1.0) AS %s%s%s_dens" % (raw_header, acres_col, measure['prefix'], label, id)
+            else: 
+                dens_column = "Sum(master.%s*1.0)/Sum(master.%s*1.0) AS %s%s%s_dens" % (raw_header, ag_area_id, measure['prefix'], label, id)
             query += ", \n\
     %s, \n\
     %s" % (raw_column, dens_column)
@@ -128,7 +132,8 @@ SELECT \n\
     GEOMETRY, \n\
     area_in_acres, \n\
     pixels, \n\
-    poly_count \n\
+    poly_count, \n\
+    ag_acres \n\
 FROM %s;" % (feature_data_table, out_table)
 
 cur.execute(query)

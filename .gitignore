@@ -2,3 +2,11 @@ data
 site/choropleth-local.css
 site/local-vars.js
 dist/fonts
+site/food_zones/input/*.dbf
+site/food_zones/input/*.shp*
+site/food_zones/input/*.sbn
+site/food_zones/input/*.shx
+site/food_zones/input/*.prj
+site/food_zones/input/*.qpj
+site/food_zones/input/*.sbx
+site/food_zones/input/*.atx

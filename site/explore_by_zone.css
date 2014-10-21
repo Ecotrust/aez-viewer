@@ -29,8 +29,8 @@ li {
 .node {
     border: solid 1px #ccc;
     white-space: nowrap;
-    /*font: 10px sans-serif;*/
-    font-size:80%;
+    font: 10px sans-serif;
+    font-size:100%;
     /*padding-top: 8px;*/
     color: black;
     line-height: 12px;
@@ -93,6 +93,7 @@ div.olControlZoom a, div.olControlTextButtonPanel .olButton {
 #left-panel {
     height: 100%;
     width: 100%;
+    overflow-y: auto;
 }
 
 .nav-tabs {

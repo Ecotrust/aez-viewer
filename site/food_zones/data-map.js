@@ -1,5 +1,12 @@
 var data_dir = './food_zones/Data';
 var UID_key = 'zone_id';
+var total_key = 'total';
+var required_total_keys = [
+	'area_in_acres',
+	'ag_acres',
+	'irrig_acre'
+];
+var perspective_text = ' in the bioregion';
 
 function getAjaxLocation(measure, type, code, unit, format){
 	var measure_dir;
@@ -15,8 +22,9 @@ function getAjaxLocation(measure, type, code, unit, format){
 			break;
 		default:
 			measure_dir = measure;
-			alert(measure);
-			debugger;
+	}
+	if (measure_dir == 'total') {
+		return data_dir + '/totals.json';
 	}
 	return data_dir + '/' + measure_dir + '/' + type + '_' + code + '.' + format;
 }
@@ -541,10 +549,26 @@ function getLabel(property){
 				label = '% Area';
 				break;
 			case 'farms':
-				label = 'Farms Per Acre';
+				label = 'Farms Per Mile<sup>2</sup>';
 				break;
 			case 'yield':
 				label = 'Yield';
+				break;
+			default:
+				if (property.unit) {
+					label = property.unit.label;
+				}
+		}
+	} else if (property.unit == 'count') {
+		switch(property.measure){
+			case 'acres':
+				label = 'Acres';
+				break;
+			case 'farms':
+				label = 'Farms';
+				break;
+			case 'yield':
+				label = 'Production';
 				break;
 			default:
 				if (property.unit) {
@@ -559,13 +583,10 @@ function showQuantity(meas) {
 	switch(meas){
 		case 'acres':
 			return false;
-			break;
 		case 'farms':
 			return false;
-			break;
 		case 'yield':
 			return true;
-			break;
 		default:
 			return false;
 	}
@@ -578,15 +599,15 @@ function getUnits(property) {
 
 var measures = {
 	"acres": {
-		"name": "% of Area"
+		"name": "Acres"
 	},
 	"farms": {
-		"name": "Farms Per Acre"
+		"name": "Farms"
 	},
 	"yield": {
-		"name": "Yield Per Acre"
+		"name": "Production"
 	}
-}
+};
 
 var popUpDescriptions = {
 	"acres": {
@@ -594,12 +615,12 @@ var popUpDescriptions = {
 			"name": "% area planted in this crop"
 		},
 		'count': {
-			"name": "Total acres"
+			"name": "Total acres of this crop"
 		}
 	},
 	"farms": {
 		'density': {
-			"name": "Farms per acre that grow this crop"
+			"name": "Farms per Mi<sup>2</sup> that grow this crop"
 		},
 		'count': {
 			"name": "Total farms"
@@ -607,17 +628,18 @@ var popUpDescriptions = {
 	},
 	"yield": {
 		'density': {
-			"name": "Yield per acre"
+			"name": "Units per acre"
 		},
 		'count': {
-			"name": "Total yield"
+			"name": "Total production"
 		}
 	}
-}
+};
 
 function getMeasures(property) {
 	var available_measures = measures;
-	for (m_key in measures){
+	var m_key;
+	for (m_key in measures) {
 		available_measures[m_key]['available'] = ($.inArray(property.type + '_' + property.code, files[m_key].options) != -1);
 	}
 	return available_measures;
@@ -625,6 +647,7 @@ function getMeasures(property) {
 
 function getTypes(property){
 	var available_types = {};
+	var type_key, opt_key;
 	for (type_key in types){
 		var type = types[type_key];
 		available_types[type_key] = types[type_key];
@@ -635,8 +658,8 @@ function getTypes(property){
 	return available_types;
 }
 
-var defaultPrimaryUnit = 'density';
-var defaultSecondaryUnit = 'count';
+var defaultPrimaryUnit = 'count';
+var defaultSecondaryUnit = 'density';
 
 function encodeLayer(measure, type, code, unit) {
 	if (unit == 'density' || unit == 'dens') {
@@ -657,7 +680,7 @@ function encodeLayer(measure, type, code, unit) {
 		if (measure == 'farms') {
 			return "farms_" + type + "_" + code + "_z_fm";
 		}
-		if (measure = 'yield') {
+		if (measure == 'yield') {
 			return "qnty_" + type + "_" + code + "_z_qt";
 		}
 		return 0;
@@ -688,11 +711,11 @@ function parseLayer(layername) {
 			"code": parts[2]
 		};
 	}
-	if (ret_val != 0) {
+	if (ret_val !== 0) {
 		if (parts.length < 5) {
-			ret_val['unit'] = defaultPrimaryUnit;
+			ret_val['unit'] = 'density';
 		} else {
-			ret_val['unit'] = defaultSecondaryUnit;
+			ret_val['unit'] = 'count';
 		}
 		ret_val['label'] = false;
 	}
@@ -720,6 +743,44 @@ function getDisplayValue(properties, key) {
 	if (key_parts[0] == 'acres' && key_parts[3] == 'dens') {	//We display "percentages", not density values for this.
 		return 100*properties[key];
 	}
+	if (key_parts[0] == 'farms' && key_parts[3] == 'dens') {		//We display "farms per sq. mile" not acre.
+		return 640*properties[key];
+	}
 	return properties[key];
+}
 
+function legendTooltipUnits(measure, type, code){
+	unit = '';
+	if (defaultPrimaryUnit == 'density') {
+		switch(measure) {
+			case 'acres':
+				unit = '%';
+				break;
+			case 'farms':
+				unit = ' farms/sq.mi';
+				break;
+			case 'yield':
+				unit = ' ' + types[type]['options'][code]['qty'];
+				break;
+			default:
+				unit='';
+				alert('Unknown unit.');
+		}
+	} else if (defaultPrimaryUnit == 'count') {
+		switch(measure) {
+			case 'acres':
+				unit = ' acres';
+				break;
+			case 'farms':
+				unit = ' farms';
+				break;
+			case 'yield':
+				unit = ' ' + types[type]['options'][code]['qty'];
+				break;
+			default:
+				unit='';
+				alert('Unknown unit.');
+		}
+	}
+	return unit;
 }
