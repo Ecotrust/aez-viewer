@@ -909,23 +909,22 @@ function killWaiting(layer) {
     initModal.modal('hide');
 }
 
-function loadGeoJson() {
-	geojson = L.geoJson(data, {
-		style: style,
-		onEachFeature: onEachFeature
-	}).addTo(map);
-	if (selectedFeature !== null) {
-		highlightFeature(selectedFeature);
-	}
-	facilities = L.geoJson(facilities_layer, {
-		style: facilitiesStyle,
-		pointToLayer: function (feature, latlng) {
-			return L.circleMarker(latlng, facilitiesStyle);
-		},
-		onEachFeature: onEachFacilityFeature
-	}).addTo(map);
-
+function loadLayersCallback(){
 	killWaiting(geojson.getLayers());
+}
+
+function loadGeoJson() {
+    geojson = L.geoJson(data, {
+        style: style,
+        onEachFeature: onEachFeature
+    }).addTo(map);
+    if (selectedFeature !== null) {
+        highlightFeature(selectedFeature);
+    }
+
+    loadAdditionalLayers(property, loadLayersCallback);
+    
+
 }
 
 //TODO: Get link to Ag census for attribution

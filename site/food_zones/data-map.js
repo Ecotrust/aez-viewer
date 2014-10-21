@@ -793,3 +793,18 @@ function getPerspective(prefix, prop_name, type, unit, measure, postfix) {
 	}
 	return ret_string;
 }
+
+function loadAdditionalLayers(property, callback) {
+
+	if (property.code == 'chicken') {
+		facilities = L.geoJson(facilities_layer, {
+			style: facilitiesStyle,
+			pointToLayer: function (feature, latlng) {
+				return L.circleMarker(latlng, facilitiesStyle);
+			},
+			onEachFeature: onEachFacilityFeature
+		}).addTo(map);
+	}
+
+    callback();
+}
