@@ -672,21 +672,13 @@ function encodeLayer(measure, type, code, unit) {
 		return 0;
 	} else {
 		if (measure == 'acres') {
-			return "acres_" + type + "_" + code + "_z_ac";
+			return "acres_" + type + "_" + code;
 		}
 		if (measure == 'farms') {
-			if (type != 'mt') {
-				return "farms_" + type + "_" + code + "_z_fm";
-			} else {
-				return "farms_" + type + "_" + code;
-			}
+			return "farms_" + type + "_" + code;
 		}
 		if (measure == 'yield') {
-			if (type != 'mt') {
-				return "qnty_" + type + "_" + code + "_z_qt";
-			} else {
-				return "qnty_" + type + "_" + code;
-			}
+			return "qnty_" + type + "_" + code;
 		}
 		return 0;
 	}

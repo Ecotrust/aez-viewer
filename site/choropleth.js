@@ -758,11 +758,7 @@ function getPopupHtml(feature) {
     var type_code = layer_code_parts[1];
     var crop_code = layer_code_parts[2];
 
-    if (type_code != 'mt') {
-        pop_up_list = [['acres','z_ac','acres','count'],['farms','z_fm','farms','count'],['qnty','z_qt','yield','count']];
-    } else {
-        pop_up_list = [['acres','','acres','count'],['farms','','farms','count'],['qnty','','yield','count']];
-    }
+    pop_up_list = [['acres','','acres','count'],['farms','','farms','count'],['qnty','','yield','count']];
 
     var perspective_val;
     for (var item_id = 0; item_id < pop_up_list.length; item_id++) {
