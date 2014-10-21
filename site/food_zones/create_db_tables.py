@@ -1,4 +1,4 @@
-import os, csv
+import os#, csv
 # importing pyspatialite
 from pyspatialite import dbapi2 as db
 from dbfpy.dbf import Dbf as dbf        #http://sourceforge.net/projects/dbfpy/files/dbfpy/

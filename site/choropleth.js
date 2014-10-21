@@ -360,7 +360,7 @@ function getRange(data,property,method) {
     if (method == "jenks"){
         var range = [];
 		for(i=0; i<data.features.length; i++){
-			value=data.features[i].properties[property];
+			value=parseFloat(data.features[i].properties[property]);
 			if (value > 0){
 				range.push(value);
 			}
@@ -375,7 +375,7 @@ function getRange(data,property,method) {
 		var high=data.features[0].properties[property];
 
 		for(i=0; i<data.features.length; i++){
-			value=data.features[i].properties[property];
+			value=parseFloat(data.features[i].properties[property]);
 			if (value < low || low === 0){
 				low = value;
 			} else if (value > high){
@@ -435,7 +435,7 @@ function getJenksCategories(range, count){
     var slice_count = 1;
     for (var i = 0; i < range.length; i++) {
         if (range[i] !== 0) {
-            new_range.push(range[i]);
+            new_range.push(parseFloat(range[i]));
         }
     }
     new_range = new_range.sort().filter(function(item) {
@@ -627,7 +627,7 @@ function getOpacity(value) {
     if (value === null) {
         value = 0;
     }
-    if (value === 0){
+    if (parseFloat(value) === 0){
         return 0;
     } else {
         return 0.7;
@@ -841,7 +841,7 @@ function getPopupHtml(feature) {
 
             var perspective_prefix;
             if (pu_code_val !== 0 && perspective_val !== 0 && pu_code_val !==null && perspective_val !== null) {
-                var perpective_pctg = (pu_code_val.toPrecision(20)/perspective_val.toPrecision(20))*100;
+                var perpective_pctg = (parseFloat(pu_code_val).toPrecision(20)/parseFloat(perspective_val).toPrecision(20))*100;
                 perspective_prefix = Humanize.intComma(perpective_pctg) + '% of ';
             } else {
                 perspective_prefix = 'Of ';
@@ -989,7 +989,7 @@ function setLegend() {
             '" data-toggle="tooltip" data-placement="top" title="' +
             ( i===0 ? '<' + to_label :
                 ( i == grades.length-1 ? '>' + from_label :
-                    from_label + ' - ' + to_labe
+                    from_label + ' - ' + to_label
                 )
             // ) + '">&nbsp;</td> '
             ) + legendTooltipUnits(property.measure, property.type, property.code) + '">&nbsp;</td> '
