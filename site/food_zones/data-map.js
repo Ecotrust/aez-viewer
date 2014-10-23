@@ -186,6 +186,16 @@ function getFileKey(m_key) {
 	return file_key;
 }
 
+function getNewCategory(old_cat){
+	var new_cats = Object.keys(types);
+	for (var i = 0; i < new_cats.length; i++) {
+		var opts = Object.keys(types[new_cats[i]]['options']);
+		if (opts.indexOf(old_cat) >= 0) {
+			return new_cats[i];
+		}
+	}
+}
+
 function getMeasures(property) {
 	var available_measures = measures;
 	for (var m_key in measures) {
@@ -212,26 +222,27 @@ var defaultPrimaryUnit = 'count';
 var defaultSecondaryUnit = 'density';
 
 function encodeLayer(measure, type, code, unit) {
+	var key = getFileKey([type, code].join('_'));
 	if (unit == 'density' || unit == 'dens') {
 		if (measure == 'acres') {
-			return "acres_" + type + "_" + code + "_dens";
+			return "acres_" + key + "_dens";
 		}
 		if (measure == 'farms') {
-			return "farms_" + type + "_" + code + "_dens";
+			return "farms_" + key + "_dens";
 		}
 		if (measure == 'yield') {
-			return "qnty_" + type + "_" + code + "_dens";
+			return "qnty_" + key + "_dens";
 		}
 		return 0;
 	} else {
 		if (measure == 'acres') {
-			return "acres_" + type + "_" + code;
+			return "acres_" + key;
 		}
 		if (measure == 'farms') {
-			return "farms_" + type + "_" + code;
+			return "farms_" + key;
 		}
 		if (measure == 'yield') {
-			return "qnty_" + type + "_" + code;
+			return "qnty_" + key;
 		}
 		return 0;
 	}
@@ -240,24 +251,25 @@ function encodeLayer(measure, type, code, unit) {
 function parseLayer(layername) {
 	var parts = layername.split("_");
 	var ret_val = 0;
+	var translated_category = getNewCategory(parts[2]);
 	if (parts[0] == "acres"){
 		ret_val = {
 			"measure": 'acres',
-			"type": parts[1],
+			"type": translated_category,
 			"code": parts[2]
 		};
 	}
 	if (parts[0] == "farms"){
 		ret_val = {
 			"measure": 'farms',
-			"type": parts[1],
+			"type": translated_category,
 			"code": parts[2]
 		};
 	}
 	if (parts[0] == "qnty"){
 		ret_val = {
 			"measure": 'yield',
-			"type": parts[1],
+			"type": translated_category,
 			"code": parts[2]
 		};
 	}
