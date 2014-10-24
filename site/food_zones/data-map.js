@@ -361,6 +361,7 @@ function getPerspective(prefix, prop_name, type, unit, measure, postfix) {
 
 function loadAdditionalLayers(property, callback) {
 
+
 	if (property.code == 'chicken') {
 		facilities = L.geoJson(facilities_layer, {
 			style: facilitiesStyle,
@@ -370,6 +371,33 @@ function loadAdditionalLayers(property, callback) {
 			onEachFeature: onEachFacilityFeature
 		}).addTo(map);
 	}
+	/*
+	Acetate_roads = L.tileLayer('http://a{s}.acetate.geoiq.com/tiles/acetate-roads/{z}/{x}/{y}.png', {
+		attribution: '&copy;2012 Esri & Stamen, Data from OSM and Natural Earth',
+		subdomains: '0123',
+		minZoom: 2,
+		maxZoom: 18,
+		zIndex: 100
+	}).addTo(map);
+	*/
+
+	Stamen_TonerLines = L.tileLayer('http://{s}.tile.stamen.com/toner-lines/{z}/{x}/{y}.png', {
+		attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
+		subdomains: 'abcd',
+		minZoom: 0,
+		maxZoom: 20
+	}).addTo(map);
+
+	layer_switcher = L.control.layers({
+		'Base Map': esri
+	}, {
+		'Counties': geojson,
+		'Roads': Stamen_TonerLines
+	});
+
+	layer_switcher.setPosition("topleft");
+
+	layer_switcher.addTo(map);
 
     callback();
 }

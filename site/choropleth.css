@@ -254,3 +254,7 @@ strong {
     font-family:"Rotis Serif Bold", Georgia, sans-serif;
     font-weight: normal; /* Rotis doesn’t actually seem to care about this one but just in case. */
 }
+
+.leaflet-control-layers-toggle {
+    background-image: url(img/layers.png);
+}
