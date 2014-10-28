@@ -27,11 +27,8 @@ FC13,Small Grains and Rotation Crops,Lentils,cwt
 FC14,Herbs & Spices,Mustard seed (pounds),pounds
 FC15,Small Grains and Rotation Crops,Oats,bushels
 FC16,Small Grains and Rotation Crops,Other spring wheat for grain (bushels),bushels
-FC17,Nuts & Seeds,Peanuts,pounds
-FC19,Vegetables,Corn - popcorn,"pounds, shelled"
 FC20,Small Grains and Rotation Crops,Proso millet (bushels),bushels
 FC21,Small Grains and Rotation Crops,Rapeseed (pounds),pounds
-FC22,Small Grains and Rotation Crops,Rice ,cwt
 FC23,Small Grains and Rotation Crops,Rye,bushels
 FC24,Condiment/Dressings/Sauces,Oil - safflower,pounds
 FC25,Small Grains and Rotation Crops,Sorghum for grain (bushels),bushels
@@ -47,48 +44,33 @@ FC36,Small Grains and Rotation Crops,Wheat - winter,bushels
 FN01,Nuts & Seeds,Almonds,
 FN02,Fruit,Apples,
 FN03,Fruit,Apricots,
-FN04,Fruit,Avocados ,
 FN06,Fruit,"Cherries, sweet",
 FN07,Fruit,"Cherries, tart",
 FN08,Nuts & Seeds,Chestnuts ,
 FN09,Fruit,"Citrus fruit, all",
-FN10,Fruit,Dates ,
 FN11,Fruit,Figs,
-FN12,Fruit,Grapefruit ,
 FN13,Fruit,Grapes,
 FN15,Nuts & Seeds,Filberts / hazelnuts,
 FN16,Fruit,Kiwifruit,
-FN18,Fruit,Lemons ,
-FN20,Nuts & Seeds,Macadamia nuts,
 FN22,Fruit,Nectarines,
 FN25,Vegetables,Olives,
-FN26,Fruit,Oranges ,
 FN28,Fruit,Other noncitrus fruit,
 FN29,Nuts & Seeds,Other nuts,
 FN33,Fruit,Peaches,
-FN34,Fruit,"Peaches, clingstone",
-FN35,Fruit,"Peaches, freestone",
 FN36,Fruit,Pears,
 FN37,Fruit,Pears - Bartlett ,
 FN38,Fruit,Pears - not Bartlett,
-FN39,Nuts & Seeds,Pecans,
 FN42,Fruit,Persimmons ,
-FN43,Nuts & Seeds,Pistachios,
-FN44,Fruit,Plums,
 FN46,Fruit,Pluot ,
 FN47,Fruit,Pomegranates,
-FN48,Fruit,Prunes,
-FN51,Fruit,Oranges - Valencia ,
 FN52,Nuts & Seeds,Walnuts - English ,
 GOATS,Livestock & Poultry,Goat,animals
 HOGS,Livestock & Poultry,Pork,animals
-OC02,Herbs & Spices,Dill for oil (pounds),pounds
 OC03,Herbs & Spices,"Herbs, dried (pounds)",pounds
 OC04,Herbs & Spices,Hops (pounds),pounds
 OC06,Condiment/Dressings/Sauces,Oil - mint,pounds of oil
 OC07,Herbs & Spices,"Mint for oil, peppermint (pounds of oil)",pounds of oil
 OC08,Herbs & Spices,"Mint for oil, spearmint (pounds of oil)",pounds of oil
-OC10,Nuts & Seeds,Sesame seeds,pounds
 SHEEP,Livestock & Poultry,Sheep and lambs,animals
 VP01,Vegetables,"Artichokes, excluding Jerusalem",
 VP02,Vegetables,Asparagus,
@@ -99,7 +81,6 @@ VP06,Vegetables,Broccoli,
 VP07,Vegetables,Brussel sprouts,
 VP08,Salad and Field Greens,"Cabbage, Chinese",
 VP09,Salad and Field Greens,"Cabbage, head",
-VP10,Salad and Field Greens,"Cabbage, mustard",
 VP11,Fruit,Muskmelon - cantaloupe,
 VP12,Storage Crops,Carrots,
 VP13,Vegetables,Cauliflower,
@@ -107,13 +88,10 @@ VP14,Vegetables,Celery,
 VP15,Herbs & Spices,Chicory,
 VP16,Salad and Field Greens,Collards,
 VP17,Vegetables,Cucumbers and pickles,
-VP18,Vegetables,Radish - daikon,
 VP19,Vegetables,Eggplant,
-VP20,Salad and Field Greens,Escarole and endive,
 VP21,Storage Crops,Garlic,
 VP23,Herbs & Spices,"Herbs, fresh cut",
 VP24,Fruit,Muskmelon - honeydew ,
-VP25,Storage Crops,Horseradish root,
 VP26,Salad and Field Greens,Kale,
 VP27,Salad and Field Greens,Lettuce,
 VP28,Salad and Field Greens,"Lettuce, head",
@@ -126,7 +104,6 @@ VP34,Storage Crops,"Onions, green",
 VP35,Herbs & Spices,Parsley,
 VP36,Vegetables,"Peas, Chinese (sugar and snow)",
 VP37,Vegetables,"Peas, green (excluding southern)",
-VP38,Vegetables,"Peas, green southern (cowpeas)  blackeyed, crowder, etc.",
 VP39,Vegetables,Peppers other than bell (including chile),
 VP40,Vegetables,Sweet bell,
 VP41,Storage Crops,Potatoes,
@@ -140,7 +117,5 @@ VP48,Vegetables,Winter squash,
 VP49,Vegetables,Corn,
 VP50,Storage Crops,Sweet potato,
 VP51,Vegetables,Tomatoes,
-VP52,Storage Crops,Turnip greens,
 VP53,Storage Crops,Turnips,
-VP55,Salad and Field Greens,Watercress,
 VP56,Fruit,Melons - watermelon,

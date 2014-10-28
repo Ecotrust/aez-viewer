@@ -34,8 +34,8 @@ function calcCharts(feature, type) {
         var cat = treeData.children[i];
         for (j in cat.children) {
             var crop = cat.children[j];
-            featAcres = attrs["acres_" + cat.name + "_" + crop.name + attr_key_suffix];
-
+            var attr_key = getFileKey(cat.name + '_' + crop.name);
+            featAcres = parseFloat(attrs["acres_" + attr_key + attr_key_suffix]);
             var newacres, newyield;
             if (type === "select") {
                 newacres = crop.acres + featAcres;
@@ -44,7 +44,7 @@ function calcCharts(feature, type) {
                 newacres = crop.acres - featAcres;
             }
 
-            treeData.children[i].children[j].acres = newacres;
+            treeData.children[i].children[j].acres = parseFloat(newacres);
         }
     }
     /*
@@ -327,19 +327,20 @@ function redrawTreemap(v) {
         .call(position)
         .text(function(d) {
             if (d.dy < 12) { return null; }
-            return d.children ? null : d.fullname + ': ' + Humanize.intComma(d.acres) + ' acres';
+            return d.children ? null : d.fullname + ': ' + Humanize.intComma(parseFloat(d.acres)) + ' acres';
       });
 
     return true;
 }
 
 function getFullName(cat, crop) {
-    var name = types[cat.toLowerCase()].options[crop.toLowerCase()].name;
+    var cat_key = getNewCategory(crop);
+    var name = types[cat_key].options[crop.toLowerCase()].name;
     return name;
 }
 
 function getCategoryName(cat) {
-    var name = types[cat.toLowerCase()].name;
+    var name = types[cat].name;
     return name;
 }
 
@@ -372,12 +373,12 @@ function initTreemap() {
             ) {
             var newk = k.replace(start,"").replace(end,"");
             var parts = newk.split("_");
-            catname = parts[0];
 
             // TODO: Ignore fs?
             // if (catname == "fs") { continue; }
 
             var cropname = parts[1];
+            catname = getNewCategory(cropname)
             var fullname = getFullName(catname, cropname);
             // Ignore crops ending with ", All" 
             var bad = ", All";
