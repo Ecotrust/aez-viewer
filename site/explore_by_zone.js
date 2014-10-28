@@ -187,7 +187,39 @@ function init(){
 
     var baseLayer = new OpenLayers.Layer.XYZ( "ESRI",
         "http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/${z}/${y}/${x}",
-        {sphericalMercator: true}
+        {
+            sphericalMercator: true,
+            isBaseLayer: true
+        }
+    );
+
+    var stamenRoads = new OpenLayers.Layer.XYZ( "ROADS",
+        [
+            "http://a.tile.stamen.com/toner-lines/${z}/${x}/${y}.png",
+            "http://b.tile.stamen.com/toner-lines/${z}/${x}/${y}.png",
+            "http://c.tile.stamen.com/toner-lines/${z}/${x}/${y}.png",
+            "http://d.tile.stamen.com/toner-lines/${z}/${x}/${y}.png",
+        ],
+        {
+            sphericalMercator: true,
+            isBaseLayer: false
+        }
+    );
+
+    var mapQuest = new OpenLayers.Layer.XYZ(
+        "OpenStreetMap",
+        [
+            "http://otile1.mqcdn.com/tiles/1.0.0/vy/hyb/${z}/${x}/${y}.png",
+            "http://otile2.mqcdn.com/tiles/1.0.0/vy/hyb/${z}/${x}/${y}.png",
+            "http://otile3.mqcdn.com/tiles/1.0.0/vy/hyb/${z}/${x}/${y}.png",
+            "http://otile4.mqcdn.com/tiles/1.0.0/vy/hyb/${z}/${x}/${y}.png"
+        ],
+        {
+            attribution: "Data, imagery and map information provided by <a href='http://www.mapquest.com/'  target='_blank'>MapQuest</a>, <a href='http://www.openstreetmap.org/' target='_blank'>Open Street Map</a> and contributors, <a href='http://creativecommons.org/licenses/by-sa/2.0/' target='_blank'>CC-BY-SA</a>  <img src='http://developer.mapquest.com/content/osm/mq_logo.png' border='0'>",
+            transitionEffect: "resize",
+            sphericalMercator: true,
+            isBaseLayer: false
+        }
     );
 
     var styleMap = new OpenLayers.StyleMap({
@@ -227,7 +259,7 @@ function init(){
         }
     });
 
-    map.addLayers([baseLayer, vectors]);
+    map.addLayers([baseLayer, stamenRoads, vectors]);
     
     selectControl = new OpenLayers.Control.SelectFeature(
         vectors,
