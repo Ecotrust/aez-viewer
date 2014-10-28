@@ -221,7 +221,7 @@ for measure in measures:
             content += '            "%s%s",\n' % (types[type]['label'], id)
     content += '        ]\n\
     },\n'
-content += '}'
+content += '};'
 
 file = open('data-map-gen.js', 'w+')
 file.write(content)
