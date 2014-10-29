@@ -313,8 +313,6 @@ function updateStatus(key, value, reload){
 
     updateHref(queryString, reload);
 
-    redrawAdditionalLegend();
-
     return queryString;
 }
 
@@ -323,20 +321,6 @@ function updateHref(queryString, reload){
     if (reload) {
         loadData();
     }
-}
-
-function redrawAdditionalLegend() {
-
-    var i;
-    for(i=0; $('.pointlegend').length > 0; i++) {
-        $('.pointlegend')[0].remove();
-    }
-
-    setAdditionalLegendData();
-
-    // TODO: have setAdditionalLegendData also populate the legend_data object.
-
-    addAdditionalLegends(property);
 }
 
 function selectMeasure(value){

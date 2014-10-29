@@ -10,6 +10,143 @@ var required_total_keys = [
 var perspective_text = ' in Oregon';
 var original_category_codes = ['br','fc','fn','fs','oc','vpm'];
 var legend_data = {};
+var featureData = zoneData;
+var acresData = zoneData;
+var farmsData = zoneData;
+var yieldData = zoneData;
+var dataMap = {
+	"acres": {
+		"data": acresData,
+		"mapping": {
+			"type": types
+		}
+	},
+	"farms": {
+		"data": farmsData,
+		"mapping": {
+			"type": types
+		}
+	},
+	"yield": {
+		"data": yieldData,
+		"mapping": {
+			"type": types
+		}
+	}
+};
+var defaultPrimaryUnit = 'count';
+var defaultSecondaryUnit = 'density';
+var units = {
+	"density": {
+		"name":"Density",
+		"value":"density",
+		"label":"Per Acre"
+	},
+	"count": {
+		"name": "Count",
+		"value": "count",
+		"label": "units"
+	}
+};
+var measures = {
+	"acres": {
+		"name": "Acres"
+	},
+	"farms": {
+		"name": "Farms"
+	},
+	"yield": {
+		"name": "Production"
+	}
+};
+var popUpDescriptions = {
+	"acres": {
+		'density': {
+			"name": "% ag land reprented by this product"
+		},
+		'count': {
+			"name": "Total acres of this product"
+		}
+	},
+	"farms": {
+		'density': {
+			"name": "Farms per Mi<sup>2</sup> that produce this product"
+		},
+		'count': {
+			"name": "Number of farms producing this product"
+		}
+	},
+	"yield": {
+		'density': {
+			"name": "Yield"
+		},
+		'count': {
+			"name": ""
+		}
+	}
+};
+var overlay_data = {
+	'grain_warehouse': {
+		'color': '#F00', // red
+		'label': 'Grain Warehouse',
+		'data': grain_warehouses,
+		'style': grainWarehouseStyle
+	},
+	'custom_mobile_slaughter': {
+		'color': '#0F0', // green
+		'label': 'Custom Mobile Slaughter',
+		'data': custom_mobile_slaughterers,
+		'style': custMobileSlaughterStyle
+	},
+	'custom_stationary_slaughter': {
+		'color': '#00F', // blue
+		'label': 'Custom Stationary Slaughter',
+		'data': custom_stat_slaughterers,
+		'style': custStatSlaughterStyle
+	},
+	'custom_meat_processor': {
+		'color': '#FF0', // yellow
+		'label': 'Custom Meat Processor',
+		'data': custom_meat_processors,
+		'style': custMeatProcessorStyle
+	},
+	'non_slaughtering_processor': {
+		'color': '#F0F', // magenta
+		'label': 'Non-Slaughtering Processor',
+		'data': non_slaughtering_processors,
+		'style': nonSlaughterProcessorStyle
+	},
+	'slaughterhouse': {
+		'color': '#0FF', // cyan
+		'label': 'Slaughterhouse',
+		'data': slaughterhouses,
+		'style': slaughterhouseStyle
+	},
+	'poultry_slaughterhouse': {
+		'color': '#A60', // brown
+		'label': 'Poultry Slaughterhouse',
+		'data': poultry_rabbit_slaughterers,
+		'style': poultrySlaughterhouseStyle
+	},
+	'food_storage_warehouse': {
+		'color': '#FFF', // white
+		'label': 'Food Storage Warehouse',
+		'data': food_storage_clean,
+		'style': foodStorageWarehouseStyle
+	},
+	'refrigerated_locker_plant': {
+		'color': '#000', // black
+		'label': 'Refrigerated Locker Plant',
+		'data': refrigerated_lockers,
+		'style': refrigeratedLockerStyle
+	},
+	'cold_storage': {
+		'color': '#888', // gray
+		'label': 'Cold Storage',
+		'data': cold_storage,
+		'style': coldStorageStyle
+	}
+};
 
 setAdditionalLegendData();
 
@@ -40,45 +177,6 @@ function getAjaxLocation(measure, type, code, unit, format){
 	var file_name = getFileKey([type,code].join('_'));
 	return data_dir + '/' + measure_dir + '/' + file_name + '.' + format;
 }
-
-var featureData = zoneData;
-var acresData = zoneData;
-var farmsData = zoneData;
-var yieldData = zoneData;
-
-var dataMap = {
-	"acres": {
-		"data": acresData,
-		"mapping": {
-			"type": types
-		}
-	},
-	"farms": {
-		"data": farmsData,
-		"mapping": {
-			"type": types
-		}
-	},
-	"yield": {
-		"data": yieldData,
-		"mapping": {
-			"type": types
-		}
-	}
-};
-
-var units = {
-	"density": {
-		"name":"Density",
-		"value":"density",
-		"label":"Per Acre"
-	},
-	"count": {
-		"name": "Count",
-		"value": "count",
-		"label": "units"
-	}
-};
 
 function getLabel(property){
 	var label = capFirstLetter(property.measure);
@@ -136,45 +234,6 @@ function getUnits(property) {
 	return units;
 }
 
-var measures = {
-	"acres": {
-		"name": "Acres"
-	},
-	"farms": {
-		"name": "Farms"
-	},
-	"yield": {
-		"name": "Production"
-	}
-};
-
-var popUpDescriptions = {
-	"acres": {
-		'density': {
-			"name": "% ag land reprented by this product"
-		},
-		'count': {
-			"name": "Total acres of this product"
-		}
-	},
-	"farms": {
-		'density': {
-			"name": "Farms per Mi<sup>2</sup> that produce this product"
-		},
-		'count': {
-			"name": "Number of farms producing this product"
-		}
-	},
-	"yield": {
-		'density': {
-			"name": "Yield"
-		},
-		'count': {
-			"name": ""
-		}
-	}
-};
-
 function getFileKey(m_key) {
 	var key_prefix;
 	var key_code = m_key.split("_")[1];
@@ -226,9 +285,6 @@ function getTypes(property){
 	}
 	return available_types;
 }
-
-var defaultPrimaryUnit = 'count';
-var defaultSecondaryUnit = 'density';
 
 function encodeLayer(measure, type, code, unit) {
 	var key = getFileKey([type, code].join('_'));
@@ -380,63 +436,53 @@ function licensePointStyle(fillColor) {
 }
 
 function grainWarehouseStyle(feature) {
-	var color = '#F00';
-	appendToLegend('Grain Warehouse', color);
-	return licensePointStyle(color);
+	appendToLegend(overlay_data['grain_warehouse']);
+	return licensePointStyle(overlay_data['grain_warehouse'].color);
 }
 
 function custMobileSlaughterStyle(feature) {
-	var color = '#0F0';
-	appendToLegend('Custom Mobile Slaughter', color);
-	return licensePointStyle(color);
+	appendToLegend(overlay_data['custom_mobile_slaughter']);
+	return licensePointStyle(overlay_data['custom_mobile_slaughter'].color);
 }
 
 function custStatSlaughterStyle(feature) {
-	var color = '#00F';
-	appendToLegend('Custom Stationary Slaughter', color);
-	return licensePointStyle(color);
+	appendToLegend(overlay_data['custom_stationary_slaughter']);
+	return licensePointStyle(overlay_data['custom_stationary_slaughter'].color);
 }
 
 function custMeatProcessorStyle(feature) {
-	var color = '#FF0';
-	appendToLegend('Custom Meat Processor', color);
-	return licensePointStyle(color);
+	appendToLegend(overlay_data['custom_meat_processor']);
+	return licensePointStyle(overlay_data['custom_meat_processor'].color);
 }
 
 function nonSlaughterProcessorStyle(feature) {
-	var color = '#F0F';
-	appendToLegend('Non-Slaughtering Processor', color);
-	return licensePointStyle(color);
+	appendToLegend(overlay_data['non_slaughtering_processor']);
+	return licensePointStyle(overlay_data['non_slaughtering_processor'].color);
 }
 
 function slaughterhouseStyle(feature) {
-	var color = '#0FF';
-	appendToLegend('Slaughterhouse', color);
-	return licensePointStyle(color);
+	appendToLegend(overlay_data['slaughterhouse']);
+	return licensePointStyle(overlay_data['slaughterhouse'].color);
 }
 
 function poultrySlaughterhouseStyle(feature) {
-	var color = '#0FF';
-	appendToLegend('Poultry Slaughterhouse', color);
-	return licensePointStyle(color);
+	appendToLegend(overlay_data['poultry_slaughterhouse']);
+	return licensePointStyle(overlay_data['poultry_slaughterhouse'].color);
 }
 
 function foodStorageWarehouseStyle(feature) {
-	var color = '#FFF';
-	appendToLegend('Food Storage Warehouse', color);
-	return licensePointStyle(color);
+	appendToLegend(overlay_data['food_storage_warehouse']);
+	return licensePointStyle(overlay_data['food_storage_warehouse'].color);
 }
 
 function refrigeratedLockerStyle(feature) {
-	var color = '#000';
-	appendToLegend('Refrigerated Locker Plant', color);
-	return licensePointStyle(color);
+	appendToLegend(overlay_data['refrigerated_locker_plant']);
+	return licensePointStyle(overlay_data['refrigerated_locker_plant'].color);
 }
 
 function coldStorageStyle(feature) {
-	var color = '#888';
-	appendToLegend('Cold Storage', color);
-	return licensePointStyle(color);
+	appendToLegend(overlay_data['cold_storage']);
+	return licensePointStyle(overlay_data['cold_storage'].color);
 }
 
 function onEachLicensePointFeature(feature, layer) {
@@ -462,6 +508,25 @@ function licensePointClicked(e) {
 	e.target.bindPopup(popupHtml).openPopup();
 }
 
+function removeLeftoverLegendItems(overlay_id) {
+	var overlay = overlay_data[overlay_id];
+	var legend_item_id = '#' + S(overlay.label).slugify().s;
+	for(i=0; $(legend_item_id).length > 0; i++) {
+        $(legend_item_id)[0].remove();
+    }
+    delete legend_data[overlay.label];
+}
+
+function addOverlayLayer(overlay){
+	return L.geoJson(overlay.data, {
+		style: overlay.style,
+		pointToLayer: function (feature, latlng) {
+			return L.circleMarker(latlng, overlay.style);
+		},
+		onEachFeature: onEachLicensePointFeature
+	}).addTo(map);
+}
+
 function loadAdditionalLayers(property, callback) {
 
 	var basemap = {'Base Map': esri};
@@ -477,111 +542,70 @@ function loadAdditionalLayers(property, callback) {
 	overlays['Roads'] = Stamen_TonerLines;
 
 	if (property.type == 'SmallGrainsandRotationCrops') {
-		grain_warehouse_overlay = L.geoJson(grain_warehouses, {
-			style: grainWarehouseStyle,
-			pointToLayer: function (feature, latlng) {
-				return L.circleMarker(latlng, grainWarehouseStyle);
-			},
-			onEachFeature: onEachLicensePointFeature
-		}).addTo(map);
-
+		// Grain Warehouse
+		grain_warehouse_overlay = addOverlayLayer(overlay_data['grain_warehouse']);
+		overlay_data['grain_warehouse']['layer'] = grain_warehouse_overlay;
 		overlays['Grain Warehouses'] = grain_warehouse_overlay;
+	} else {
+		removeLeftoverLegendItems('grain_warehouse');
 	}
 
 	if (property.type == 'LivestockPoultry' && property.code != "chicken") {
-		custom_mobile_slaughter_overlay = L.geoJson(custom_mobile_slaughterers, {
-			style: custMobileSlaughterStyle,
-			pointToLayer: function (feature, latlng) {
-				return L.circleMarker(latlng, custMobileSlaughterStyle);
-			},
-			onEachFeature: onEachLicensePointFeature
-		}).addTo(map);
-
+		// Custom Mobile Slaughter
+		custom_mobile_slaughter_overlay = addOverlayLayer(overlay_data['custom_mobile_slaughter']);
+		overlay_data['custom_mobile_slaughter']['layer'] = custom_mobile_slaughter_overlay;
 		overlays['Custom Mobile Slaughter'] = custom_mobile_slaughter_overlay;
 
-		custom_stat_slaughter_overlay = L.geoJson(custom_stat_slaughterers, {
-			style: custStatSlaughterStyle,
-			pointToLayer: function (feature, latlng) {
-				return L.circleMarker(latlng, custStatSlaughterStyle);
-			},
-			onEachFeature: onEachLicensePointFeature
-		}).addTo(map);
-
+		// Custom Stationary Slaughter
+		custom_stat_slaughter_overlay = addOverlayLayer(overlay_data['custom_stationary_slaughter']);
+		overlay_data['custom_stationary_slaughter']['layer'] = custom_stat_slaughter_overlay;
 		overlays['Custom Stationary Slaughter'] = custom_stat_slaughter_overlay;
 
-		custom_meat_processor_overlay = L.geoJson(custom_meat_processors, {
-			style: custMeatProcessorStyle,
-			pointToLayer: function (feature, latlng) {
-				return L.circleMarker(latlng, custMeatProcessorStyle);
-			},
-			onEachFeature: onEachLicensePointFeature
-		}).addTo(map);
-
+		// Custom Meat Processor
+		custom_meat_processor_overlay = addOverlayLayer(overlay_data['custom_meat_processor']);
+		overlay_data['custom_meat_processor']['layer'] = custom_meat_processor_overlay;
 		overlays['Custom Meat Processor'] = custom_meat_processor_overlay;
 
-		non_slaughter_processor_overlay = L.geoJson(non_slaughtering_processors, {
-			style: nonSlaughterProcessorStyle,
-			pointToLayer: function (feature, latlng) {
-				return L.circleMarker(latlng, nonSlaughterProcessorStyle);
-			},
-			onEachFeature: onEachLicensePointFeature
-		}).addTo(map);
-
+		// Non-slaughtering Processor
+		non_slaughter_processor_overlay = addOverlayLayer(overlay_data['non_slaughtering_processor']);
+		overlay_data['non_slaughtering_processor']['layer'] = non_slaughter_processor_overlay;
 		overlays['Non-Slaughtering Processor'] = non_slaughter_processor_overlay;
 
-		slaughterhouse_overlay = L.geoJson(slaughterhouses, {
-			style: slaughterhouseStyle,
-			pointToLayer: function (feature, latlng) {
-				return L.circleMarker(latlng, slaughterhouseStyle);
-			},
-			onEachFeature: onEachLicensePointFeature
-		}).addTo(map);
-
+		// Slaughterhouse
+		slaughterhouse_overlay = addOverlayLayer(overlay_data['slaughterhouse']);
+		overlay_data['slaughterhouse']['layer'] = slaughterhouse_overlay;
 		overlays['Slaughterhouse'] = slaughterhouse_overlay;
+	} else {
+		removeLeftoverLegendItems('custom_mobile_slaughter');
+		removeLeftoverLegendItems('custom_stationary_slaughter');
+		removeLeftoverLegendItems('custom_meat_processor');
+		removeLeftoverLegendItems('non_slaughtering_processor');
+		removeLeftoverLegendItems('slaughterhouse');
 	}
 
 	if (property.code == "chicken") {
-		poultry_slaughter_overlay = L.geoJson(poultry_rabbit_slaughterers, {
-			style: poultrySlaughterhouseStyle,
-			pointToLayer: function (feature, latlng) {
-				return L.circleMarker(latlng, poultrySlaughterhouseStyle);
-			},
-			onEachFeature: onEachLicensePointFeature
-		}).addTo(map);
-
+		// Poultry Slaughter
+		poultry_slaughter_overlay = addOverlayLayer(overlay_data['poultry_slaughterhouse']);
+		overlay_data['poultry_slaughterhouse']['layer'] = poultry_slaughter_overlay;
 		overlays['Poultry Slaughter'] = poultry_slaughter_overlay;
+	} else {
+		removeLeftoverLegendItems('poultry_slaughterhouse');
 	}
 
-	food_storage_warehouse_overlay = L.geoJson(food_storage_clean, {
-		style: foodStorageWarehouseStyle,
-		pointToLayer: function (feature, latlng) {
-			return L.circleMarker(latlng, foodStorageWarehouseStyle);
-		},
-		onEachFeature: onEachLicensePointFeature
-	}).addTo(map);
-
+	// Food Storage Warehouse
+	food_storage_warehouse_overlay = addOverlayLayer(overlay_data['food_storage_warehouse']);
+	overlay_data['food_storage_warehouse']['layer'] = food_storage_warehouse_overlay;
 	overlays['Food Storage Warehouse'] = food_storage_warehouse_overlay;
 
-	refrigerated_locker_overlay = L.geoJson(refrigerated_lockers, {
-		style: refrigeratedLockerStyle,
-		pointToLayer: function (feature, latlng) {
-			return L.circleMarker(latlng, refrigeratedLockerStyle);
-		},
-		onEachFeature: onEachLicensePointFeature
-	}).addTo(map);
-
+	// Refrigerated Locker Plant
+	refrigerated_locker_overlay = addOverlayLayer(overlay_data['refrigerated_locker_plant']);
+	overlay_data['refrigerated_locker_plant']['layer'] = refrigerated_locker_overlay;
 	overlays['Refrigerated Locker Plant'] = refrigerated_locker_overlay;
 
-	cold_storage_overlay = L.geoJson(cold_storage, {
-		style: coldStorageStyle,
-		pointToLayer: function (feature, latlng) {
-			return L.circleMarker(latlng, coldStorageStyle);
-		},
-		onEachFeature: onEachLicensePointFeature
-	}).addTo(map);
-
+	// Cold Storage
+	cold_storage_overlay = addOverlayLayer(overlay_data['cold_storage']);
+	overlay_data['cold_storage']['layer'] = cold_storage_overlay;
 	overlays['Cold Storage'] = cold_storage_overlay;
-
 
 	layer_switcher = L.control.layers(basemap, overlays);
 
@@ -592,8 +616,8 @@ function loadAdditionalLayers(property, callback) {
     callback();
 }
 
-function appendToLegend(label, color) {
-	legend_data[label] = color;
+function appendToLegend(overlay) {
+	legend_data[overlay.label] = overlay.color;
 }
 
 function addAdditionalLegends(property){
@@ -604,11 +628,10 @@ function addAdditionalLegends(property){
 		var div2 = L.DomUtil.create('div', 'info legend pointlegend');
 		div2.innerHTML = '<h4>' + legend_data.name + '</h4>';
 		for (var i = 1; i < keys.length; i++) {
-			div2.innerHTML += '<i style="background: ' + legend_data[keys[i]] + '; border: solid 1px">&nbsp;&nbsp;&nbsp;&nbsp;</i> ' + keys[i] + '<br />';
+			div2.innerHTML += '<span id="' + S(keys[i]).slugify().s + '"><i style="background: ' + legend_data[keys[i]] + '; border: solid 1px">&nbsp;&nbsp;&nbsp;&nbsp;</i> ' + keys[i] + '<br />';
 		}
 		span2.appendChild(div2);
 		row2.appendChild(span2);
 		$('#filter-container').append(row2);
 	}
-
 }
