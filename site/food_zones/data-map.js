@@ -9,7 +9,7 @@ var required_total_keys = [
 ];
 var perspective_text = ' in Oregon';
 var original_category_codes = ['br','fc','fn','fs','oc','vpm'];
-var legend_data = {};
+var legend_data = {'name': 'Infrastructure'};
 var featureData = zoneData;
 var acresData = zoneData;
 var farmsData = zoneData;
@@ -85,74 +85,69 @@ var popUpDescriptions = {
 		}
 	}
 };
-var overlay_data = {
-	'grain_warehouse': {
-		'color': '#F00', // red
-		'label': 'Grain Warehouse',
-		'data': grain_warehouses,
-		'style': grainWarehouseStyle
-	},
-	'custom_mobile_slaughter': {
-		'color': '#0F0', // green
-		'label': 'Custom Mobile Slaughter',
-		'data': custom_mobile_slaughterers,
-		'style': custMobileSlaughterStyle
-	},
-	'custom_stationary_slaughter': {
-		'color': '#00F', // blue
-		'label': 'Custom Stationary Slaughter',
-		'data': custom_stat_slaughterers,
-		'style': custStatSlaughterStyle
-	},
-	'custom_meat_processor': {
-		'color': '#FF0', // yellow
-		'label': 'Custom Meat Processor',
-		'data': custom_meat_processors,
-		'style': custMeatProcessorStyle
-	},
-	'non_slaughtering_processor': {
-		'color': '#F0F', // magenta
-		'label': 'Non-Slaughtering Processor',
-		'data': non_slaughtering_processors,
-		'style': nonSlaughterProcessorStyle
-	},
-	'slaughterhouse': {
-		'color': '#0FF', // cyan
-		'label': 'Slaughterhouse',
-		'data': slaughterhouses,
-		'style': slaughterhouseStyle
-	},
-	'poultry_slaughterhouse': {
-		'color': '#A60', // brown
-		'label': 'Poultry Slaughterhouse',
-		'data': poultry_rabbit_slaughterers,
-		'style': poultrySlaughterhouseStyle
-	},
-	'food_storage_warehouse': {
-		'color': '#FFF', // white
-		'label': 'Food Storage Warehouse',
-		'data': food_storage_clean,
-		'style': foodStorageWarehouseStyle
-	},
-	'refrigerated_locker_plant': {
-		'color': '#000', // black
-		'label': 'Refrigerated Locker Plant',
-		'data': refrigerated_lockers,
-		'style': refrigeratedLockerStyle
-	},
-	'cold_storage': {
-		'color': '#888', // gray
-		'label': 'Cold Storage',
-		'data': cold_storage,
-		'style': coldStorageStyle
-	}
-};
 
-setAdditionalLegendData();
-
-function setAdditionalLegendData() {
-	legend_data = {
-		'name': 'Infrastructure'
+if (typeof(grain_warehouses) !== "undefined"){
+	var overlay_data = {
+		'grain_warehouse': {
+			'color': '#F00', // red
+			'label': 'Grain Warehouse',
+			'data': grain_warehouses,
+			'style': grainWarehouseStyle
+		},
+		'custom_mobile_slaughter': {
+			'color': '#0F0', // green
+			'label': 'Custom Mobile Slaughter',
+			'data': custom_mobile_slaughterers,
+			'style': custMobileSlaughterStyle
+		},
+		'custom_stationary_slaughter': {
+			'color': '#00F', // blue
+			'label': 'Custom Stationary Slaughter',
+			'data': custom_stat_slaughterers,
+			'style': custStatSlaughterStyle
+		},
+		'custom_meat_processor': {
+			'color': '#FF0', // yellow
+			'label': 'Custom Meat Processor',
+			'data': custom_meat_processors,
+			'style': custMeatProcessorStyle
+		},
+		'non_slaughtering_processor': {
+			'color': '#F0F', // magenta
+			'label': 'Non-Slaughtering Processor',
+			'data': non_slaughtering_processors,
+			'style': nonSlaughterProcessorStyle
+		},
+		'slaughterhouse': {
+			'color': '#0FF', // cyan
+			'label': 'Slaughterhouse',
+			'data': slaughterhouses,
+			'style': slaughterhouseStyle
+		},
+		'poultry_slaughterhouse': {
+			'color': '#A60', // brown
+			'label': 'Poultry Slaughterhouse',
+			'data': poultry_rabbit_slaughterers,
+			'style': poultrySlaughterhouseStyle
+		},
+		'food_storage_warehouse': {
+			'color': '#FFF', // white
+			'label': 'Food Storage Warehouse',
+			'data': food_storage_clean,
+			'style': foodStorageWarehouseStyle
+		},
+		'refrigerated_locker_plant': {
+			'color': '#000', // black
+			'label': 'Refrigerated Locker Plant',
+			'data': refrigerated_lockers,
+			'style': refrigeratedLockerStyle
+		},
+		'cold_storage': {
+			'color': '#888', // gray
+			'label': 'Cold Storage',
+			'data': cold_storage,
+			'style': coldStorageStyle
+		}
 	};
 }
 
