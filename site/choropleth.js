@@ -526,13 +526,15 @@ function clearMeasures() {
 
 function setTypes() {
     var types = getTypes(property);
-    var key, subKey;
+    var key, subKey, option_list;
 
     for (key in types){
         var oGroup = document.createElement("optgroup");
         oGroup.value = key;
         oGroup.label = types[key].name;
-        for (subKey in types[key].options){
+        option_list = sortOptions(types[key].options);
+        for (var subKey_idx in option_list){
+            subKey = option_list[subKey_idx].key;
             var typeOpt = document.createElement("option");
             typeOpt.value = key + "_" + subKey;
             typeOpt.innerHTML = capFirstLetter(types[key].options[subKey].name);

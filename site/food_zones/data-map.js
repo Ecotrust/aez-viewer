@@ -276,7 +276,9 @@ function getMeasures(property) {
 function getTypes(property){
 	var available_types = {};
 	var type_key, opt_key;
-	for (type_key in types){
+	var type_key_list_order = Object.keys(types).sort();
+	for (var type_key_index in type_key_list_order){
+		type_key = type_key_list_order[parseInt(type_key_index, 10)];
 		var type = types[type_key];
 		available_types[type_key] = types[type_key];
 		for (opt_key in type.options){
@@ -284,6 +286,22 @@ function getTypes(property){
 		}
 	}
 	return available_types;
+}
+
+function sortOptions(options) {
+	option_list = [];
+	var option;
+	for (var option_key in options){
+		option = options[option_key];
+		option.key = option_key;
+		option_list.push(option);
+	}
+	option_list.sort(function(a,b){
+		if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
+		if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
+		return 0;
+	});
+	return option_list;
 }
 
 function encodeLayer(measure, type, code, unit) {
