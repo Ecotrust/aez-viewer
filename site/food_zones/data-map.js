@@ -9,6 +9,15 @@ var required_total_keys = [
 ];
 var perspective_text = ' in Oregon';
 var original_category_codes = ['br','fc','fn','fs','oc','vpm'];
+var legend_data = {};
+
+setAdditionalLegendData();
+
+function setAdditionalLegendData() {
+	legend_data = {
+		'name': 'Infrastructure'
+	};
+}
 
 function getAjaxLocation(measure, type, code, unit, format){
 	var measure_dir;
@@ -359,27 +368,104 @@ function getPerspective(prefix, prop_name, type, unit, measure, postfix) {
 	return ret_string;
 }
 
+function licensePointStyle(fillColor) {
+	return {
+		radius: 5,
+		fillColor: fillColor,
+		weight: 1,
+		opacity: 1,
+		fillOpacity: 1,
+		zindex: 1999
+	};
+}
+
+function grainWarehouseStyle(feature) {
+	var color = '#F00';
+	appendToLegend('Grain Warehouse', color);
+	return licensePointStyle(color);
+}
+
+function custMobileSlaughterStyle(feature) {
+	var color = '#0F0';
+	appendToLegend('Custom Mobile Slaughter', color);
+	return licensePointStyle(color);
+}
+
+function custStatSlaughterStyle(feature) {
+	var color = '#00F';
+	appendToLegend('Custom Stationary Slaughter', color);
+	return licensePointStyle(color);
+}
+
+function custMeatProcessorStyle(feature) {
+	var color = '#FF0';
+	appendToLegend('Custom Meat Processor', color);
+	return licensePointStyle(color);
+}
+
+function nonSlaughterProcessorStyle(feature) {
+	var color = '#F0F';
+	appendToLegend('Non-Slaughtering Processor', color);
+	return licensePointStyle(color);
+}
+
+function slaughterhouseStyle(feature) {
+	var color = '#0FF';
+	appendToLegend('Slaughterhouse', color);
+	return licensePointStyle(color);
+}
+
+function poultrySlaughterhouseStyle(feature) {
+	var color = '#0FF';
+	appendToLegend('Poultry Slaughterhouse', color);
+	return licensePointStyle(color);
+}
+
+function foodStorageWarehouseStyle(feature) {
+	var color = '#FFF';
+	appendToLegend('Food Storage Warehouse', color);
+	return licensePointStyle(color);
+}
+
+function refrigeratedLockerStyle(feature) {
+	var color = '#000';
+	appendToLegend('Refrigerated Locker Plant', color);
+	return licensePointStyle(color);
+}
+
+function coldStorageStyle(feature) {
+	var color = '#888';
+	appendToLegend('Cold Storage', color);
+	return licensePointStyle(color);
+}
+
+function onEachLicensePointFeature(feature, layer) {
+	layer.on({
+		click: licensePointClicked
+	});
+}
+
+function licensePointClicked(e) {
+	var props = e.target.feature.properties;
+	var type = props.Type;
+	var name = props.Name;
+	var loc1 = props.LocAdd1;
+	var loc2 = props.LocAdd2;
+	var city = props.LocCity;
+	var state = props.LocState;
+	var zip = props.LocZip;
+	var popupHtml = '<h3>' + type + '</h3>\
+	<h4>' + name + '</h4>\
+	' + loc1 + (loc2===null?"":'<br/>' + loc2) + '<br />\
+	' + city + ', ' + state + '<br />\
+	' + zip;
+	e.target.bindPopup(popupHtml).openPopup();
+}
+
 function loadAdditionalLayers(property, callback) {
 
-
-	if (property.code == 'chicken') {
-		facilities = L.geoJson(facilities_layer, {
-			style: facilitiesStyle,
-			pointToLayer: function (feature, latlng) {
-				return L.circleMarker(latlng, facilitiesStyle);
-			},
-			onEachFeature: onEachFacilityFeature
-		}).addTo(map);
-	}
-	/*
-	Acetate_roads = L.tileLayer('http://a{s}.acetate.geoiq.com/tiles/acetate-roads/{z}/{x}/{y}.png', {
-		attribution: '&copy;2012 Esri & Stamen, Data from OSM and Natural Earth',
-		subdomains: '0123',
-		minZoom: 2,
-		maxZoom: 18,
-		zIndex: 100
-	}).addTo(map);
-	*/
+	var basemap = {'Base Map': esri};
+	var overlays = {'Counties': geojson};
 
 	Stamen_TonerLines = L.tileLayer('http://{s}.tile.stamen.com/toner-lines/{z}/{x}/{y}.png', {
 		attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>',
@@ -388,12 +474,116 @@ function loadAdditionalLayers(property, callback) {
 		maxZoom: 20
 	}).addTo(map);
 
-	layer_switcher = L.control.layers({
-		'Base Map': esri
-	}, {
-		'Counties': geojson,
-		'Roads': Stamen_TonerLines
-	});
+	overlays['Roads'] = Stamen_TonerLines;
+
+	if (property.type == 'SmallGrainsandRotationCrops') {
+		grain_warehouse_overlay = L.geoJson(grain_warehouses, {
+			style: grainWarehouseStyle,
+			pointToLayer: function (feature, latlng) {
+				return L.circleMarker(latlng, grainWarehouseStyle);
+			},
+			onEachFeature: onEachLicensePointFeature
+		}).addTo(map);
+
+		overlays['Grain Warehouses'] = grain_warehouse_overlay;
+	}
+
+	if (property.type == 'LivestockPoultry' && property.code != "chicken") {
+		custom_mobile_slaughter_overlay = L.geoJson(custom_mobile_slaughterers, {
+			style: custMobileSlaughterStyle,
+			pointToLayer: function (feature, latlng) {
+				return L.circleMarker(latlng, custMobileSlaughterStyle);
+			},
+			onEachFeature: onEachLicensePointFeature
+		}).addTo(map);
+
+		overlays['Custom Mobile Slaughter'] = custom_mobile_slaughter_overlay;
+
+		custom_stat_slaughter_overlay = L.geoJson(custom_stat_slaughterers, {
+			style: custStatSlaughterStyle,
+			pointToLayer: function (feature, latlng) {
+				return L.circleMarker(latlng, custStatSlaughterStyle);
+			},
+			onEachFeature: onEachLicensePointFeature
+		}).addTo(map);
+
+		overlays['Custom Stationary Slaughter'] = custom_stat_slaughter_overlay;
+
+		custom_meat_processor_overlay = L.geoJson(custom_meat_processors, {
+			style: custMeatProcessorStyle,
+			pointToLayer: function (feature, latlng) {
+				return L.circleMarker(latlng, custMeatProcessorStyle);
+			},
+			onEachFeature: onEachLicensePointFeature
+		}).addTo(map);
+
+		overlays['Custom Meat Processor'] = custom_meat_processor_overlay;
+
+		non_slaughter_processor_overlay = L.geoJson(non_slaughtering_processors, {
+			style: nonSlaughterProcessorStyle,
+			pointToLayer: function (feature, latlng) {
+				return L.circleMarker(latlng, nonSlaughterProcessorStyle);
+			},
+			onEachFeature: onEachLicensePointFeature
+		}).addTo(map);
+
+		overlays['Non-Slaughtering Processor'] = non_slaughter_processor_overlay;
+
+		slaughterhouse_overlay = L.geoJson(slaughterhouses, {
+			style: slaughterhouseStyle,
+			pointToLayer: function (feature, latlng) {
+				return L.circleMarker(latlng, slaughterhouseStyle);
+			},
+			onEachFeature: onEachLicensePointFeature
+		}).addTo(map);
+
+		overlays['Slaughterhouse'] = slaughterhouse_overlay;
+	}
+
+	if (property.code == "chicken") {
+		poultry_slaughter_overlay = L.geoJson(poultry_rabbit_slaughterers, {
+			style: poultrySlaughterhouseStyle,
+			pointToLayer: function (feature, latlng) {
+				return L.circleMarker(latlng, poultrySlaughterhouseStyle);
+			},
+			onEachFeature: onEachLicensePointFeature
+		}).addTo(map);
+
+		overlays['Poultry Slaughter'] = poultry_slaughter_overlay;
+	}
+
+	food_storage_warehouse_overlay = L.geoJson(food_storage_clean, {
+		style: foodStorageWarehouseStyle,
+		pointToLayer: function (feature, latlng) {
+			return L.circleMarker(latlng, foodStorageWarehouseStyle);
+		},
+		onEachFeature: onEachLicensePointFeature
+	}).addTo(map);
+
+	overlays['Food Storage Warehouse'] = food_storage_warehouse_overlay;
+
+	refrigerated_locker_overlay = L.geoJson(refrigerated_lockers, {
+		style: refrigeratedLockerStyle,
+		pointToLayer: function (feature, latlng) {
+			return L.circleMarker(latlng, refrigeratedLockerStyle);
+		},
+		onEachFeature: onEachLicensePointFeature
+	}).addTo(map);
+
+	overlays['Refrigerated Locker Plant'] = refrigerated_locker_overlay;
+
+	cold_storage_overlay = L.geoJson(cold_storage, {
+		style: coldStorageStyle,
+		pointToLayer: function (feature, latlng) {
+			return L.circleMarker(latlng, coldStorageStyle);
+		},
+		onEachFeature: onEachLicensePointFeature
+	}).addTo(map);
+
+	overlays['Cold Storage'] = cold_storage_overlay;
+
+
+	layer_switcher = L.control.layers(basemap, overlays);
 
 	layer_switcher.setPosition("topleft");
 
@@ -402,16 +592,20 @@ function loadAdditionalLayers(property, callback) {
     callback();
 }
 
+function appendToLegend(label, color) {
+	legend_data[label] = color;
+}
+
 function addAdditionalLegends(property){
-	if (property.code == 'chicken'){
+	var keys = Object.keys(legend_data);
+	if (keys.length > 1) {
 		var row2 = L.DomUtil.create('div', 'row legend-row');
 		var span2 = L.DomUtil.create('div', 'col-md-12');
 		var div2 = L.DomUtil.create('div', 'info legend pointlegend');
-		div2.innerHTML = '<h4>Facilities</h4>\
-		<i style="background: #FFFF00; border: solid 1px">&nbsp;&nbsp;&nbsp;&nbsp;</i> Crops Only<br />\
-		<i style="background: #0000FF; border: solid 1px">&nbsp;&nbsp;&nbsp;&nbsp;</i> Livestock Only<br />\
-		<i style="background: #00FF00; border: solid 1px">&nbsp;&nbsp;&nbsp;&nbsp;</i> Both<br />\
-		<i style="background: #FFFFFF; border: solid 1px">&nbsp;&nbsp;&nbsp;&nbsp;</i> Neither<br />';
+		div2.innerHTML = '<h4>' + legend_data.name + '</h4>';
+		for (var i = 1; i < keys.length; i++) {
+			div2.innerHTML += '<i style="background: ' + legend_data[keys[i]] + '; border: solid 1px">&nbsp;&nbsp;&nbsp;&nbsp;</i> ' + keys[i] + '<br />';
+		}
 		span2.appendChild(div2);
 		row2.appendChild(span2);
 		$('#filter-container').append(row2);

@@ -313,6 +313,8 @@ function updateStatus(key, value, reload){
 
     updateHref(queryString, reload);
 
+    redrawAdditionalLegend();
+
     return queryString;
 }
 
@@ -321,6 +323,20 @@ function updateHref(queryString, reload){
     if (reload) {
         loadData();
     }
+}
+
+function redrawAdditionalLegend() {
+
+    var i;
+    for(i=0; $('.pointlegend').length > 0; i++) {
+        $('.pointlegend')[0].remove();
+    }
+
+    setAdditionalLegendData();
+
+    // TODO: have setAdditionalLegendData also populate the legend_data object.
+
+    addAdditionalLegends(property);
 }
 
 function selectMeasure(value){
@@ -647,32 +663,6 @@ function style(feature) {
 	};
 }
 
-function facilitiesStyle(feature) {
-    var facilityColor;
-	if (feature.properties.Crops == 'Yes'){
-		if (feature.properties.Livestock == 'Yes') {
-			facilityColor = '#00FF00';
-		} else {
-			facilityColor = '#FFFF00';
-		}
-	} else {
-		if (feature.properties.Livestock == 'Yes'){
-			facilityColor = '#0000FF';
-		} else {
-			facilityColor = '#FFFFFF';
-		}
-	}
-	return {
-		radius: 6,
-		fillColor: facilityColor,
-		color: '#000',
-		weight: 1,
-		opacity: 1,
-		fillOpacity: 1,
-		zindex: 1999
-	};
-}
-
 function highlightFeature(layer) {
     if (highlightedFeature) {
         resetHighlight();
@@ -869,34 +859,11 @@ function onEachFeature(feature, layer) {
     }
 }
 
-function onEachFacilityFeature(feature, layer) {
-	layer.on({
-		click: facilityClicked
-	});
-}
-
 function featureClicked(e) {
     highlightFeature(e.target);
     var stats = getPopupHtml(e.target.feature);
     updateStats(stats);
     selectFeature(e.target.feature.properties.zone_id);
-}
-
-function facilityClicked(e) {
-	var props = e.target.feature.properties;
-	var name = props.NameOp;
-	var crops = props.Crops;
-	var livestock = props.Livestock;
-	var handling = props.Handling;
-	var wildCrps = props.WildCrps;
-	var products = props.Products;
-	var facilityPopupHtml = '<h3>' + name + '</h3>\
-	Crops: ' + crops + '<br/>\
-	Livestock: ' + livestock + '<br />\
-	Handling: ' + handling + '<br />\
-	Wild Crops: ' + wildCrps + '<br />\
-	Products: ' + products;
-	e.target.bindPopup(facilityPopupHtml).openPopup();
 }
 
 function updateStats(stats) {
