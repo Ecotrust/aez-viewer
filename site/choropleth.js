@@ -658,12 +658,16 @@ function highlightFeature(layer) {
         dashArray: ''
     });
 
-	if (!L.Browser.ie && !L.Browser.opera && layer._map) {
-		layer.bringToFront();
-		if (typeof facilities != 'undefined') {
-			facilities.bringToFront();
-		}
-	}
+    if (!L.Browser.ie && !L.Browser.opera && layer._map) {
+        layer.bringToFront();
+        for (var i = 0; i < Object.keys(overlay_data).length; i++) {
+            var key = Object.keys(overlay_data)[i];
+            var overlay = overlay_data[key];
+            if (overlay.hasOwnProperty('layer') && map.hasLayer(overlay.layer)) {
+                overlay.layer.bringToFront();
+            }
+        }
+    }
 
     highlightedFeature = layer;
 
