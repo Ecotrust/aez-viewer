@@ -90,7 +90,7 @@ if (typeof(grain_warehouses) !== "undefined"){
 	var overlay_data = {
 		'grain_warehouse': {
 			'color': '#F00', // red
-			'label': 'Grain Warehouse',
+			'label': 'Grain Warehouse, Bonded',
 			'data': grain_warehouses,
 			'style': grainWarehouseStyle
 		},
